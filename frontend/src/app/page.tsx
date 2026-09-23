@@ -15,7 +15,7 @@ export default function Home() {
         </div>
         <div className="hero-grid">
           <div className="hero-primary">
-            <p className="hero-name">AJMIR ARIBAM</p>
+            <p className="hero-name">MD AJMIR ARIBAM</p>
             <h1>
               Software Engineer<span className="hero-dash"> — </span>
               <em>Backend, Cloud &amp; DevOps.</em>
@@ -27,6 +27,10 @@ export default function Home() {
             <p className="hero-copy">
               From backend design and full-stack implementation to testing,
               CI/CD, cloud delivery, and the work that follows launch.
+            </p>
+            <p className="hero-capability">
+              Production systems · Secure APIs · CI/CD · Cloud delivery ·
+              Operational ownership
             </p>
             <div className="hero-ctas">
               <Link className="button button-primary" href="/work">
@@ -62,11 +66,7 @@ export default function Home() {
               </Link>
             ))}
             <div className="index-bottom">
-              <span>
-                Implementation evidence
-                <br />
-                inside every case study.
-              </span>
+              <span>Product stories with engineering depth.</span>
               <Link href="/engineering">Explore engineering →</Link>
             </div>
           </aside>
@@ -86,13 +86,17 @@ export default function Home() {
             <h2 id="selected-heading">Systems in context.</h2>
           </div>
           <p>
-            Each case follows the real boundaries visible in source: what the
-            product serves, what the code does, and what remains to verify.
+            Three very different problems: financial workflows, institutional
+            publishing, and a commercial web experience.
           </p>
         </div>
         <div className="project-grid">
-          {projects.map((project) => (
-            <ProjectCard key={project.slug} project={project} />
+          {projects.map((project, index) => (
+            <ProjectCard
+              key={project.slug}
+              project={project}
+              featured={index === 0}
+            />
           ))}
         </div>
         <Link className="text-link" href="/work">
@@ -116,22 +120,9 @@ export default function Home() {
               a way to know when something is broken.
             </p>
             <Link className="text-link light" href="/engineering">
-              Explore capability evidence <span aria-hidden="true">↗</span>
+              Explore engineering <span aria-hidden="true">↗</span>
             </Link>
           </div>
-        </div>
-      </section>
-      <section className="section shell end-note">
-        <span className="eyebrow">03 / BEYOND DELIVERY</span>
-        <div>
-          <h2>Good engineering is visible in the decisions.</h2>
-          <p>
-            Read the implementation notes, explore the live products, and trace
-            claims back to inspected source paths.
-          </p>
-          <Link className="button button-outline" href="/writing">
-            Read the writing <span aria-hidden="true">↗</span>
-          </Link>
         </div>
       </section>
     </main>

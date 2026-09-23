@@ -4,10 +4,10 @@ export function SystemDiagram({ project }: { project: Project }) {
   return (
     <figure className="system-diagram" aria-labelledby="diagram-title">
       <div className="diagram-head">
-        <span className="eyebrow">SYSTEM BOUNDARIES / SOURCE-BASED</span>
+        <span className="eyebrow">SYSTEM BOUNDARIES</span>
         <span>FIG. {project.number}</span>
       </div>
-      <h3 id="diagram-title">How the inspected implementation is divided</h3>
+      <h3 id="diagram-title">From interaction to recorded state</h3>
       <ol className="diagram-flow">
         {project.boundaries.map((item, index) => (
           <li key={item.label}>
@@ -18,8 +18,8 @@ export function SystemDiagram({ project }: { project: Project }) {
         ))}
       </ol>
       <figcaption>
-        Conceptual boundary map from inspected repository files. It does not
-        assert unverified production topology.
+        Application responsibilities shown as a request flow; deployment
+        configuration is described separately.
       </figcaption>
     </figure>
   );

@@ -41,8 +41,8 @@ export default function About() {
           <p>
             The projects here range from billing workflows and controlled
             institutional publishing to a commercial site designed around clear
-            discovery and inquiry. Each has a different level of complexity;
-            each deserves an honest account of what the implementation proves.
+            discovery and inquiry. I enjoy the different decisions each kind of
+            product demands.
           </p>
           <div className="about-facts">
             <div>
@@ -52,8 +52,7 @@ export default function About() {
             <div>
               <span>EDUCATION</span>
               <strong>
-                MCA, Sharda University{" "}
-                <small>(2025–2027, per supplied resume)</small>
+                MCA, Sharda University <small>(2025–2027)</small>
               </strong>
             </div>
             <div>
@@ -62,13 +61,14 @@ export default function About() {
             </div>
           </div>
           <p>
-            My MCA studies sit alongside practical work in production-oriented
-            repositories. I prefer explicit interfaces, traceable decisions, and
-            claims that can survive source inspection.
+            Earlier work in banking and public digital services taught me to
+            value clear processes and dependable records. I bring that same care
+            to software: define the boundary, test the decision, and make the
+            operating path visible.
           </p>
           <div className="about-links">
             <Link className="button button-primary" href="/work">
-              Inspect selected work ↗
+              View selected work ↗
             </Link>
             <Link className="text-link" href="/resume">
               Read resume ↗

@@ -5,7 +5,7 @@ import { pageMeta } from "@/lib/site";
 
 export const metadata: Metadata = pageMeta(
   "Selected work",
-  "Production project case studies with implementation evidence and verified live product links.",
+  "Azaeron, SHAPES India, and Friends Aluminium Works: product stories and engineering decisions.",
   "/work",
 );
 
@@ -18,17 +18,17 @@ export default function WorkPage() {
           Selected work<span className="period">.</span>
         </h1>
         <p>
-          Three different delivery problems. Each case is grounded in an
-          inspected codebase and keeps open verification questions visible.
+          Financial workflows, editorial publishing, and commercial discovery.
+          Explore the product first, then the decisions that make it work.
         </p>
       </div>
       <div className="work-list">
-        {projects.map((p) => (
-          <ProjectCard key={p.slug} project={p} />
+        {projects.map((p, index) => (
+          <ProjectCard key={p.slug} project={p} featured={index === 0} />
         ))}
       </div>
       <div className="inline-note">
-        <strong>Experiments have a separate place.</strong>
+        <strong>Also exploring</strong>
         <p>
           Zam Zam Academy is a prototype/template and appears under{" "}
           <a href="/labs">Labs &amp; Experiments</a>.

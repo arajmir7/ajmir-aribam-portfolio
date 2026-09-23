@@ -6,6 +6,7 @@ export type Project = {
   lede: string;
   summary: string;
   live: string;
+  visual: { src: string; alt: string; caption: string };
   source: string; // TODO_OWNER_VERIFY: remotes are not publicly accessible; never render as visitor links.
   revision: string;
   year: string;
@@ -34,6 +35,11 @@ export const projects: Project[] = [
     summary:
       "Invoice and business operations software with a React interface, Express API, and MongoDB persistence.",
     live: "https://invoice.web-com.live/",
+    visual: {
+      src: "/images/projects/azaeron-login.webp",
+      alt: "Azaeron's public workspace sign-in interface",
+      caption: "Public sign-in surface · Azaeron",
+    },
     source: "https://github.com/arajmir7/azaeron-invoice-system",
     revision: "66b0f7c4c023685303ff495f58a6a776b7d67809",
     stack: ["React", "TypeScript", "Express", "MongoDB", "GitHub Actions"],
@@ -67,7 +73,7 @@ export const projects: Project[] = [
       {
         label: "Delivery",
         detail:
-          "GitHub Actions release gate; Vercel frontend and Render API described in source configuration.",
+          "GitHub Actions release checks; separate Vercel frontend and Render API configuration.",
       },
     ],
     decisions: [
@@ -110,6 +116,11 @@ export const projects: Project[] = [
     summary:
       "An institutional web platform for six centres, public resources, and content operations.",
     live: "https://shapesindia.org/",
+    visual: {
+      src: "/images/projects/shapes-centres.webp",
+      alt: "SHAPES India centre index showing its six-centre navigation",
+      caption: "Public centre index · SHAPES India",
+    },
     source: "https://github.com/arajmir7/Shapes-India",
     revision: "0dbdf15b3dabce0a7d3bb37582a50426f793d7db",
     stack: ["Flask", "SQLAlchemy", "PostgreSQL", "Vite", "GitHub Actions"],
@@ -182,10 +193,15 @@ export const projects: Project[] = [
     name: "Friends Aluminium Works",
     type: "Commercial web · frontend delivery",
     year: "2026",
-    lede: "A trade business translated into a clear, inspectable web presence.",
+    lede: "A local fabrication business made clear through products, projects, and a direct path to inquiry.",
     summary:
       "A responsive product, service, project, and inquiry site for an Imphal fabrication business.",
     live: "https://friendsaluminiumworks.com/",
+    visual: {
+      src: "/images/projects/friends-banner.webp",
+      alt: "Aluminium and glass work featured on the Friends Aluminium Works website",
+      caption: "Project photography · Friends Aluminium Works",
+    },
     source: "https://github.com/arajmir7/friends-aluminium-works",
     revision: "13aa4bfbefb116b5839c18d02907caa5097ecee8",
     stack: ["React", "TypeScript", "Vite", "SEO", "Responsive UI"],

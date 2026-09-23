@@ -13,22 +13,18 @@ export default function Labs() {
       <div className="page-heading">
         <p className="eyebrow">LABS / EXPERIMENTS</p>
         <h1>
-          Work in exploration<span className="period">.</span>
+          Labs<span className="period">.</span>
         </h1>
-        <p>
-          Experiments are useful for testing a direction. They are labeled
-          separately from shipped client or institutional work.
-        </p>
+        <p>Small experiments and interface explorations.</p>
       </div>
       <article className="lab-entry">
-        <span className="index">EXP / 01</span>
+        <span className="index">01 / EXPERIMENT</span>
         <div>
-          <p className="eyebrow">PROTOTYPE / TEMPLATE ONLY</p>
+          <p className="eyebrow">PROTOTYPE / TEMPLATE EXPLORATION</p>
           <h2>Zam Zam Academy</h2>
           <p>
-            A prototype/template exploration. This is not presented as completed
-            client work. Source and ownership details have not yet been
-            verified.
+            A template study for an academy website, exploring structure,
+            navigation, and presentation.
           </p>
           <a
             href="https://storied-bombolone-5d4a8f.netlify.app/"

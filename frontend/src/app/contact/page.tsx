@@ -16,18 +16,15 @@ export default function Contact() {
           Let’s talk systems<span className="period">.</span>
         </h1>
         <p>
-          Share the problem, context, and what a useful next step would look
-          like.
+          Tell me what you’re building, the problem you’re solving, and the
+          constraints that matter.
         </p>
       </div>
       <div className="contact-grid">
         <aside className="contact-aside">
           <p className="eyebrow">DIRECT ROUTES</p>
           <h2>A good brief starts with the constraint.</h2>
-          <p>
-            If the form is unavailable, email directly. Include enough context
-            to make the first reply useful.
-          </p>
+          <p>Prefer email? Send a short brief and a useful next step.</p>
           <a href={`mailto:${email}`}>{email} ↗</a>
           <div className="footer-links">
             <a href={githubUrl} target="_blank" rel="noopener noreferrer">

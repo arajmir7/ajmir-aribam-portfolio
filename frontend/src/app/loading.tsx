@@ -1,9 +1,9 @@
 export default function Loading() {
   return (
     <main id="main" className="shell state-page" aria-live="polite">
-      <p className="eyebrow">LOADING / PLEASE WAIT</p>
+      <p className="eyebrow">LOADING</p>
       <div className="loading-rule" />
-      <p>Preparing the next record…</p>
+      <p>Opening the page…</p>
     </main>
   );
 }

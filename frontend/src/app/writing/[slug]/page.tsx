@@ -50,7 +50,7 @@ export default async function Article({
     <main id="main" className="shell article-page">
       <StructuredData value={structured} />
       <Link className="back-link" href="/writing">
-        ← All writing
+        ← All notes
       </Link>
       <div className="article-head">
         <p className="eyebrow">ENGINEERING NOTE / {article.date}</p>
@@ -66,12 +66,11 @@ export default async function Article({
           on it.
         </p>
         <p>
-          In the Azaeron invoice source, moving an invoice to <code>paid</code>{" "}
-          is guarded by a payment summary. The lifecycle service rejects a paid
-          transition while an outstanding balance exists. It also records a
-          journal event and an audit entry after changing state. The
-          implementation treats a transition as a business operation, not a
-          display update.
+          In Azaeron, moving an invoice to <code>paid</code> is guarded by a
+          payment summary. The lifecycle service rejects a paid transition while
+          an outstanding balance exists. It also records a journal event and an
+          audit entry after changing state. The implementation treats a
+          transition as a business operation, not a display update.
         </p>
         <p>
           The SHAPES publishing service makes a similar choice for a different
@@ -89,14 +88,12 @@ export default async function Article({
           together.
         </p>
         <p>
-          That does not make every transition perfectly atomic by itself.
-          Transaction boundaries, side effects, and retries still need review
-          against the real datastore and deployment. The source shows a clear
-          architectural intention; production outcomes require separate
-          evidence.
+          A service boundary alone does not make every side effect atomic.
+          Transaction scope and retries still matter, especially when payment
+          and publishing flows touch more than one record.
         </p>
         <div className="article-sources">
-          <strong>Read the inspection records</strong>
+          <strong>See the projects behind this note</strong>
           <Link href="/work/azaeron">Azaeron case study ↗</Link>
           <Link href="/work/shapes-india">SHAPES case study ↗</Link>
         </div>

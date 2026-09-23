@@ -24,7 +24,7 @@ The browser does not talk directly to FastAPI, so no cross-origin browser API is
 
 ## Rendering and content
 
-Case study data lives in `frontend/src/content/projects.ts`. It includes sources and `TODO_OWNER_VERIFY` markers. Most UI is server-rendered. Client code is limited to theme preference, form behavior, and first-party web-vitals reporting. The portrait is a faithful JPEG conversion of the supplied photo. Diagrams map inspected code boundaries and explicitly avoid claiming live deployment topology.
+Case study data lives in `frontend/src/content/projects.ts`. It includes sources and `TODO_OWNER_VERIFY` markers that are not rendered to visitors. Most UI is server-rendered. Small client components handle the mobile menu, route-aware footer, active case contents, theme preference, form behavior, and first-party web-vitals reporting. The portrait is a faithful JPEG conversion of the supplied photo; project imagery consists of public page captures and existing project photographs. Diagrams map inspected code boundaries and explicitly avoid claiming live deployment topology.
 
 ## Data and lifecycle
 

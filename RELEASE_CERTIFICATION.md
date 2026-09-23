@@ -1,50 +1,57 @@
-# Release certification — local monorepo candidate
+# Release certification — local product candidate
 
-**Revision:** The architecture-refactor commit containing this document, based on `29b68d7`. Use `git rev-parse HEAD` to identify its exact SHA after commit creation.
+- **Revision:** This document is part of the final frontend product pass on top of `7215fab8ea1e0fd2f4372a92c03d69693cd52ced`; `git rev-parse HEAD` identifies the exact candidate commit after creation.
+- **Verified:** 2026-09-23 on Darwin arm64 with Node 24, Next.js 16.3.6, React 19.3.0, Python 3.12 containers, PostgreSQL 17, and Docker 29.
+- **Status:** Local release gate passed. No push, hosted CI run, or public deployment is claimed.
 
-**Verified:** 23 September 2026 on Darwin arm64, Node 24.17.0, npm 11.13.0, local uv 0.10.6, Docker 29.8.0. Containers use Node 24, Python 3.12, and uv 0.12.16.
+## Architecture
 
-**Status:** Local verification passed. No GitHub push, hosted CI run, or public deployment is claimed.
+The repository keeps separate `frontend/` and `backend/` applications. Next.js renders the public portfolio and owns the same-origin contact route. The private FastAPI service validates and persists inquiries through SQLAlchemy and Alembic into PostgreSQL. Compose runs the frontend, backend, and database without exposing the private API or database to the public origin. Project case studies are server-rendered; small client components serve the mobile menu, active case contents, theme preference, form, footer, and first-party telemetry.
 
-## Architecture and behavior boundary
-
-`frontend/` owns Next.js rendering, routes, assets, content, and browser tests. `backend/` owns the private FastAPI inquiry API, Pydantic input, SQLAlchemy storage, migrations, and operational CLI. The only cross-application integration is HTTP through the same-origin Next contact route. Root Compose runs frontend, backend, and PostgreSQL; `infra/compose.dev.yaml` exposes PostgreSQL to localhost for host development. There is no empty contracts or repository layer.
-
-The route and contact contracts remain the same as baseline: all 13 public pages, `/api/contact`, `/api/health`, `/inquiries`, `/health/live`, and `/health/ready`. The Azaeron, SHAPES India, Friends Aluminium Works, Labs, writing, About, and resume evidence copy was not rewritten. Source content files, the Labs page, About page, and portrait match the baseline byte-for-byte. The resume page changed only its PrintButton import path. The responsive 320px Engineering regression test remains active and passes.
-
-Generated output and `next-env.d.ts` are excluded from Git. `npm run typecheck` regenerates the Next.js types before strict TypeScript checking; this was verified after deleting the local generated file.
+This pass changed public presentation, project images, case-study structure, navigation, and browser coverage. It did not rewrite the backend or add infrastructure. Genuine project captures are from public pages; Friends photographs come from its project source. The supplied About portrait remains faithful to the original.
 
 ## Verification results
 
-`make verify` passed after the move. It ran:
+`make verify` passed on the final candidate. Its gates included:
 
-- Prettier over frontend and root/docs configuration; ESLint, strict TypeScript, Ruff lint and format.
-- Two frontend unit tests, four backend API/unit tests, a fresh PostgreSQL 17 migration and Alembic schema check, and one PostgreSQL persistence integration test.
-- A production Next build and three Playwright journeys covering all 13 routes, internal links, metadata, sitemap, robots, 404, contact, keyboard navigation, and the evidence links.
-- Axe checks on all 13 routes in light and dark themes, plus horizontal-overflow checks at 320, 375, and 768 pixels. No automated WCAG 2/2.1/2.2 A/AA violations were reported.
-- `npm audit --audit-level=high` and `pip-audit` with no reported vulnerabilities; Gitleaks scans of committed history and staged refactor changes with no leaks.
-- Frontend and backend Docker builds; isolated Compose startup from an empty volume, healthy PostgreSQL/backend/frontend, a 200 contact response with one persisted row, and a 403 response for a foreign origin.
+- Prettier, ESLint, strict TypeScript, Ruff format and lint, and a production Next.js build.
+- Two frontend unit tests; four backend API/unit tests; a fresh isolated PostgreSQL migration, Alembic schema check, and persisted-inquiry integration test. One backend test is skipped in the SQLite-only run because its PostgreSQL path is exercised separately.
+- Six Playwright tests covering 13 public routes, metadata, sitemap, robots, internal links, 404, real case imagery, visitor-copy exclusions, mobile navigation and Escape/focus behavior, case anchors, contact success and failure fallback, and responsive overflow.
+- Axe scans on all 13 routes in both themes with zero automated WCAG 2/2.1/2.2 A/AA violations. A dark-theme intermediate contrast defect was found and corrected before the passing run.
+- `npm audit --audit-level=high` and `pip-audit` with zero reported vulnerabilities; Gitleaks scans of committed history and staged changes with no findings.
+- Frontend and backend Docker builds; isolated Compose startup from an empty PostgreSQL volume, healthy services, a persisted contact response, and rejection of a foreign origin.
+- `git diff --check`. The before/after screenshot review and 14-path, ten-width viewport sweep are documented in [Final design review](docs/quality/FINAL_DESIGN_REVIEW.md).
 
-`make dev` was also exercised with disposable local values: it started PostgreSQL, applied migration, served backend readiness and the homepage (both HTTP 200), and shut down without retaining the test volume. Next.js dev-generated agent files are disabled and did not reappear on a fresh dev start. The four supplied project URLs returned HTTP 200 to direct HEAD requests during this refactor; the three project GitHub source remotes remained inaccessible to unauthenticated visitors and are not visitor links.
+The résumé was rendered to two selectable-text A4 pages and visually checked for page breaks. The error and loading components were reviewed; an unexpected production exception was not introduced solely to force an error-boundary screenshot.
 
-## Security, accessibility, and performance
+## Accessibility and performance
 
-The refactor preserved the nonce CSP, security headers, same-origin contact boundary, private API token, input limits, Pydantic validation, honeypot, database-backed throttling, safe errors, request IDs, and PII-safe logs. The base Compose file does not publish the backend or database. A trusted production reverse proxy must overwrite client-IP headers for throttling to be reliable. OWASP ASVS 5.0 is a reference, not a compliance claim.
+Manual keyboard checks covered the skip link, menu open/close, Escape focus restoration, active links, case contents, and contact form. Automated axe results passed; a human screen-reader session and physical-device checks remain open. Reduced-motion rules remain active.
 
-Automated accessibility and keyboard checks passed. A human screen-reader session and physical-device checks remain open. The design respects reduced motion. Current Lighthouse 13.5 mobile lab runs against the local production build scored the homepage 98 performance, 100 accessibility, 100 best practices, and 100 SEO (LCP 2.29 s, CLS 0, TBT 12 ms); About scored 98/100/100/100 (LCP 2.31 s, CLS 0, TBT 2 ms). These are lab measurements, not field Core Web Vitals. INP and field LCP/CLS require production traffic.
+Lighthouse 13.5.0 **local mobile lab** runs against the production build returned:
 
-## Deployment status and remaining limits
+| Route   | Performance | Accessibility | Best practices | SEO |    LCP | CLS |  TBT |
+| ------- | ----------: | ------------: | -------------: | --: | -----: | --: | ---: |
+| Home    |         100 |           100 |            100 | 100 | 1.66 s |   0 | 6 ms |
+| Azaeron |          99 |           100 |            100 | 100 | 2.24 s |   0 | 3 ms |
+| About   |          99 |           100 |            100 | 100 | 2.23 s |   0 | 2 ms |
 
-The local candidate is not a certified production deployment. Before public launch, verify the final domain, DNS/TLS and trusted proxy, database credentials and restore-tested backups, secret storage, SMTP delivery or a staffed pending-inquiry process, log sink and alerts, retention scheduler and backup expiry, real-origin metadata/social preview, human accessibility review, and field performance. GitHub Actions has not run on the refactor commit until it is published.
+Script transfer was about 152 KB on these routes, with no font transfer or third-party browser scripts. These are lab measurements, not field Core Web Vitals. INP and field LCP/CLS need production traffic.
 
-The optional email task runs in-process after storage, not in a durable queue. A crash can leave an inquiry `pending` for operator review. Simultaneous first submissions for one rate-window key can cause one transient 503 due to a uniqueness race; an atomic upsert should replace this if observed. The deployed privacy notice must match the actual retention schedule.
+## Security and deployment boundary
+
+The existing nonce CSP, security headers, same-origin contact boundary, private API token, bounded and validated input, honeypot, database-backed throttling, safe errors, request IDs, and PII-safe logs remain in place. OWASP ASVS 5.0 is a design reference, not a compliance claim. The production reverse proxy must overwrite client-IP headers for throttling to be reliable.
+
+The candidate is **not a certified public deployment**. External launch inputs remain: final domain and TLS/proxy configuration, database credentials and restore-tested backups, secret storage, SMTP delivery or staffed pending-inquiry review, log sink and alerts, retention scheduler, privacy schedule, live-origin metadata/social preview, human accessibility review, and field performance monitoring. GitHub Actions has not run on this commit until it is published.
+
+The optional email task runs in-process after storage; a crash can leave an inquiry pending for operator review. A simultaneous first-submission rate-window uniqueness race can return a transient 503 and should be changed to an atomic upsert if observed. These are known backend limitations retained from the baseline; the contact page now offers a direct email fallback when submission fails.
 
 ## `TODO_OWNER_VERIFY` register
 
-- Final public domain, hosting, credentials, TLS/proxy, alerts, backup/restore and retention ownership.
-- Whether the three project source repositories may be public; their current unauthenticated URLs return 404.
-- Azaeron active deployment/integrations, SHAPES production operations, and Friends Aluminium Works commercial arrangement and measured outcomes.
-- Zam Zam Academy source and ownership details beyond the supplied prototype classification.
-- Human screen-reader and physical-device review, production field Core Web Vitals, and SMTP/alert delivery.
+- Final public domain, hosting, credentials, TLS/proxy, alerts, backup/restore, retention, and contact delivery ownership.
+- Whether the three project source repositories may be public; their unauthenticated URLs returned 404 during evidence review.
+- Azaeron authenticated/active deployment behavior and enabled integrations; SHAPES production operations; Friends commercial arrangement and measured outcomes.
+- Zam Zam Academy source and ownership detail beyond the supplied prototype classification.
+- Human screen-reader and physical-device review, production field Web Vitals, and SMTP/alert delivery.
 
-The fact classifications are in `PORTFOLIO_SPEC.md`. Unverified facts remain `TODO_OWNER_VERIFY` in content source rather than appearing as public claims.
+Unverified facts remain in internal content and documentation rather than becoming public portfolio claims.

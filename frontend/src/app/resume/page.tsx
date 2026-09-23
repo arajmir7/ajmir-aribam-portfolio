@@ -13,7 +13,7 @@ export default function Resume() {
     <main id="main" className="shell page resume-page">
       <div className="resume-top">
         <div>
-          <p className="eyebrow">RESUME / CURRENT SUMMARY</p>
+          <p className="eyebrow">RESUME / SOFTWARE ENGINEERING</p>
           <h1>
             MD AJMIR
             <br />
@@ -86,6 +86,32 @@ export default function Resume() {
           </article>
         </div>
       </div>
+      <div className="resume-section">
+        <h2>Operations experience</h2>
+        <div className="resume-items">
+          <article>
+            <span>2021–25</span>
+            <div>
+              <h3>Banking Correspondent · Axis Bank</h3>
+              <p>
+                Handled customer banking transactions and digital service
+                workflows, with a focus on dependable records and clear
+                communication.
+              </p>
+            </div>
+          </article>
+          <article>
+            <span>2020–25</span>
+            <div>
+              <h3>Village Level Entrepreneur · Common Service Centre</h3>
+              <p>
+                Supported access to government digital services and managed
+                end-to-end service requests for local residents.
+              </p>
+            </div>
+          </article>
+        </div>
+      </div>
       <div className="resume-section resume-columns">
         <div>
           <h2>Technical areas</h2>
@@ -97,20 +123,12 @@ export default function Resume() {
         </div>
         <div>
           <h2>Education</h2>
-          <p>
-            Master of Computer Applications, Sharda University, Greater Noida ·
-            2025–2027 <small>(per supplied resume)</small>
-          </p>
-          <p>
-            B.Com, Manipur University · 2021–2024{" "}
-            <small>(per supplied resume)</small>
-          </p>
+          <p>MCA · Sharda University, Greater Noida · 2025–2027</p>
+          <p>B.Com · Manipur University · 2021–2024</p>
+          <p>B.Sc. Botany · Manipur University · 2019–2022</p>
+          <p>DCA · NIELIT · 2022</p>
         </div>
       </div>
-      <p className="resume-note">
-        This resume intentionally omits unverified business and performance
-        metrics. Source paths and revision references are in each case study.
-      </p>
     </main>
   );
 }

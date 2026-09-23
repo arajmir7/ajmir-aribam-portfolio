@@ -1,5 +1,6 @@
 "use client";
 import { useState } from "react";
+import { email } from "@/lib/site";
 
 type Fields = {
   name: string;
@@ -23,12 +24,14 @@ export function ContactForm() {
     "idle",
   );
   const [feedback, setFeedback] = useState("");
+  const [emailFallback, setEmailFallback] = useState(false);
   function update(key: keyof Fields, value: string) {
     setValues((v) => ({ ...v, [key]: value }));
     setErrors((e) => ({ ...e, [key]: "" }));
   }
   async function submit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    setEmailFallback(false);
     const next: Record<string, string> = {};
     if (values.name.trim().length < 2)
       next.name = "Enter your name (at least 2 characters).";
@@ -45,6 +48,7 @@ export function ContactForm() {
     }
     setStatus("sending");
     setFeedback("");
+    setEmailFallback(false);
     try {
       const response = await fetch("/api/contact", {
         method: "POST",
@@ -55,9 +59,15 @@ export function ContactForm() {
         await response.json();
       if (!response.ok) {
         setErrors(result.errors || {});
+        if (result.errors && Object.keys(result.errors).length) {
+          setFeedback("Please correct the marked fields.");
+          setStatus("failed");
+          return;
+        }
         throw new Error(
-          result.message ||
-            "Inquiry could not be sent. Please try email instead.",
+          response.status === 429
+            ? "Please wait a little before trying again."
+            : "I couldn’t receive that just now. You can email me directly.",
         );
       }
       setStatus("sent");
@@ -68,10 +78,11 @@ export function ContactForm() {
       setErrors({});
     } catch (error) {
       setStatus("failed");
+      setEmailFallback(true);
       setFeedback(
         error instanceof Error
           ? error.message
-          : "Inquiry could not be sent. Please try email instead.",
+          : "I couldn’t receive that just now. You can email me directly.",
       );
     }
   }
@@ -84,8 +95,8 @@ export function ContactForm() {
     >
       <p className="eyebrow">SEND AN INQUIRY</p>
       <p className="form-note">
-        All fields except the spam check are required. This form needs the
-        inquiry service to be available.
+        All fields are required. A few useful details make the first reply
+        easier.
       </p>
       <div className="form-row">
         <div className="field">
@@ -185,6 +196,11 @@ export function ContactForm() {
           role={status === "failed" ? "alert" : "status"}
         >
           {feedback}
+        </p>
+      )}
+      {emailFallback && (
+        <p className="form-fallback">
+          <a href={`mailto:${email}`}>Email {email} instead ↗</a>
         </p>
       )}
       <button
