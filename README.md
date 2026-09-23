@@ -48,3 +48,5 @@ The browser suite starts its own API and web servers. `npx playwright install ch
 ## Evidence and constraints
 
 [PORTFOLIO_SPEC.md](PORTFOLIO_SPEC.md) records inspected sources and claim confidence. [ARCHITECTURE.md](ARCHITECTURE.md) and [SECURITY.md](SECURITY.md) describe the implemented boundaries. Production deployment, field performance, SMTP delivery and external recovery operations are not claimed until verified.
+
+[RELEASE_CERTIFICATION.md](RELEASE_CERTIFICATION.md) records the local verification results and the remaining production gates.
