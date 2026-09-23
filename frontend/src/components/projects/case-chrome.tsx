@@ -23,14 +23,18 @@ export function CaseHero({ project }: { project: Project }) {
               <span>{project.year}</span>
               <span>{project.stack.slice(0, 4).join(" · ")}</span>
             </div>
-            <a
-              className="text-link"
-              href={project.live}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Visit live product <span aria-hidden="true">↗</span>
-            </a>
+            {project.live ? (
+              <a
+                className="text-link"
+                href={project.live}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Visit live product <span aria-hidden="true">↗</span>
+              </a>
+            ) : (
+              <span className="case-status">{project.status}</span>
+            )}
           </div>
           <figure className="case-hero-figure">
             <div className="case-hero-image">

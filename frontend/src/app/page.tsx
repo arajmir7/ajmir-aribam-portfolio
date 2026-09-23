@@ -1,128 +1,265 @@
+import Image from "next/image";
 import Link from "next/link";
-import { ProjectCard } from "@/components/projects/project-card";
 import { projects } from "@/content/projects";
-import { githubUrl, linkedinUrl } from "@/lib/site";
+import { githubUrl } from "@/lib/site";
+
+const [azaeron, shapes, friends] = projects;
+
+const engineeringAreas = [
+  ["Backend", "Business rules, APIs, and services", "/work/azaeron", "Azaeron"],
+  [
+    "Data",
+    "Durable records and controlled state",
+    "/work/shapes-india",
+    "SHAPES India",
+  ],
+  [
+    "AI systems",
+    "Versioned analysis for human review",
+    "/work/azaeron-verity",
+    "Verity",
+  ],
+  [
+    "Quality",
+    "Tests, accessibility, and release checks",
+    "/engineering",
+    "Engineering",
+  ],
+  ["Cloud", "Containers, CI, and deployment paths", "/work/azaeron", "Azaeron"],
+  [
+    "Security",
+    "Permissions at the point of change",
+    "/work/the-scent-bar-retail-os",
+    "The Scent Bar",
+  ],
+] as const;
 
 export default function Home() {
   return (
     <main id="main">
-      <section className="hero shell">
-        <div className="hero-top">
-          <span className="eyebrow">ENGINEERING PORTFOLIO / 2026</span>
-          <span className="hero-availability">
-            01 / SYSTEMS, DELIVERY, OPERATIONS
-          </span>
+      <section className="home-hero shell" aria-labelledby="home-title">
+        <div className="home-hero-top">
+          <span className="eyebrow">SOFTWARE ENGINEERING / PORTFOLIO</span>
+          <span>BACKEND · CLOUD · DEVOPS · AI · QUALITY</span>
         </div>
-        <div className="hero-grid">
-          <div className="hero-primary">
-            <p className="hero-name">MD AJMIR ARIBAM</p>
-            <h1>
-              Software Engineer<span className="hero-dash"> — </span>
-              <em>Backend, Cloud &amp; DevOps.</em>
+        <div className="home-hero-grid">
+          <div className="home-hero-main">
+            <h1 id="home-title">
+              Ajmir
+              <br />
+              Aribam<span className="period">.</span>
             </h1>
-            <div className="hero-rule" />
-            <p className="hero-statement">
-              I build software systems designed to survive production.
+            <p className="home-role">Software Engineer</p>
+            <p className="home-capability-line">
+              Backend · Cloud · DevOps · AI Systems · Quality Engineering
             </p>
-            <p className="hero-copy">
-              From backend design and full-stack implementation to testing,
-              CI/CD, cloud delivery, and the work that follows launch.
+            <p className="home-proposition">
+              I build reliable software products, from backend logic and APIs to
+              deployment, testing, and the services that keep them running.
             </p>
-            <p className="hero-capability">
-              Production systems · Secure APIs · CI/CD · Cloud delivery ·
-              Operational ownership
+            <p className="home-summary">
+              My work includes business rules, data, permissions, background
+              jobs, release pipelines, and the interfaces people use to reach
+              them.
             </p>
-            <div className="hero-ctas">
+            <div className="home-actions">
               <Link className="button button-primary" href="/work">
                 View selected work <span aria-hidden="true">↗</span>
               </Link>
               <Link className="button button-outline" href="/resume">
                 Resume <span aria-hidden="true">↗</span>
               </Link>
-            </div>
-            <div className="hero-social">
-              <a href={githubUrl} target="_blank" rel="noopener noreferrer">
-                GitHub ↗
-              </a>
-              <a href={linkedinUrl} target="_blank" rel="noopener noreferrer">
-                LinkedIn ↗
-              </a>
-              <Link href="/contact">Contact ↗</Link>
+              <Link className="home-contact-link" href="/contact">
+                Contact ↗
+              </Link>
             </div>
           </div>
-          <aside className="hero-index" aria-label="Selected systems">
-            <div className="index-heading">
-              <span className="eyebrow">SELECTED SYSTEMS</span>
+          <aside className="home-evidence-index" aria-label="Selected projects">
+            <div className="home-index-head">
+              <span>SELECTED SYSTEMS</span>
               <span>01 — 03</span>
             </div>
-            {projects.map((p) => (
-              <Link className="index-row" href={`/work/${p.slug}`} key={p.slug}>
-                <span className="index-number">{p.number}</span>
-                <span>
-                  <strong>{p.name}</strong>
-                  <small>{p.type}</small>
-                </span>
+            {projects.slice(0, 3).map((project) => (
+              <Link href={`/work/${project.slug}`} key={project.slug}>
+                <span>{project.number}</span>
+                <strong>{project.name}</strong>
+                <small>{project.type}</small>
                 <span aria-hidden="true">↗</span>
               </Link>
             ))}
-            <div className="index-bottom">
-              <span>Product stories with engineering depth.</span>
-              <Link href="/engineering">Explore engineering →</Link>
-            </div>
+            <p>Start with the work. The details are in each case study.</p>
           </aside>
         </div>
-        <div className="hero-foot">
-          <span>REQUIREMENTS → ARCHITECTURE → CODE → RELEASE → OPERATIONS</span>
-          <span>SCROLL TO EXPLORE ↓</span>
+        <div className="home-hero-foot">
+          <span>BACKEND · CLOUD · DEVOPS · AI SYSTEMS · QUALITY</span>
+          <a href={githubUrl} target="_blank" rel="noopener noreferrer">
+            GitHub ↗
+          </a>
         </div>
       </section>
+
+      <section className="home-flagship" aria-labelledby="flagship-title">
+        <div className="shell">
+          <div className="section-line section-line--light">
+            <span>01 / FLAGSHIP SYSTEM</span>
+            <span>PRODUCT + ENGINEERING</span>
+          </div>
+          <div className="home-flagship-grid">
+            <div className="home-flagship-copy">
+              <p className="eyebrow">AZAERON / BILLING SYSTEMS</p>
+              <h2 id="flagship-title">
+                Billing, stock, and customers in one place.
+              </h2>
+              <p>
+                Azaeron connects invoices, quotations, inventory, point of sale,
+                payments, and customer records. The difficult part is making
+                those views agree when money or access changes.
+              </p>
+              <div className="flagship-path" aria-label="Azaeron product areas">
+                <span>Sell</span>
+                <span aria-hidden="true">→</span>
+                <span>Collect</span>
+                <span aria-hidden="true">→</span>
+                <span>Operate</span>
+              </div>
+              <Link className="text-link light" href="/work/azaeron">
+                Explore the Azaeron case study <span aria-hidden="true">↗</span>
+              </Link>
+            </div>
+            <figure className="home-flagship-visual">
+              <div>
+                <Image
+                  src={azaeron.visual.src}
+                  alt={azaeron.visual.alt}
+                  fill
+                  sizes="(max-width: 900px) 100vw, 56vw"
+                  priority
+                />
+              </div>
+              <figcaption>{azaeron.visual.caption}</figcaption>
+            </figure>
+          </div>
+          <div className="home-flagship-meta">
+            <span>React · TypeScript · Express · MongoDB</span>
+            <span>Lifecycle rules · authorization · release checks</span>
+          </div>
+        </div>
+      </section>
+
       <section
-        className="section shell selected-work"
-        aria-labelledby="selected-heading"
+        className="home-other-work shell"
+        aria-labelledby="other-work-title"
       >
-        <div className="section-intro">
+        <div className="home-section-heading">
           <div>
-            <p className="eyebrow">01 / SELECTED WORK</p>
-            <h2 id="selected-heading">Systems in context.</h2>
+            <p className="eyebrow">02 / SELECTED SYSTEMS</p>
+            <h2 id="other-work-title">Products built for different people.</h2>
           </div>
-          <p>
-            Three very different problems: financial workflows, institutional
-            publishing, and a commercial web experience.
-          </p>
+          <Link className="text-link" href="/work">
+            Full work index <span aria-hidden="true">↗</span>
+          </Link>
         </div>
-        <div className="project-grid">
-          {projects.map((project, index) => (
-            <ProjectCard
-              key={project.slug}
-              project={project}
-              featured={index === 0}
+        <article className="home-project-row home-project-row--shapes">
+          <div className="home-project-image">
+            <Image
+              src={shapes.visual.src}
+              alt={shapes.visual.alt}
+              fill
+              sizes="(max-width: 800px) 100vw, 55vw"
             />
-          ))}
-        </div>
-        <Link className="text-link" href="/work">
-          All selected work <span aria-hidden="true">↗</span>
-        </Link>
-      </section>
-      <section className="approach-band">
-        <div className="shell approach-grid">
-          <div>
-            <p className="eyebrow">02 / ENGINEERING PRACTICE</p>
-            <h2>
-              Build the system.
-              <br />
-              <em>Own the boundary.</em>
-            </h2>
           </div>
-          <div>
+          <div className="home-project-copy">
+            <p className="eyebrow">02 / INSTITUTIONAL PLATFORM</p>
+            <h3>SHAPES India</h3>
             <p>
-              Requirements become architecture. Architecture becomes explicit
-              interfaces and tests. Delivery includes security, deployment, and
-              a way to know when something is broken.
+              SHAPES India brings six centres into one public website. A
+              publishing service lets editors prepare and review changes before
+              they appear on the site.
             </p>
-            <Link className="text-link light" href="/engineering">
-              Explore engineering <span aria-hidden="true">↗</span>
+            <span>Flask · SQLAlchemy · PostgreSQL</span>
+            <Link href="/work/shapes-india">Read the case study ↗</Link>
+          </div>
+        </article>
+        <article className="home-project-row home-project-row--friends">
+          <div className="home-project-copy">
+            <p className="eyebrow">03 / COMMERCIAL FRONTEND</p>
+            <h3>Friends Aluminium Works</h3>
+            <p>
+              A product and project website for an Imphal fabrication business.
+              Visitors can see the work and send a quote request through
+              WhatsApp or email.
+            </p>
+            <span>React · TypeScript · Responsive UI</span>
+            <Link href="/work/friends-aluminium-works">
+              Read the case study ↗
             </Link>
           </div>
+          <div className="home-project-image">
+            <Image
+              src={friends.visual.src}
+              alt={friends.visual.alt}
+              fill
+              sizes="(max-width: 800px) 100vw, 55vw"
+            />
+          </div>
+        </article>
+      </section>
+
+      <section className="home-method" aria-labelledby="method-title">
+        <div className="shell">
+          <div className="home-method-intro">
+            <div>
+              <p className="eyebrow">03 / ENGINEERING SURFACE</p>
+              <h2 id="method-title">What I build and how I check it.</h2>
+            </div>
+            <p>
+              Each area connects to a project or a concrete delivery practice.
+            </p>
+          </div>
+          <div className="home-area-grid">
+            {engineeringAreas.map(
+              ([label, description, href, project], index) => (
+                <article key={label}>
+                  <span>
+                    0{index + 1} / {label}
+                  </span>
+                  <h3>{description}</h3>
+                  <Link href={href}>
+                    See {project} <span aria-hidden="true">↗</span>
+                  </Link>
+                </article>
+              ),
+            )}
+          </div>
+          <Link className="text-link" href="/engineering">
+            Explore the engineering practice <span aria-hidden="true">↗</span>
+          </Link>
+        </div>
+      </section>
+
+      <section className="home-personal shell" aria-labelledby="personal-title">
+        <div className="home-personal-image">
+          <Image
+            src="/images/ajmir-portrait.jpg"
+            alt="Portrait of Ajmir Aribam"
+            fill
+            sizes="(max-width: 700px) 35vw, 220px"
+          />
+        </div>
+        <div>
+          <p className="eyebrow">04 / THE PERSON BEHIND THE WORK</p>
+          <h2 id="personal-title">
+            People notice when software gets the details wrong.
+          </h2>
+          <p>
+            Earlier work in banking and public digital services shaped how I
+            think about dependable records, clear process, and the people who
+            rely on a system after it ships.
+          </p>
+        </div>
+        <div className="home-personal-links">
+          <Link href="/about">About Ajmir ↗</Link>
+          <Link href="/resume">Resume ↗</Link>
         </div>
       </section>
     </main>

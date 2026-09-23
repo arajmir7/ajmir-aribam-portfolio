@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { SystemDiagram } from "@/components/diagrams/system-diagram";
 import type { Project } from "@/content/projects";
 import { CaseContents } from "./case-contents";
@@ -18,7 +19,7 @@ export function AzaeronCase({ project }: { project: Project }) {
       <div className="case-main">
         <section id="product" className="case-section">
           <p className="eyebrow">01 / THE PRODUCT</p>
-          <h2>One business workflow. Several kinds of state.</h2>
+          <h2>An invoice touches more than billing.</h2>
           <p className="section-lede">
             Azaeron brings invoicing, quotations, point of sale, inventory,
             payments, and customer records into a merchant workspace. These
@@ -41,6 +42,29 @@ export function AzaeronCase({ project }: { project: Project }) {
               </div>
             ))}
           </div>
+          <figure className="azaeron-public-surface">
+            <div>
+              <Image
+                src="/images/projects/azaeron-documentation.webp"
+                alt="Azaeron public documentation page with product guides and developer resources"
+                width={1440}
+                height={900}
+                sizes="(max-width: 760px) 100vw, 850px"
+              />
+            </div>
+            <figcaption>
+              Public documentation is a second inspectable product surface.
+              Authenticated workspace behavior below is described from the
+              implementation, not a staged screenshot.{" "}
+              <a
+                href="https://invoice.web-com.live/documentation"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                View live documentation ↗
+              </a>
+            </figcaption>
+          </figure>
         </section>
 
         <section
@@ -48,7 +72,7 @@ export function AzaeronCase({ project }: { project: Project }) {
           className="case-section case-section--state"
         >
           <p className="eyebrow">02 / FINANCIAL STATE</p>
-          <h2>A status change is a business operation.</h2>
+          <h2>A paid invoice needs a settled balance.</h2>
           <p className="section-lede">
             The invoice lifecycle checks allowed moves against payment
             summaries. A partially paid invoice needs both a completed payment
@@ -99,7 +123,7 @@ export function AzaeronCase({ project }: { project: Project }) {
 
         <section id="architecture" className="case-section">
           <p className="eyebrow">03 / ARCHITECTURE</p>
-          <h2>Clear boundaries around money and access.</h2>
+          <h2>The API owns the rules.</h2>
           <SystemDiagram project={project} />
           <p className="architecture-caption">
             React and TypeScript handle the merchant interface. Express owns
@@ -110,7 +134,7 @@ export function AzaeronCase({ project }: { project: Project }) {
 
         <section id="access" className="case-section">
           <p className="eyebrow">04 / ACCESS &amp; DELIVERY</p>
-          <h2>Controls travel with the request.</h2>
+          <h2>Check the request before changing a record.</h2>
           <div className="boundary-steps">
             <div>
               <span>01</span>
@@ -135,7 +159,7 @@ export function AzaeronCase({ project }: { project: Project }) {
           </div>
           <div className="two-col-copy">
             <div>
-              <h3>Release path</h3>
+              <h3>How the release is checked</h3>
               <p>
                 GitHub Actions runs release checks. The application has separate
                 frontend and API deployment configuration, with Vercel and
@@ -143,7 +167,7 @@ export function AzaeronCase({ project }: { project: Project }) {
               </p>
             </div>
             <div>
-              <h3>Operational signal</h3>
+              <h3>When the API is ready</h3>
               <p>
                 The API checks database indexes before listening and exposes a
                 readiness route. Request context and audit records make failures
@@ -155,7 +179,7 @@ export function AzaeronCase({ project }: { project: Project }) {
 
         <section id="decisions" className="case-section case-section--last">
           <p className="eyebrow">05 / ENGINEERING DECISIONS</p>
-          <h2>Built for the next state change.</h2>
+          <h2>What had to stay true.</h2>
           <div className="decision-list">
             {project.decisions.map((decision, index) => (
               <article key={decision.title}>

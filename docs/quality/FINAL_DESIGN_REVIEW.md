@@ -1,45 +1,52 @@
 # Final design review
 
-- **Baseline:** `7215fab8ea1e0fd2f4372a92c03d69693cd52ced`
-- **Review date:** 2026-09-23
-- **Scope:** public frontend and content presentation; monorepo and private inquiry API boundaries retained.
+- **Candidate:** Portfolio V4, built on the prior local product pass at `7215fab8ea1e0fd2f4372a92c03d69693cd52ced`.
+- **Review date:** 2026-09-23.
+- **Scope:** Public frontend, project content, browser behavior, and print résumé. The private inquiry API contract remains unchanged.
 
 ## What changed
 
-| Baseline weakness                                                                                | Change                                                                                                                                                                                      | Result checked                                                                      |
-| ------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------- |
-| Case studies opened with similar text-heavy audit sections.                                      | Azaeron now leads with its public product surface and invoice state; SHAPES follows public experience into publishing; Friends leads with project photography, catalogue, and inquiry path. | Full-page desktop/mobile review of all three cases.                                 |
-| Work cards had no visual product proof.                                                          | Added responsive captures from the live public sites and existing Friends project photography; Azaeron is the featured full-width card.                                                     | Images decoded at every tested width; no broken images or horizontal clipping.      |
-| Repository paths, revisions, owner-verification markers, and reviewer language reached visitors. | Kept provenance and unknowns in internal content; rewrote visitor copy and placed deeper technical detail in optional implementation notes.                                                 | Browser text scan across all 13 public routes found none of the prohibited strings. |
-| Utility routes repeated a large conversion footer and minor pages had too much visual weight.    | Added compact footer on cases, Engineering, Resume, Notes, Labs, Privacy, and 404; reduced Labs and Notes to truthful small collections. Contact closes with a route to selected work.      | Full-page screenshots of every route at 390 and 1440 px.                            |
-| Mobile navigation, active location, dark theme, and print layout needed a final pass.            | Added an accessible disclosure menu, current-route and current-section states, a mobile case contents rail, theme contrast corrections, and two-page A4 resume print rules.                 | Keyboard menu/anchor tests, axe scans, viewport sweep, and rendered A4 PDF review.  |
+| Earlier issue                                                                     | V4 change                                                                                                                                                            | Review result                                                                                      |
+| --------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------- |
+| The opening described a technical approach before explaining the person and work. | The hero now says Software Engineer, names five capability areas, and states in plain English what Ajmir builds. Azaeron remains the flagship.                       | Recruiter scan: name, role, work, and first proof appear in the first viewport at 390 and 1440 px. |
+| Engineering read as a nine-row résumé.                                            | Ten capability families now have concise explanations and links to specific project sections. AI Systems and Quality Engineering have their own grounded entries.    | Each family links to an inspectable case or a concrete local delivery practice.                    |
+| All projects appeared similarly mature.                                           | Live Azaeron, SHAPES, and Friends remain primary. Verity and The Scent Bar have distinct in-development cards and case pages. SCMIRN appears in Labs as a prototype. | Browser checks confirm development labels and current limitations are visible.                     |
+| Case introductions used abstract phrasing.                                        | Cards and case heroes first explain the product and its user. Technical depth follows in architecture, state, and release sections.                                  | Copy scan found no visitor-facing owner markers, source paths, credentials, or generic AI phrases. |
+| Social links relied on text and arrows.                                           | About, Contact, and footer use SVG platform marks with visible labels or accessible names.                                                                           | Browser accessibility scans include the new links in both themes.                                  |
+| Warm rust dominated the visual language.                                          | Neutral paper and graphite now carry the page; cobalt leads links and focus, emerald appears in technical states, and copper remains a small accent.                 | Full-page light and dark captures were reviewed for hierarchy and contrast.                        |
+| The expanded résumé initially printed with poor page breaks.                      | Print CSS now breaks before Operations Experience and keeps individual work entries together.                                                                        | A4 PDF rendered as two pages with selectable text; both pages were visually inspected.             |
+| The Work page shifted while streamed content replaced the loading view.           | The loading view now reserves the first viewport height, keeping the footer below the fold.                                                                          | Mobile Lighthouse Work CLS improved from 0.311 to 0 on a production build.                         |
 
-The visual system retains warm paper, graphite, rust, serif supporting copy, and architectural rules. Images are treated as content within the grid. The supplied About portrait is unchanged in identity and remains the primary personal photograph.
+## Source and status decisions
 
-## Before and after captures
+- **Azaeron:** Flagship billing and merchant workspace. Public sign-in and documentation captures are genuine public surfaces. No customer, uptime, or transaction metric is asserted.
+- **SHAPES India and Friends Aluminium Works:** Live public sites, each with a distinct case narrative and genuine imagery.
+- **Azaeron Verity:** Local document review and evidence graph implementation. Its own execution ledger says it is **not production ready** and has no approved production generative model or calibrated detector. The case uses local development captures and describes abstention explicitly.
+- **The Scent Bar Retail OS:** Identity, branch, catalogue, and pricing foundations are implemented. The case states that inventory, purchasing, and POS remain future work and that current database/API runtime gates are open.
+- **SCMIRN:** Local civic complaint and tracking code with experimental specialist-agent modules; shown as a prototype in Labs. Its README claims exceed what was independently demonstrated.
+- **AccessForge:** No inspectable source was found in the available local projects. It is omitted pending `TODO_OWNER_VERIFY`, rather than given an unsupported case study.
 
-These first-viewport captures were taken from the baseline and final local builds at the same viewport sizes. Full-page captures for all routes were also compared locally.
+## Browser and copy review
 
-| View                             | Baseline                                          | Final                                           |
-| -------------------------------- | ------------------------------------------------- | ----------------------------------------------- |
-| Home, 1440 px                    | [Before](screenshots/home-desktop-before.webp)    | [After](screenshots/home-desktop-after.webp)    |
-| Home, 390 px                     | [Before](screenshots/home-mobile-before.webp)     | [After](screenshots/home-mobile-after.webp)     |
-| Azaeron, 1440 px                 | [Before](screenshots/azaeron-desktop-before.webp) | [After](screenshots/azaeron-desktop-after.webp) |
-| SHAPES India, 1440 px            | [Before](screenshots/shapes-desktop-before.webp)  | [After](screenshots/shapes-desktop-after.webp)  |
-| Friends Aluminium Works, 1440 px | [Before](screenshots/friends-desktop-before.webp) | [After](screenshots/friends-desktop-after.webp) |
+The browser gate covers 15 public routes, internal links, canonical metadata, sitemap, robots, image decoding, contact success and failure, mobile menu focus/Escape behavior, case anchors, and visitor-copy exclusions. All 15 routes were captured full-page at 390 and 1440 px in light and dark themes (60 local screenshots in ignored `frontend/test-results/`). The full-page captures and first-viewport contact sheets were checked for hierarchy, clipping, repeated imagery, and project status. The new Verity and Scent cases were revised after that review to avoid repeating their hero visuals.
 
-## Validation
+The responsive sweep covered every public route at 320, 360, 375, 390, 412, 430, 768, 820, 1024, 1280, 1440, 1600, 1728, and 1920 px. It found no document overflow. Axe reported zero automated WCAG 2/2.1/2.2 A/AA violations across all 15 routes in both themes. A dark-theme color transition found during the first pass was removed before the passing rerun. These results are automated checks, not an accessibility certification.
 
-- All 13 public routes and 404 were captured at 390 and 1440 px. Home, all cases, About, and Contact were also captured in dark mode. A viewport sweep covered 14 paths at 320, 360, 375, 390, 430, 768, 1024, 1280, 1440, and 1728 px: no document overflow, clipped main headings/images, or broken images was detected. Representative first-view screenshots at each breakpoint were visually inspected.
-- Playwright checked navigation, active links, mobile menu Escape/focus behavior, case anchors, live image decoding, contact success and email fallback, route metadata, internal links, sitemap, robots, and 404. Axe reported zero WCAG 2/2.1/2.2 A/AA violations on all 13 routes in light and dark themes. A color-transition contrast failure found during testing was fixed before the final scan.
-- The resume produced a two-page A4 PDF with selectable text and the Operations Experience heading kept with its content. The loading and error components received copy and action review; an actual unexpected production exception was not forced solely to take a screenshot.
+The dedicated copy pass read routes in navigation order and shortened abstract headings, removed a portfolio cliché from the Friends case, and made the sole engineering note's title specific. Status and limitations remain visible without turning visitor pages into internal verification logs.
 
-### Local mobile Lighthouse lab, production build
+### Local mobile Lighthouse lab
 
-| Route   | Performance | Accessibility | Best practices | SEO |    LCP | CLS |  TBT |
-| ------- | ----------: | ------------: | -------------: | --: | -----: | --: | ---: |
-| Home    |         100 |           100 |            100 | 100 | 1.66 s |   0 | 6 ms |
-| Azaeron |          99 |           100 |            100 | 100 | 2.24 s |   0 | 3 ms |
-| About   |          99 |           100 |            100 | 100 | 2.23 s |   0 | 2 ms |
+Lighthouse 13.5.0 ran against the production build on localhost. These are lab measurements, not field Core Web Vitals.
 
-Lighthouse 13.5.0 measured about 152 KB of transferred script and no font transfer on each route. These are local lab results, not field Core Web Vitals or an INP measurement. The largest authenticated Azaeron surfaces were not available for safe public capture, so its visual shows the genuine public sign-in page. Human screen-reader review, physical-device review, and production monitoring remain deployment follow-ups.
+| Route | Performance | Accessibility | Best practices | SEO |   LCP | CLS |   TBT |
+| ----- | ----------: | ------------: | -------------: | --: | ----: | --: | ----: |
+| Home  |          97 |           100 |            100 | 100 | 2.6 s |   0 | 30 ms |
+| Work  |          99 |           100 |            100 | 100 | 2.3 s |   0 | 10 ms |
+
+Home LCP was 0.1 s above the 2.5 s target in this run. Both pages transferred about 155 KB of script, within the 160 KB initial-page budget. Field LCP and INP still need production traffic.
+
+## Release boundary
+
+`make verify` must pass on the final candidate before the local release gate is claimed in `RELEASE_CERTIFICATION.md`. The command includes PostgreSQL migration/inquiry integration, frontend and backend tests, browser/axe coverage, dependency and secret scans, container builds, and isolated Compose contact and origin checks. Screenshots, the rendered print PDF, local databases, and test output remain outside Git.
+
+Human screen-reader review, physical-device review, field performance measurements, and production monitoring remain deployment follow-ups. This review does not claim a public deployment.

@@ -7,12 +7,14 @@ const routes = [
   "/work/azaeron",
   "/work/shapes-india",
   "/work/friends-aluminium-works",
+  "/work/azaeron-verity",
+  "/work/the-scent-bar-retail-os",
   "/engineering",
   "/labs",
   "/about",
   "/resume",
-  "/writing",
-  "/writing/state-is-a-boundary",
+  "/notes",
+  "/notes/state-is-a-boundary",
   "/contact",
   "/privacy",
 ];
@@ -22,8 +24,11 @@ test("orientation, routes, metadata, and evidence links", async ({
   request,
 }) => {
   await page.goto("/");
-  await expect(page.getByRole("heading", { level: 1 })).toContainText(
-    "Software Engineer",
+  await expect(page.getByRole("heading", { level: 1 })).toContainText("Ajmir");
+  await expect(page.getByRole("heading", { level: 1 })).toContainText("Aribam");
+  await expect(page.locator(".home-role")).toContainText("Software Engineer");
+  await expect(page.locator(".home-capability-line")).toContainText(
+    "Quality Engineering",
   );
   await expect(
     page.getByRole("link", { name: /View selected work/ }),
@@ -38,7 +43,31 @@ test("orientation, routes, metadata, and evidence links", async ({
     const html = await response.text();
     expect(html, `${path} title`).toMatch(/<title>[^<]+<\/title>/);
     expect(html, `${path} canonical`).toContain(`rel="canonical"`);
+    expect(html, `${path} previous name`).not.toMatch(/\bmd\s+ajmir\b/i);
+    expect(html, `${path} public identity`).toContain("Ajmir Aribam");
   }
+  for (const [from, to] of [
+    ["/writing", "/notes"],
+    ["/writing/state-is-a-boundary", "/notes/state-is-a-boundary"],
+  ]) {
+    const response = await request.get(from, { maxRedirects: 0 });
+    expect(response.status(), from).toBe(308);
+    expect(response.headers().location, from).toBe(to);
+  }
+  await page.goto("/");
+  await expect(page.locator('meta[property="og:title"]')).toHaveAttribute(
+    "content",
+    /Ajmir Aribam/,
+  );
+  await expect(page.locator('meta[name="twitter:card"]')).toHaveAttribute(
+    "content",
+    "summary_large_image",
+  );
+  const person = await page
+    .locator('script[type="application/ld+json"]')
+    .first()
+    .textContent();
+  expect(JSON.parse(person || "{}").name).toBe("Ajmir Aribam");
   const sitemap = await (await request.get("/sitemap.xml")).text();
   const locations = Array.from(
     sitemap.matchAll(/<loc>([^<]+)<\/loc>/g),
@@ -51,6 +80,7 @@ test("orientation, routes, metadata, and evidence links", async ({
   const internal = new Set<string>();
   for (const path of routes) {
     await page.goto(path);
+    await expect(page.locator("#main h1")).toBeVisible();
     const hrefs = await page
       .locator('a[href^="/"]')
       .evaluateAll((anchors) =>
@@ -64,6 +94,7 @@ test("orientation, routes, metadata, and evidence links", async ({
     expect((await request.get(href)).status(), href).toBe(200);
   for (const path of routes) {
     await page.goto(path);
+    await expect(page.locator("#main h1")).toBeVisible();
     const visibleText = await page.locator("body").innerText();
     expect(visibleText, `${path} public copy`).not.toMatch(
       /TODO_OWNER_VERIFY|source inspection|inspected source|verification boundary|per supplied resume|local Git history|backend\/src|Users\/ajmiraribam/i,
@@ -72,7 +103,7 @@ test("orientation, routes, metadata, and evidence links", async ({
   await page.goto("/work/azaeron");
   await expect(
     page.getByRole("heading", {
-      name: "A status change is a business operation.",
+      name: "A paid invoice needs a settled balance.",
     }),
   ).toBeVisible();
   await expect(page.getByText("Partially paid", { exact: true })).toBeVisible();
@@ -80,6 +111,8 @@ test("orientation, routes, metadata, and evidence links", async ({
     "/work/azaeron",
     "/work/shapes-india",
     "/work/friends-aluminium-works",
+    "/work/azaeron-verity",
+    "/work/the-scent-bar-retail-os",
   ]) {
     await page.goto(path);
     const heroImage = page.locator(".case-hero-image img");
@@ -102,6 +135,19 @@ test("orientation, routes, metadata, and evidence links", async ({
   await page.goto("/labs");
   await expect(
     page.getByText("PROTOTYPE / TEMPLATE EXPLORATION"),
+  ).toBeVisible();
+  await expect(page.getByRole("heading", { name: "SCMIRN" })).toBeVisible();
+  await page.goto("/work/azaeron-verity");
+  await expect(page.locator(".case-status")).toHaveText("In development");
+  await expect(
+    page.getByText(/No approved production generative model/),
+  ).toBeVisible();
+  await page.goto("/work/the-scent-bar-retail-os");
+  await expect(page.locator(".case-status")).toHaveText("In development");
+  await expect(
+    page.getByText(
+      /Inventory ledger, purchasing, and point of sale have not been implemented/,
+    ),
   ).toBeVisible();
   expect((await request.get("/missing-route")).status()).toBe(404);
 });
@@ -180,6 +226,7 @@ test("themes and automated accessibility", async ({ page }) => {
   await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
   for (const path of routes) {
     await page.goto(path);
+    await expect(page.locator("#main h1")).toBeVisible();
     await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
     const results = await new AxeBuilder({ page })
       .withTags(["wcag2a", "wcag2aa", "wcag21aa", "wcag22aa"])
@@ -190,6 +237,7 @@ test("themes and automated accessibility", async ({ page }) => {
   await expect(page.locator("html")).toHaveAttribute("data-theme", "light");
   for (const path of routes) {
     await page.goto(path);
+    await expect(page.locator("#main h1")).toBeVisible();
     await expect(page.locator("html")).toHaveAttribute("data-theme", "light");
     const results = await new AxeBuilder({ page })
       .withTags(["wcag2a", "wcag2aa", "wcag21aa", "wcag22aa"])
@@ -200,10 +248,13 @@ test("themes and automated accessibility", async ({ page }) => {
 
 test("responsive routes have no horizontal overflow", async ({ page }) => {
   test.setTimeout(180_000);
-  for (const width of [320, 360, 375, 390, 430, 768, 1024, 1280, 1440, 1728]) {
+  for (const width of [
+    320, 360, 375, 390, 412, 430, 768, 820, 1024, 1280, 1440, 1600, 1728, 1920,
+  ]) {
     await page.setViewportSize({ width, height: 812 });
     for (const path of routes) {
       await page.goto(path);
+      await expect(page.locator("#main h1")).toBeVisible();
       const overflow = await page.evaluate(
         () => document.documentElement.scrollWidth > window.innerWidth,
       );
@@ -213,35 +264,31 @@ test("responsive routes have no horizontal overflow", async ({ page }) => {
 });
 
 test("representative visual states are captured", async ({ page }) => {
-  for (const state of [
-    { width: 1440, theme: "light", path: "/", name: "home" },
-    { width: 1440, theme: "dark", path: "/", name: "home" },
-    { width: 390, theme: "light", path: "/", name: "home" },
-    { width: 390, theme: "dark", path: "/", name: "home" },
-    { width: 1440, theme: "light", path: "/work/azaeron", name: "azaeron" },
-    { width: 390, theme: "dark", path: "/work/azaeron", name: "azaeron" },
-    {
-      width: 1440,
-      theme: "light",
-      path: "/work/friends-aluminium-works",
-      name: "friends",
-    },
-    {
-      width: 390,
-      theme: "light",
-      path: "/work/friends-aluminium-works",
-      name: "friends",
-    },
-  ]) {
-    await page.setViewportSize({ width: state.width, height: 900 });
-    await page.goto(state.path);
-    await page.evaluate((theme) => {
-      document.documentElement.dataset.theme = theme;
-    }, state.theme);
-    await page.screenshot({
-      path: `test-results/${state.name}-${state.width}-${state.theme}.png`,
-      fullPage: true,
-      animations: "disabled",
-    });
+  test.setTimeout(120_000);
+  for (const width of [1440, 390]) {
+    await page.setViewportSize({ width, height: 900 });
+    for (const theme of ["light", "dark"]) {
+      for (const path of routes) {
+        await page.goto(path);
+        await expect(page.locator("#main h1")).toBeVisible();
+        await page.evaluate((value) => {
+          document.documentElement.dataset.theme = value;
+        }, theme);
+        const name = path === "/" ? "home" : path.slice(1).replaceAll("/", "-");
+        await page.screenshot({
+          path: `test-results/${name}-${width}-${theme}.png`,
+          fullPage: true,
+          animations: "disabled",
+        });
+      }
+    }
   }
+  await page.setViewportSize({ width: 1280, height: 900 });
+  await page.goto("/resume");
+  await expect(page.locator("#main h1")).toBeVisible();
+  await page.pdf({
+    path: "test-results/resume-print.pdf",
+    format: "A4",
+    printBackground: true,
+  });
 });

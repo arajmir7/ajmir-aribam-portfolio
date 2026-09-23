@@ -16,7 +16,7 @@ export function ShapesCase() {
       <div className="case-main">
         <section id="public-experience" className="case-section">
           <p className="eyebrow">01 / PUBLIC EXPERIENCE</p>
-          <h2>Make six centres feel like one institution.</h2>
+          <h2>Six centres, one place to start.</h2>
           <p className="section-lede">
             SHAPES connects learning, psychological services, research, and
             community work. The public site gives each centre a clear point of
@@ -40,7 +40,7 @@ export function ShapesCase() {
 
         <section id="editorial-workflow" className="case-section">
           <p className="eyebrow">02 / EDITORIAL SYSTEM</p>
-          <h2>Publishing is a workflow, not a visibility switch.</h2>
+          <h2>Editors can review before they publish.</h2>
           <p className="section-lede">
             Editors need room to revise content without making unfinished work
             public. A publishing service validates state changes, records
@@ -70,7 +70,7 @@ export function ShapesCase() {
 
         <section id="platform" className="case-section">
           <p className="eyebrow">03 / PLATFORM DESIGN</p>
-          <h2>One path from public page to governed record.</h2>
+          <h2>Public pages and editor tools share the same records.</h2>
           <div
             className="institution-flow"
             role="group"
@@ -98,7 +98,7 @@ export function ShapesCase() {
 
         <section id="continuity" className="case-section case-section--last">
           <p className="eyebrow">04 / CONTINUITY</p>
-          <h2>The editorial system needs an operating path.</h2>
+          <h2>How the site is released and checked.</h2>
           <div className="two-col-copy">
             <div>
               <h3>Release</h3>

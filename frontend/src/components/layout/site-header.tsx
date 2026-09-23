@@ -9,7 +9,7 @@ const links = [
   ["Work", "/work"],
   ["Engineering", "/engineering"],
   ["About", "/about"],
-  ["Notes", "/writing"],
+  ["Notes", "/notes"],
   ["Contact", "/contact"],
 ] as const;
 
@@ -31,12 +31,12 @@ export function SiteHeader() {
       }}
     >
       <div className="shell header-inner">
-        <Link className="brand" href="/" aria-label="MD Ajmir Aribam, home">
+        <Link className="brand" href="/" aria-label="Ajmir Aribam, home">
           <span className="brand-mark">
             A<span>.</span>
           </span>
           <span className="brand-name">
-            MD AJMIR
+            AJMIR
             <br />
             ARIBAM
           </span>

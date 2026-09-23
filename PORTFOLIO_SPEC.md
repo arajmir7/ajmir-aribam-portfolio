@@ -2,13 +2,13 @@
 
 ## Purpose and positioning
 
-MD AJMIR ARIBAM — Software Engineer, Backend, Cloud & DevOps. The first screen names the engineer, the type of systems built, three inspectable projects, and direct paths to work, resume, GitHub, LinkedIn, and contact. MCA appears in About and Resume only.
+AJMIR ARIBAM — Software Engineer. The first screen names Backend, Cloud, DevOps, AI Systems, and Quality Engineering, then gives direct paths to selected work, resume, and contact. Azaeron is the flagship; live work and in-development projects have separate visual tiers. MCA appears in About and Resume only.
 
-The visual language is an editorial engineering record: warm paper, deep ink, restrained copper, large typographic hierarchy, ruled grids, precise labels, and readable architecture drawings. No decorative terminal, rating bars, or ungrounded claims.
+The visual language uses neutral paper, graphite, cobalt interaction accents, ruled grids, product imagery, and readable architecture drawings. Emerald is reserved for system states; copper appears only as a small editorial accent. No decorative terminal, rating bars, or ungrounded claims.
 
 ## Evidence inventory (inspected 2026-09-23)
 
-The target directory and linked GitHub portfolio repository were empty. No `reference/` or `project-facts.md` was present. Supplied photo: `/Users/ajmiraribam/Downloads/Image Sep 12, 2026.png`, 1122×1402. Several resume versions were inspected. Source implementations were inspected in `/Users/ajmiraribam/Projects/Invoice`, `/Users/ajmiraribam/Projects/ShapesIndia`, and `/Users/ajmiraribam/Projects/First`; their Git histories show Ajmir Aribam as an author. The older invoice checkout and unrelated Azaeron Verity repository were identified but do not establish claims about the current invoice deployment.
+The initial evidence pass inspected resume versions, the supplied portrait, and source implementations in `/Users/ajmiraribam/Projects/Invoice`, `/Users/ajmiraribam/Projects/ShapesIndia`, and `/Users/ajmiraribam/Projects/First`. A later pass inspected the separate `azaeron_humanize` Verity source and release ledger, `the-scent-bar-retail-os` source and milestone status, and SCMIRN source. Those repositories do not establish facts about the current Azaeron invoice deployment.
 
 The three project GitHub remote URLs returned public HTTP 404 during verification. They may be private or unpublished. Source paths and revisions remain in internal content/provenance records; visitor pages do not expose local paths, revision hashes, or broken repository links. Public source access is `TODO_OWNER_VERIFY`.
 
@@ -17,6 +17,9 @@ The three project GitHub remote URLs returned public HTTP 404 during verificatio
 - Azaeron invoice repository contains React/TypeScript/Vite frontend, Express/Mongoose API, invoice lifecycle validation, permission mapping, rate limiting, readiness endpoint, GitHub Actions release gate, and Render/Vercel configuration. Source: `Projects/Invoice` paths and commit `66b0f7c`.
 - SHAPES live site presents the institution and six centres. Its source contains a Flask app, SQLAlchemy models, migrations, controlled content publishing, permission checks, health/readiness, deployment scripts and GitHub Actions. Source: `Projects/ShapesIndia`, commit `0dbdf15`, and https://shapesindia.org/.
 - Friends Aluminium Works live site presents products, services, projects and contact information. Its source is a React/TypeScript/Vite site with SEO metadata and a quote flow that opens WhatsApp; contact opens the user's mail client. Source: `Projects/First`, commit `13aa4bf`, and https://friendsaluminiumworks.com/.
+- Azaeron Verity local source contains a document review UI, immutable document versions, evidence graph and report services, explicit abstention states, and local unit/database/browser checks. Its 2026-09-20 execution ledger says **not production ready**; there is no approved production generative model or calibrated detector. The public case study is labeled in development and uses a local development screenshot.
+- The Scent Bar Retail OS local source implements identity/branch access and catalogue/pricing modules. The project status explicitly leaves PostgreSQL and API runtime verification open. Inventory ledger, purchasing, and POS are not yet implemented; the case study labels them as later milestones.
+- SCMIRN local source contains complaint/tracker UI, Flask routes, and experimental agent code. The README and current implementation differ, so it appears in Labs as a prototype without a deployment or AI behavior claim.
 - The supplied portrait is available and is the sole identity photograph used.
 - Project visuals are genuine: Azaeron public sign-in, SHAPES homepage and centre index, and Friends Aluminium Works product index were captured from their public URLs on 2026-09-23. Friends project photographs were optimized from `/Users/ajmiraribam/Projects/First/public/faw/`. The captures are public surfaces; no authenticated application view or private customer data is represented.
 
@@ -35,12 +38,14 @@ The three project GitHub remote URLs returned public HTTP 404 during verificatio
 - `TODO_OWNER_VERIFY`: Zam Zam Academy source repository, ownership detail, and current prototype status beyond the user's explicit classification.
 - `TODO_OWNER_VERIFY`: final portfolio domain and contact delivery credentials.
 - `TODO_OWNER_VERIFY`: whether project repositories may be made public for direct source inspection.
+- `TODO_OWNER_VERIFY`: Verity and The Scent Bar contribution boundaries, final deployment state, and repository publication.
+- `TODO_OWNER_VERIFY`: AccessForge source and implemented scope; it is omitted until inspectable evidence is supplied.
 
 No traffic, revenue, uptime, release-count, performance, customer-count, or coverage claims appear in public copy.
 
 ## Information architecture
 
-`/` orientation and selected work; `/work` all production cases; `/work/[slug]` distinct Azaeron, SHAPES, and Friends product narratives; `/engineering` capability and project map; `/labs` clearly labeled prototype; `/about` biography and portrait; `/resume` factual interactive and printable resume; `/writing` and `/writing/[slug]` one authored engineering note; `/contact` functional inquiry; `/privacy`; 404, loading, and error surfaces. Implementation notes are optional disclosures in case studies. Each page has a reason to exist and a path to deeper detail.
+`/` orientation, flagship and engineering surface; `/work` separates live work from in-development work; `/work/[slug]` has five project narratives with current status; `/engineering` has ten capability families and project references; `/labs` labels SCMIRN and Zam Zam Academy as prototypes; `/about` biography and portrait; `/resume` factual interactive and printable resume; `/notes` and `/notes/[slug]` one authored engineering note; `/contact` functional inquiry; `/privacy`; 404, loading, and error surfaces. Legacy `/writing` paths redirect to `/notes`. Implementation notes are optional disclosures in case studies.
 
 ## Architecture
 
@@ -49,7 +54,7 @@ Next.js App Router and strict TypeScript render mostly on the server. Browser-si
 ## Quality budgets and checks
 
 - LCP ≤ 2.5 s, INP ≤ 200 ms, CLS ≤ 0.1 are targets requiring field confirmation.
-- Initial page JavaScript budget: ≤ 160 KB transferred including framework; no third-party browser scripts by default. Lighthouse 13.5.0 local mobile lab measured 152 KB of script transfer on the final homepage, which is not a field metric.
+- Initial page JavaScript budget: ≤ 160 KB transferred including framework; no third-party browser scripts by default. V4 local Lighthouse lab measured about 155 KB on Home and Work. Home LCP was 2.6 s and Work LCP 2.3 s; both had CLS 0. These are lab results, not field metrics.
 - Portrait ≤ 300 KB delivered; no remote font. Self-host/system typography.
 - Semantic HTML, visible keyboard focus, skip link, error announcements, touch targets, reduced-motion rules; target WCAG 2.2 AA.
 - CSP, secure headers, server-side validation, spam trap, per-IP throttling, bounded body, safe error responses, correlation IDs, no full message logging. ASVS 5.0 is a reference, not a compliance claim.

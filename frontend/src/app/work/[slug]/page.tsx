@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { AzaeronCase } from "@/components/projects/azaeron-case";
 import { CaseHero } from "@/components/projects/case-chrome";
+import { DevelopingCase } from "@/components/projects/developing-case";
 import { FriendsCase } from "@/components/projects/friends-case";
 import { ShapesCase } from "@/components/projects/shapes-case";
 import { StructuredData } from "@/components/seo/structured-data";
@@ -59,6 +60,9 @@ export default async function CaseStudy({
       {slug === "azaeron" && <AzaeronCase project={project} />}
       {slug === "shapes-india" && <ShapesCase />}
       {slug === "friends-aluminium-works" && <FriendsCase />}
+      {(slug === "azaeron-verity" || slug === "the-scent-bar-retail-os") && (
+        <DevelopingCase project={project} />
+      )}
     </main>
   );
 }

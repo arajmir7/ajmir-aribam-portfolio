@@ -10,11 +10,11 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "/labs",
     "/about",
     "/resume",
-    "/writing",
+    "/notes",
     "/contact",
     "/privacy",
     ...projects.map((x) => `/work/${x.slug}`),
-    ...writing.map((x) => `/writing/${x.slug}`),
+    ...writing.map((x) => `/notes/${x.slug}`),
   ];
   return paths.map((path) => ({
     url: `${siteUrl}${path || "/"}`,

@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 760" role="img" aria-labelledby="title desc">
+<title id="title">The Scent Bar Retail OS implementation map</title>
+<desc id="desc">Implemented identity, branch access, catalogue and pricing feed future inventory and point of sale modules.</desc>
+<rect width="1200" height="760" fill="#111923"/>
+<g stroke="#263849" stroke-width="1"><path d="M0 120H1200M0 240H1200M0 360H1200M0 480H1200M0 600H1200M120 0V760M240 0V760M360 0V760M480 0V760M600 0V760M720 0V760M840 0V760M960 0V760M1080 0V760"/></g>
+<text x="72" y="82" fill="#9ab4ca" font-family="Arial,sans-serif" font-size="22" font-weight="700" letter-spacing="4">THE SCENT BAR / RETAIL OS</text>
+<text x="72" y="152" fill="#ffffff" font-family="Arial,sans-serif" font-size="52" font-weight="700">Retail foundations</text>
+<text x="72" y="197" fill="#b7c8d4" font-family="Arial,sans-serif" font-size="25">Current implementation scope</text>
+<rect x="72" y="260" width="485" height="205" rx="14" fill="#203447" stroke="#5288b1" stroke-width="2"/>
+<text x="102" y="313" fill="#8ac8f5" font-family="Arial,sans-serif" font-size="17" font-weight="700" letter-spacing="3">01 / IMPLEMENTED</text>
+<text x="102" y="364" fill="#ffffff" font-family="Arial,sans-serif" font-size="35" font-weight="700">Identity &amp; branches</text>
+<text x="102" y="413" fill="#c4d5e2" font-family="Arial,sans-serif" font-size="22">Permissions · tenant scope · audit</text>
+<rect x="643" y="260" width="485" height="205" rx="14" fill="#203447" stroke="#5288b1" stroke-width="2"/>
+<text x="673" y="313" fill="#8ac8f5" font-family="Arial,sans-serif" font-size="17" font-weight="700" letter-spacing="3">02 / IMPLEMENTED</text>
+<text x="673" y="364" fill="#ffffff" font-family="Arial,sans-serif" font-size="35" font-weight="700">Catalogue &amp; pricing</text>
+<text x="673" y="413" fill="#c4d5e2" font-family="Arial,sans-serif" font-size="22">SKU · barcode · effective prices</text>
+<path d="M557 362H643" stroke="#8ac8f5" stroke-width="3" stroke-dasharray="8 8"/>
+<rect x="72" y="540" width="1056" height="128" rx="14" fill="#182431" stroke="#526372" stroke-width="2" stroke-dasharray="10 8"/>
+<text x="102" y="587" fill="#a7b6c3" font-family="Arial,sans-serif" font-size="17" font-weight="700" letter-spacing="3">LATER MILESTONES / NOT YET BUILT</text>
+<text x="102" y="632" fill="#dbe4eb" font-family="Arial,sans-serif" font-size="29" font-weight="700">Inventory ledger</text>
+<text x="488" y="632" fill="#dbe4eb" font-family="Arial,sans-serif" font-size="29" font-weight="700">Purchasing</text>
+<text x="820" y="632" fill="#dbe4eb" font-family="Arial,sans-serif" font-size="29" font-weight="700">Point of sale</text>
+</svg>

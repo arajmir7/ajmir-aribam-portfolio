@@ -18,11 +18,11 @@ export async function generateMetadata({
   const article = writing.find((x) => x.slug === slug);
   return article
     ? {
-        ...pageMeta(article.title, article.description, `/writing/${slug}`),
+        ...pageMeta(article.title, article.description, `/notes/${slug}`),
         openGraph: {
           title: article.title,
           description: article.description,
-          url: `/writing/${slug}`,
+          url: `/notes/${slug}`,
           type: "article",
           publishedTime: article.date,
         },
@@ -43,13 +43,13 @@ export default async function Article({
     headline: article.title,
     description: article.description,
     datePublished: article.date,
-    author: { "@type": "Person", name: "MD Ajmir Aribam" },
-    mainEntityOfPage: `${siteUrl}/writing/${slug}`,
+    author: { "@type": "Person", name: "Ajmir Aribam" },
+    mainEntityOfPage: `${siteUrl}/notes/${slug}`,
   };
   return (
     <main id="main" className="shell article-page">
       <StructuredData value={structured} />
-      <Link className="back-link" href="/writing">
+      <Link className="back-link" href="/notes">
         ← All notes
       </Link>
       <div className="article-head">
@@ -79,7 +79,7 @@ export default async function Article({
           creates a revision record. Routes call that service so one workflow
           owns the rules.
         </p>
-        <h2>Why this boundary matters</h2>
+        <h2>Why it matters</h2>
         <p>
           When UI controls are the only guard, another API caller can skip them.
           When multiple routes each implement a slice of the same rules, they

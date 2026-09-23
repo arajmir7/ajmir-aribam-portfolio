@@ -5,7 +5,8 @@ export type Project = {
   type: string;
   lede: string;
   summary: string;
-  live: string;
+  live?: string;
+  status?: string;
   visual: { src: string; alt: string; caption: string };
   source: string; // TODO_OWNER_VERIFY: remotes are not publicly accessible; never render as visitor links.
   revision: string;
@@ -31,7 +32,7 @@ export const projects: Project[] = [
     name: "Azaeron",
     type: "Billing systems · full stack",
     year: "2026",
-    lede: "A billing platform where state, access, and money have to agree.",
+    lede: "Azaeron brings invoicing, quotations, payments, inventory, and customer records into one business workspace.",
     summary:
       "Invoice and business operations software with a React interface, Express API, and MongoDB persistence.",
     live: "https://invoice.web-com.live/",
@@ -112,7 +113,7 @@ export const projects: Project[] = [
     name: "SHAPES India",
     type: "Institutional platform · production",
     year: "2026",
-    lede: "A public institution site backed by controlled publishing.",
+    lede: "A public site for six centres, with a controlled publishing workflow behind it.",
     summary:
       "An institutional web platform for six centres, public resources, and content operations.",
     live: "https://shapesindia.org/",
@@ -266,6 +267,158 @@ export const projects: Project[] = [
     verify: [
       "Commercial arrangement and business outcomes — TODO_OWNER_VERIFY",
     ],
+  },
+  {
+    slug: "azaeron-verity",
+    number: "04",
+    name: "Azaeron Verity",
+    type: "Document intelligence · in development",
+    year: "2026",
+    status: "In development",
+    lede: "Verity lets reviewers examine document analysis alongside the exact version, recorded text, and sources behind it.",
+    summary:
+      "A version-aware document review workspace with recorded findings, citations, provenance, and explicit unavailable analysis states.",
+    visual: {
+      src: "/images/projects/verity-review.png",
+      alt: "Verity local review workspace showing a version-scoped result and an explicit insufficient-evidence state",
+      caption: "Local development capture · Verity review workspace",
+    },
+    source: "TODO_OWNER_VERIFY: Verity repository publication status",
+    revision: "TODO_OWNER_VERIFY: local source snapshot has no Git metadata",
+    stack: ["Next.js", "FastAPI", "PostgreSQL", "Redis"],
+    context:
+      "Local source contains document versions, evidence graph and report services, and a browser review surface. Its execution ledger explicitly says not production ready.",
+    problem:
+      "A document-analysis result is hard to assess when the source text, document version, and uncertainty are separated from it.",
+    ownership:
+      "TODO_OWNER_VERIFY: exact individual and team contribution boundaries.",
+    constraints: [
+      "Every finding must belong to an immutable document version",
+      "Uncalibrated analysis must abstain rather than imply certainty",
+      "Private documents and tenant scopes must remain separate",
+    ],
+    boundaries: [
+      {
+        label: "Review UI",
+        detail: "Next.js document and evidence review surfaces.",
+      },
+      {
+        label: "API",
+        detail: "FastAPI document, provenance, citation, and report services.",
+      },
+      {
+        label: "Data",
+        detail:
+          "PostgreSQL version and evidence records with scoped relationships.",
+      },
+      {
+        label: "Analysis",
+        detail:
+          "Deterministic writing suggestions; no approved production generative model.",
+      },
+    ],
+    decisions: [
+      {
+        title: "Tie analysis to a version",
+        body: "Evidence writes require a document version; graph edges cannot cross document versions or organizations.",
+        evidence: "backend/app/modules/evidence/service.py",
+      },
+      {
+        title: "Show uncertainty",
+        body: "The review surface can report insufficient evidence and an unavailable calibrated model instead of asserting authorship.",
+        evidence: "backend/app/modules/evidence/report_service.py",
+      },
+      {
+        title: "Keep model claims narrow",
+        body: "Writing suggestions currently use deterministic rules. Production model adoption remains gated on approval and evaluation.",
+        evidence: "docs/verity/AI_SYSTEM.md",
+      },
+    ],
+    delivery:
+      "Local gates cover unit, PostgreSQL, and browser tests, but the current certification fails on a backend image scan and missing product capabilities.",
+    operations:
+      "Readiness and isolated dependency outage tests exist locally; production resilience is unverified.",
+    outcome:
+      "A substantive local review prototype with explicit uncertainty and traceable analysis. No public deployment or model accuracy claim.",
+    lessons:
+      "Analysis is more useful when it can point back to a version and admit what it cannot conclude.",
+    verify: ["Production model, deployment, and ownership — TODO_OWNER_VERIFY"],
+  },
+  {
+    slug: "the-scent-bar-retail-os",
+    number: "05",
+    name: "The Scent Bar Retail OS",
+    type: "Retail operations · in development",
+    year: "2026",
+    status: "In development",
+    lede: "A multi-branch retail workspace taking shape around identity, catalogue, SKU, pricing, and branch access.",
+    summary:
+      "A retail operations platform with implemented identity and catalogue modules; inventory, purchasing, and POS remain future milestones.",
+    visual: {
+      src: "/images/projects/scent-bar-architecture.svg",
+      alt: "Diagram of the implemented Scent Bar identity and catalogue modules, with later retail modules marked as planned",
+      caption: "Implementation map · current milestone scope",
+    },
+    source: "TODO_OWNER_VERIFY: retail OS repository publication status",
+    revision: "TODO_OWNER_VERIFY: local worktree revision",
+    stack: ["Next.js", "NestJS", "PostgreSQL", "Redis"],
+    context:
+      "Local implementation status identifies identity/branch access and catalogue/pricing as implemented, with required runtime and database verification still open.",
+    problem:
+      "A branch-specific catalogue needs dependable product identity, price rules, and access control before transactional retail flows can be built on it.",
+    ownership:
+      "TODO_OWNER_VERIFY: exact individual and team contribution boundaries.",
+    constraints: [
+      "Tenant and branch scope derived on the server",
+      "SKU, barcode, and effective-dated price rules",
+      "Runtime PostgreSQL verification still required",
+    ],
+    boundaries: [
+      {
+        label: "Web",
+        detail: "Next.js catalogue administration and product detail surfaces.",
+      },
+      {
+        label: "API",
+        detail:
+          "NestJS modules for identity, branches, catalogue, and pricing.",
+      },
+      {
+        label: "Data",
+        detail:
+          "PostgreSQL tenant scope, row-level security, and catalogue migrations.",
+      },
+      {
+        label: "Worker",
+        detail: "Outbox processing foundation with Redis/BullMQ integration.",
+      },
+    ],
+    decisions: [
+      {
+        title: "Keep branch scope server-owned",
+        body: "The API resolves organization and allowed branches from the authenticated principal; a browser-selected branch does not grant access.",
+        evidence: "docs/ARCHITECTURE.md",
+      },
+      {
+        title: "Separate product identity from stock",
+        body: "Catalogue and pricing models exist; product/SKU records carry no authoritative inventory quantity yet.",
+        evidence: "docs/IMPLEMENTATION_STATUS.md",
+      },
+      {
+        title: "Verify database rules directly",
+        body: "Test harnesses cover row-level security, cross-tenant relations, duplicate codes, and price overlap; current runtime results remain open.",
+        evidence: "scripts/test-milestone2-db.mjs",
+      },
+    ],
+    delivery:
+      "Workspace build and source gates have been reported locally. The current milestone requires fresh migrations, database and HTTP checks before it can be called verified complete.",
+    operations:
+      "A runbook and worker foundation exist. Retail transaction and recovery behavior is not yet demonstrated.",
+    outcome:
+      "Identity and catalogue foundations are implemented; stock ledger, purchasing, and POS have not been built in this milestone.",
+    lessons:
+      "Retail operations need reliable product identity and branch permissions before stock or sales can be trusted.",
+    verify: ["Runtime integration and final feature scope — TODO_OWNER_VERIFY"],
   },
 ];
 

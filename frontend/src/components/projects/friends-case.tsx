@@ -34,7 +34,7 @@ export function FriendsCase() {
       <div className="case-main">
         <section id="business" className="case-section">
           <p className="eyebrow">01 / THE BUSINESS</p>
-          <h2>Show the work before asking for the inquiry.</h2>
+          <h2>See the work, then ask for a quote.</h2>
           <p className="section-lede">
             Friends Aluminium Works makes aluminium, steel, and glass work in
             Imphal. A useful site has to answer practical questions quickly:
@@ -50,7 +50,7 @@ export function FriendsCase() {
 
         <section id="discovery" className="case-section">
           <p className="eyebrow">02 / DISCOVERY</p>
-          <h2>A catalogue people can move through.</h2>
+          <h2>Find the right service quickly.</h2>
           <p className="section-lede">
             Products, services, and projects have distinct routes. Category
             imagery makes the range legible before visitors need to read every
@@ -77,7 +77,7 @@ export function FriendsCase() {
           className="case-section case-section--gallery"
         >
           <p className="eyebrow">03 / VISUAL SYSTEM</p>
-          <h2>Real material, real scale.</h2>
+          <h2>Photographs do the explaining.</h2>
           <p className="section-lede">
             The visual language comes from the work itself. Photographs show
             windows, railings, and partitions in context, with responsive crops
@@ -136,9 +136,8 @@ export function FriendsCase() {
             </p>
           </ImplementationNotes>
           <p className="case-closing">
-            The result is a clear commercial web journey: understand the
-            services, inspect the work, and reach the business through a
-            familiar channel.
+            Visitors can understand the services, inspect the work, and reach
+            the business through a familiar channel.
           </p>
         </section>
         <CaseEnd />

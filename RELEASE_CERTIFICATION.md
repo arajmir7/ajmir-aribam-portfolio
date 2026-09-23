@@ -1,57 +1,47 @@
-# Release certification — local product candidate
+# Release certification — local V4 candidate
 
-- **Revision:** This document is part of the final frontend product pass on top of `7215fab8ea1e0fd2f4372a92c03d69693cd52ced`; `git rev-parse HEAD` identifies the exact candidate commit after creation.
-- **Verified:** 2026-09-23 on Darwin arm64 with Node 24, Next.js 16.3.6, React 19.3.0, Python 3.12 containers, PostgreSQL 17, and Docker 29.
-- **Status:** Local release gate passed. No push, hosted CI run, or public deployment is claimed.
+- **Candidate:** Current working tree; the final commit hash identifies the certified local state after creation.
+- **Review date:** 2026-09-23.
+- **Status:** Local release gate passed. No push, hosted CI run, or production deployment is claimed.
 
-## Architecture
+## Product scope
 
-The repository keeps separate `frontend/` and `backend/` applications. Next.js renders the public portfolio and owns the same-origin contact route. The private FastAPI service validates and persists inquiries through SQLAlchemy and Alembic into PostgreSQL. Compose runs the frontend, backend, and database without exposing the private API or database to the public origin. Project case studies are server-rendered; small client components serve the mobile menu, active case contents, theme preference, form, footer, and first-party telemetry.
+The portfolio presents Ajmir Aribam as a Software Engineer across Backend, Cloud, DevOps, AI Systems, and Quality Engineering. Azaeron is the flagship. SHAPES India and Friends Aluminium Works are live public work. Azaeron Verity and The Scent Bar Retail OS are explicitly in development. SCMIRN and Zam Zam Academy remain labeled prototypes in Labs. AccessForge is omitted pending inspectable source.
 
-This pass changed public presentation, project images, case-study structure, navigation, and browser coverage. It did not rewrite the backend or add infrastructure. Genuine project captures are from public pages; Friends photographs come from its project source. The supplied About portrait remains faithful to the original.
+The frontend and backend remain separate applications connected over HTTP. The public same-origin `/api/contact` route and private `/inquiries`, `/health/live`, and `/health/ready` contracts are unchanged. Visitor pages do not expose private project repository URLs, local source paths, or `TODO_OWNER_VERIFY` markers.
 
-## Verification results
+## Local verification
 
-`make verify` passed on the final candidate. Its gates included:
+`make verify` passed on the V4 candidate. It covers:
 
 - Prettier, ESLint, strict TypeScript, Ruff format and lint, and a production Next.js build.
-- Two frontend unit tests; four backend API/unit tests; a fresh isolated PostgreSQL migration, Alembic schema check, and persisted-inquiry integration test. One backend test is skipped in the SQLite-only run because its PostgreSQL path is exercised separately.
-- Six Playwright tests covering 13 public routes, metadata, sitemap, robots, internal links, 404, real case imagery, visitor-copy exclusions, mobile navigation and Escape/focus behavior, case anchors, contact success and failure fallback, and responsive overflow.
-- Axe scans on all 13 routes in both themes with zero automated WCAG 2/2.1/2.2 A/AA violations. A dark-theme intermediate contrast defect was found and corrected before the passing run.
-- `npm audit --audit-level=high` and `pip-audit` with zero reported vulnerabilities; Gitleaks scans of committed history and staged changes with no findings.
-- Frontend and backend Docker builds; isolated Compose startup from an empty PostgreSQL volume, healthy services, a persisted contact response, and rejection of a foreign origin.
-- `git diff --check`. The before/after screenshot review and 14-path, ten-width viewport sweep are documented in [Final design review](docs/quality/FINAL_DESIGN_REVIEW.md).
+- Two frontend unit tests, four backend API/unit tests, a fresh isolated PostgreSQL migration and persisted-inquiry integration test. The SQLite-only backend suite skips one PostgreSQL-specific test, which runs in the separate database gate.
+- Six Playwright tests across 15 public routes, including metadata, internal links, image decoding, 404, navigation, keyboard menu behavior, contact success and fallback, and truthful in-development project labels.
+- Axe scans on all 15 routes in light and dark themes with zero automated WCAG 2/2.1/2.2 A/AA violations. A responsive sweep covers 14 widths from 320 to 1920 px with no document overflow.
+- Full-page local screenshots of all 15 routes at 390 and 1440 px in both themes. These generated artifacts stay out of Git.
+- `npm audit` and `pip-audit` with no known vulnerabilities at the configured high-severity gate; Gitleaks scans of committed and staged source.
+- Frontend and backend Docker builds and isolated Compose startup from an empty PostgreSQL volume, with healthy services, a persisted contact response, and foreign-origin rejection.
+- `git diff --check`.
 
-The résumé was rendered to two selectable-text A4 pages and visually checked for page breaks. The error and loading components were reviewed; an unexpected production exception was not introduced solely to force an error-boundary screenshot.
+The print résumé was rendered as a two-page selectable-text A4 PDF and visually checked after fixing page breaks. The screenshots and copy review are documented in [Final design review](docs/quality/FINAL_DESIGN_REVIEW.md). Current local mobile Lighthouse runs returned Home 97 and Work 99 for performance, with 100 for accessibility, best practices, and SEO on both. Work CLS was 0 after a loading-layout fix; Home LCP was 2.6 s, 0.1 s above the 2.5 s target. About 155 KB of script transferred on each route. These are lab results, not field metrics.
 
-## Accessibility and performance
+## Evidence limits
 
-Manual keyboard checks covered the skip link, menu open/close, Escape focus restoration, active links, case contents, and contact form. Automated axe results passed; a human screen-reader session and physical-device checks remain open. Reduced-motion rules remain active.
+Azaeron's authenticated production behavior, active integrations, and real usage were not independently inspected. Verity's own local execution ledger says **not production ready**; it lacks an approved production generative model and calibrated detector, and its backend image gate has failed. The Scent Bar's inventory ledger, purchasing, and POS are not implemented in the inspected milestone, and its database/API runtime verification remains open. SCMIRN has local prototype code without demonstrated production behavior. Exact contribution boundaries for the new project sources remain `TODO_OWNER_VERIFY`.
 
-Lighthouse 13.5.0 **local mobile lab** runs against the production build returned:
+The local axe result is not an accessibility certification. Human screen-reader and physical-device review remain open, as do field performance measurements and INP. No production telemetry or uptime claim is made.
 
-| Route   | Performance | Accessibility | Best practices | SEO |    LCP | CLS |  TBT |
-| ------- | ----------: | ------------: | -------------: | --: | -----: | --: | ---: |
-| Home    |         100 |           100 |            100 | 100 | 1.66 s |   0 | 6 ms |
-| Azaeron |          99 |           100 |            100 | 100 | 2.24 s |   0 | 3 ms |
-| About   |          99 |           100 |            100 | 100 | 2.23 s |   0 | 2 ms |
+## Deployment boundary
 
-Script transfer was about 152 KB on these routes, with no font transfer or third-party browser scripts. These are lab measurements, not field Core Web Vitals. INP and field LCP/CLS need production traffic.
+The candidate is not a certified public deployment. Launch still needs the final HTTPS origin and TLS/proxy setup, production database credentials and restore-tested backups, secret storage, SMTP delivery or staffed pending-inquiry review, a retention scheduler, alerts, live-origin metadata/social preview review, human accessibility review, and field monitoring. The production reverse proxy must overwrite client IP headers for throttling to be reliable. Hosted CI has not run on the final commit until it is published.
 
-## Security and deployment boundary
-
-The existing nonce CSP, security headers, same-origin contact boundary, private API token, bounded and validated input, honeypot, database-backed throttling, safe errors, request IDs, and PII-safe logs remain in place. OWASP ASVS 5.0 is a design reference, not a compliance claim. The production reverse proxy must overwrite client-IP headers for throttling to be reliable.
-
-The candidate is **not a certified public deployment**. External launch inputs remain: final domain and TLS/proxy configuration, database credentials and restore-tested backups, secret storage, SMTP delivery or staffed pending-inquiry review, log sink and alerts, retention scheduler, privacy schedule, live-origin metadata/social preview, human accessibility review, and field performance monitoring. GitHub Actions has not run on this commit until it is published.
-
-The optional email task runs in-process after storage; a crash can leave an inquiry pending for operator review. A simultaneous first-submission rate-window uniqueness race can return a transient 503 and should be changed to an atomic upsert if observed. These are known backend limitations retained from the baseline; the contact page now offers a direct email fallback when submission fails.
+The optional email task runs in-process after storage; a crash can leave an inquiry pending for operator review. A simultaneous first-submission rate-window uniqueness race can return a transient 503. These backend limits remain documented in the operations and security material; the contact page offers a direct email fallback.
 
 ## `TODO_OWNER_VERIFY` register
 
 - Final public domain, hosting, credentials, TLS/proxy, alerts, backup/restore, retention, and contact delivery ownership.
-- Whether the three project source repositories may be public; their unauthenticated URLs returned 404 during evidence review.
-- Azaeron authenticated/active deployment behavior and enabled integrations; SHAPES production operations; Friends commercial arrangement and measured outcomes.
-- Zam Zam Academy source and ownership detail beyond the supplied prototype classification.
-- Human screen-reader and physical-device review, production field Web Vitals, and SMTP/alert delivery.
-
-Unverified facts remain in internal content and documentation rather than becoming public portfolio claims.
+- Whether project repositories may be public; the original three unauthenticated remote URLs returned 404 during the evidence pass.
+- Azaeron authenticated/active deployment behavior, SHAPES production operations, and Friends commercial outcomes.
+- Verity and The Scent Bar contribution boundaries, final deployment state, and public repository status.
+- AccessForge source and implemented scope; SCMIRN deployment and product maturity.
+- Human screen-reader and physical-device review, field performance measurements, and production alert delivery.

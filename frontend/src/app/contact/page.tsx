@@ -1,39 +1,33 @@
 import type { Metadata } from "next";
+import { SocialLinks } from "@/components/layout/social-links";
 import { ContactForm } from "@/features/contact/contact-form";
-import { email, githubUrl, linkedinUrl, pageMeta } from "@/lib/site";
+import { email, pageMeta } from "@/lib/site";
 
 export const metadata: Metadata = pageMeta(
   "Contact",
-  "Contact MD Ajmir Aribam about backend, cloud and full-stack engineering work.",
+  "Contact Ajmir Aribam about software engineering, backend, cloud, AI systems, and quality work.",
   "/contact",
 );
 export default function Contact() {
   return (
     <main id="main" className="shell page">
       <div className="page-heading">
-        <p className="eyebrow">OPEN CHANNEL / INQUIRIES</p>
+        <p className="eyebrow">CONTACT / AJMIR ARIBAM</p>
         <h1>
-          Let’s talk systems<span className="period">.</span>
+          Let’s talk<span className="period">.</span>
         </h1>
         <p>
-          Tell me what you’re building, the problem you’re solving, and the
-          constraints that matter.
+          Tell me what you’re building or where you need help. A short note is
+          enough to start.
         </p>
       </div>
       <div className="contact-grid">
         <aside className="contact-aside">
-          <p className="eyebrow">DIRECT ROUTES</p>
-          <h2>A good brief starts with the constraint.</h2>
-          <p>Prefer email? Send a short brief and a useful next step.</p>
+          <p className="eyebrow">DIRECT EMAIL</p>
+          <h2>Prefer your inbox?</h2>
+          <p>You can email me directly. I’ll reply from the same address.</p>
           <a href={`mailto:${email}`}>{email} ↗</a>
-          <div className="footer-links">
-            <a href={githubUrl} target="_blank" rel="noopener noreferrer">
-              GitHub ↗
-            </a>
-            <a href={linkedinUrl} target="_blank" rel="noopener noreferrer">
-              LinkedIn ↗
-            </a>
-          </div>
+          <SocialLinks />
         </aside>
         <ContactForm />
       </div>

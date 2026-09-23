@@ -6,7 +6,7 @@ import { pageMeta } from "@/lib/site";
 export const metadata: Metadata = pageMeta(
   "Engineering notes",
   "A small collection of engineering notes on product and system decisions.",
-  "/writing",
+  "/notes",
 );
 export default function Writing() {
   return (
@@ -16,7 +16,7 @@ export default function Writing() {
         <h1>
           Engineering notes<span className="period">.</span>
         </h1>
-        <p>One careful note at a time, from systems I have built.</p>
+        <p>A short note on a decision that came up in two projects.</p>
       </div>
       <div className="writing-list">
         {writing.map((x) => (
@@ -25,7 +25,7 @@ export default function Writing() {
               {x.date} / {x.reading}
             </span>
             <h2>
-              <Link href={`/writing/${x.slug}`}>{x.title} ↗</Link>
+              <Link href={`/notes/${x.slug}`}>{x.title} ↗</Link>
             </h2>
             <p>{x.description}</p>
           </article>

@@ -1,6 +1,6 @@
-# MD Ajmir Aribam — engineering portfolio
+# Ajmir Aribam — engineering portfolio
 
-An evidence-led portfolio with three source-grounded case studies, a capability map, writing, and a persisted inquiry flow. The repository has two application boundaries:
+An evidence-led portfolio with five source-grounded case studies, a capability map across backend, cloud, AI systems, and quality engineering, one engineering note, and a persisted inquiry flow. Verity and The Scent Bar are clearly labeled in development. The repository has two application boundaries:
 
 | Path        | Responsibility                                                                                                       |
 | ----------- | -------------------------------------------------------------------------------------------------------------------- |

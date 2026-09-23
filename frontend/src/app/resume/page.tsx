@@ -5,7 +5,7 @@ import { email, githubUrl, linkedinUrl, pageMeta } from "@/lib/site";
 
 export const metadata: Metadata = pageMeta(
   "Resume",
-  "Resume of MD Ajmir Aribam, Software Engineer — Backend, Cloud & DevOps.",
+  "Resume of Ajmir Aribam, Software Engineer — Backend, Cloud, DevOps, AI Systems, and Quality Engineering.",
   "/resume",
 );
 export default function Resume() {
@@ -15,11 +15,11 @@ export default function Resume() {
         <div>
           <p className="eyebrow">RESUME / SOFTWARE ENGINEERING</p>
           <h1>
-            MD AJMIR
+            AJMIR
             <br />
             ARIBAM<span className="period">.</span>
           </h1>
-          <p>Software Engineer — Backend, Cloud &amp; DevOps</p>
+          <p>Software Engineer</p>
         </div>
         <PrintButton />
       </div>
@@ -35,10 +35,10 @@ export default function Resume() {
       <div className="resume-section">
         <h2>Profile</h2>
         <p>
-          Software engineer working across backend services, full-stack
-          products, cloud delivery, security controls, and production
-          operations. Project evidence includes billing workflows, institutional
-          publishing, and client-facing web delivery.
+          Software engineer working across backend services, cloud delivery,
+          AI-enabled document review, and quality engineering. Projects include
+          business billing, institutional publishing, and client-facing web
+          work.
         </p>
       </div>
       <div className="resume-section">
@@ -74,6 +74,19 @@ export default function Resume() {
             <span>2026</span>
             <div>
               <h3>
+                <Link href="/work/azaeron-verity">Azaeron Verity ↗</Link>
+              </h3>
+              <p>
+                In-development document review workspace with versioned
+                findings, linked sources, explicit uncertainty, and local unit,
+                database, and browser checks.
+              </p>
+            </div>
+          </article>
+          <article>
+            <span>2026</span>
+            <div>
+              <h3>
                 <Link href="/work/friends-aluminium-works">
                   Friends Aluminium Works ↗
                 </Link>
@@ -86,7 +99,7 @@ export default function Resume() {
           </article>
         </div>
       </div>
-      <div className="resume-section">
+      <div className="resume-section resume-section--operations">
         <h2>Operations experience</h2>
         <div className="resume-items">
           <article>
@@ -115,11 +128,41 @@ export default function Resume() {
       <div className="resume-section resume-columns">
         <div>
           <h2>Technical areas</h2>
-          <p>
-            Backend systems, API design, data models,
-            authentication/authorization, frontend architecture, cloud delivery,
-            CI/CD, testing, security and operational readiness.
-          </p>
+          <dl className="resume-skills">
+            <div>
+              <dt>Languages</dt>
+              <dd>Python · JavaScript · TypeScript · SQL</dd>
+            </div>
+            <div>
+              <dt>Backend &amp; data</dt>
+              <dd>
+                Node.js · Express · Flask · FastAPI · REST APIs · PostgreSQL ·
+                MongoDB · Redis
+              </dd>
+            </div>
+            <div>
+              <dt>Frontend</dt>
+              <dd>React · Next.js · Vite · responsive UI</dd>
+            </div>
+            <div>
+              <dt>AI systems</dt>
+              <dd>
+                Document review · versioned analysis · evidence linking · human
+                review
+              </dd>
+            </div>
+            <div>
+              <dt>Quality</dt>
+              <dd>
+                Playwright · API and database testing · accessibility checks ·
+                release verification
+              </dd>
+            </div>
+            <div>
+              <dt>Delivery</dt>
+              <dd>Docker · GitHub Actions · CI/CD · deployment checks</dd>
+            </div>
+          </dl>
         </div>
         <div>
           <h2>Education</h2>

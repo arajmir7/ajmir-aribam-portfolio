@@ -2,9 +2,17 @@ import type { Metadata, Viewport } from "next";
 import { SiteHeader } from "@/components/layout/site-header";
 import { SiteFooter } from "@/components/layout/site-footer";
 import { WebVitals } from "@/features/telemetry/web-vitals";
-import { githubUrl, linkedinUrl, siteUrl } from "@/lib/site";
+import {
+  githubUrl,
+  instagramUrl,
+  linkedinUrl,
+  publicName,
+  siteUrl,
+  xUrl,
+} from "@/lib/site";
 import { headers } from "next/headers";
 import "./globals.css";
+import "./product.css";
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
@@ -13,14 +21,14 @@ export const metadata: Metadata = {
     template: "%s — Ajmir Aribam",
   },
   description:
-    "Ajmir Aribam builds backend systems, full-stack products, and cloud delivery workflows. Explore selected work and the engineering behind it.",
+    "Ajmir Aribam is a software engineer working across backend, cloud, DevOps, AI systems, and quality engineering. Explore the projects behind the work.",
   alternates: { canonical: "/" },
   openGraph: {
     type: "website",
     siteName: "Ajmir Aribam",
     title: "Ajmir Aribam — Software Engineer",
     description:
-      "Backend, Cloud & DevOps. Billing systems, institutional publishing and commercial products.",
+      "Backend · Cloud · DevOps · AI Systems · Quality Engineering. Real projects and their engineering decisions.",
     url: "/",
     images: ["/opengraph-image"],
   },
@@ -40,9 +48,9 @@ export default async function RootLayout({
   const person = {
     "@context": "https://schema.org",
     "@type": "Person",
-    name: "Ajmir Aribam",
+    name: publicName,
     url: siteUrl,
-    sameAs: [githubUrl, linkedinUrl],
+    sameAs: [githubUrl, linkedinUrl, instagramUrl, xUrl],
     jobTitle: "Software Engineer",
   };
   return (

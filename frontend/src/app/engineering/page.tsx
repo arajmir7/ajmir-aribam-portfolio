@@ -4,138 +4,124 @@ import { pageMeta } from "@/lib/site";
 
 export const metadata: Metadata = pageMeta(
   "Engineering",
-  "Capability evidence across backend, frontend, cloud delivery, security and operations.",
+  "Backend, AI systems, quality engineering, cloud delivery, and product development through Ajmir Aribam's projects.",
   "/engineering",
 );
 
 const capabilities = [
   {
-    label: "Backend systems",
-    principle: "Make business rules explicit at the write boundary.",
-    detail: "Domain transitions, route boundaries, and durable records",
-    refs: [
-      ["Azaeron invoice lifecycle", "/work/azaeron"],
-      ["SHAPES publishing", "/work/shapes-india"],
-    ],
-  },
-  {
-    label: "API design",
-    principle: "Keep public contracts smaller than internal implementation.",
-    detail: "Express merchant routes and Flask administrative/public routes",
+    label: "Backend & application systems",
+    text: "I put business rules in services that every caller has to use. Azaeron's invoice lifecycle checks the payment state before it changes an invoice; SHAPES does the same for publishing.",
     refs: [
       ["Azaeron", "/work/azaeron"],
-      ["SHAPES", "/work/shapes-india"],
+      ["SHAPES India", "/work/shapes-india"],
     ],
   },
   {
-    label: "Data architecture",
-    principle: "Model the record and its history together.",
-    detail: "Mongoose business records; SQLAlchemy content and revisions",
+    label: "API & data architecture",
+    text: "I design routes and records around the work they represent. That includes invoice and payment data in Azaeron, and versioned content records in SHAPES.",
     refs: [
       ["Azaeron", "/work/azaeron"],
-      ["SHAPES", "/work/shapes-india"],
+      ["SHAPES India", "/work/shapes-india"],
     ],
   },
   {
-    label: "Authentication & authorization",
-    principle: "Enforce access where data changes hands.",
-    detail: "Server-side role permissions and object-level editorial policies",
+    label: "Authentication & secure systems",
+    text: "The server checks who can act and which records they can reach. Azaeron uses API permissions; The Scent Bar derives tenant and branch access from the signed-in person.",
     refs: [
       ["Azaeron", "/work/azaeron"],
-      ["SHAPES", "/work/shapes-india"],
+      ["The Scent Bar", "/work/the-scent-bar-retail-os"],
     ],
   },
   {
-    label: "Frontend systems",
-    principle: "Design the user path around real tasks.",
-    detail: "React merchant workflow and responsive commercial discovery",
+    label: "Frontend & product engineering",
+    text: "A useful interface makes the next action obvious. I have built merchant screens, a six-centre public site, and a visual catalogue with direct inquiry paths.",
     refs: [
       ["Azaeron", "/work/azaeron"],
       ["Friends Aluminium Works", "/work/friends-aluminium-works"],
+      ["SHAPES India", "/work/shapes-india"],
     ],
   },
   {
-    label: "Cloud delivery & CI/CD",
-    principle: "Make release and recovery steps repeatable.",
-    detail:
-      "Release gates, platform configuration, migration and readiness paths",
+    label: "AI-enabled systems",
+    text: "Verity puts document analysis next to the version and recorded material behind it. Its review flow can abstain when evidence or a calibrated model is unavailable. The project is still in development.",
     refs: [
-      ["Azaeron", "/work/azaeron"],
-      ["SHAPES", "/work/shapes-india"],
+      ["Azaeron Verity", "/work/azaeron-verity"],
+      ["Verity's current limits", "/work/azaeron-verity#limits"],
     ],
   },
   {
-    label: "Security",
-    principle: "Validate inputs and narrow privileged actions.",
-    detail:
-      "Validation, permission checks, rate limits, CSRF and safe publishing boundaries",
+    label: "Quality engineering",
+    text: "I build checks into delivery: unit and API tests for rules, database checks for migrations and tenant scope, browser journeys for the UI, and release gates that stop on failure.",
+    refs: [
+      ["Verity checks", "/work/azaeron-verity#quality"],
+      ["The Scent Bar checks", "/work/the-scent-bar-retail-os#quality"],
+      ["Azaeron", "/work/azaeron"],
+    ],
+  },
+  {
+    label: "Cloud & delivery",
+    text: "I keep build, migration, and deployment steps explicit. Azaeron has a release workflow and separate frontend and API targets; SHAPES includes deployment checks and a migration path.",
     refs: [
       ["Azaeron", "/work/azaeron"],
-      ["SHAPES", "/work/shapes-india"],
+      ["SHAPES India", "/work/shapes-india"],
     ],
   },
   {
     label: "Reliability & observability",
-    principle: "Make failures visible before they become mysteries.",
-    detail: "Readiness, request context, operational checks and recovery paths",
+    text: "A service needs to say when it can take traffic and leave enough context to investigate a failure. The inspected APIs use readiness checks and request identifiers.",
     refs: [
       ["Azaeron", "/work/azaeron"],
-      ["SHAPES", "/work/shapes-india"],
+      ["SHAPES India", "/work/shapes-india"],
     ],
   },
   {
-    label: "Testing & performance",
-    principle: "Test the paths people use and keep delivery lean.",
-    detail:
-      "Repository test/build gates, responsive image delivery and route checks",
+    label: "Performance & accessibility",
+    text: "I check image delivery, responsive layouts, keyboard paths, and accessibility regressions in the interface itself. The portfolio's browser gate covers mobile widths and automated WCAG checks.",
     refs: [
-      ["Azaeron", "/work/azaeron"],
       ["Friends Aluminium Works", "/work/friends-aluminium-works"],
+      ["SHAPES India", "/work/shapes-india"],
+    ],
+  },
+  {
+    label: "Production operations",
+    text: "The job continues after a build passes. I look for a clear startup path, health signals, and recovery instructions, then keep production claims separate from local test results.",
+    refs: [
+      ["SHAPES India", "/work/shapes-india"],
+      ["Azaeron Verity", "/work/azaeron-verity"],
     ],
   },
 ] as const;
 
 export default function Engineering() {
   return (
-    <main id="main" className="shell page">
+    <main id="main" className="shell page engineering-page">
       <div className="page-heading">
-        <p className="eyebrow">PRACTICE / EVIDENCE MAP</p>
+        <p className="eyebrow">ENGINEERING / THROUGH THE WORK</p>
         <h1>
           Engineering<span className="period">.</span>
         </h1>
         <p>
-          I work across the path from product requirements to the systems that
-          keep a release useful. Each capability points to a project where it
-          shaped a concrete decision.
+          I prefer to show the work itself: the rule that stops an invalid
+          invoice state, the permission check that protects a branch, or the
+          test that catches a broken release.
         </p>
       </div>
-      <div className="capability-list">
-        {capabilities.map((c, i) => (
-          <article key={c.label}>
-            <span className="index">{String(i + 1).padStart(2, "0")}</span>
-            <div>
-              <h2>{c.label}</h2>
-              <p className="capability-principle">{c.principle}</p>
-              <p>{c.detail}</p>
-            </div>
+      <div className="capability-grid">
+        {capabilities.map((capability, index) => (
+          <article key={capability.label}>
+            <span className="index">{String(index + 1).padStart(2, "0")}</span>
+            <h2>{capability.label}</h2>
+            <p>{capability.text}</p>
             <div className="capability-links">
-              {c.refs.map(([label, href]) => (
+              {capability.refs.map(([label, href]) => (
                 <Link href={href} key={href}>
-                  {label} ↗
+                  {label} <span aria-hidden="true">↗</span>
                 </Link>
               ))}
             </div>
           </article>
         ))}
-      </div>
-      <div className="inline-note">
-        <strong>Working approach</strong>
-        <p>
-          Requirements → architecture → implementation → testing → security →
-          CI/CD → deployment → production operations. The same discipline
-          applies whether the work is a billing rule or a responsive product
-          page.
-        </p>
       </div>
     </main>
   );
