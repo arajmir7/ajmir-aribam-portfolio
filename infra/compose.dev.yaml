@@ -1,0 +1,5 @@
+# Local development only: expose PostgreSQL to the host backend process.
+services:
+  postgres:
+    ports:
+      - "127.0.0.1:${PORTFOLIO_DB_PORT:-5432}:5432"

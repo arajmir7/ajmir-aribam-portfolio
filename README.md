@@ -1,52 +1,41 @@
 # MD Ajmir Aribam — engineering portfolio
 
-An evidence-led portfolio with three source-grounded case studies, an engineering capability map, writing, and a persisted contact inquiry flow. The web app is Next.js 16 / React 19 / strict TypeScript. A private FastAPI service owns inquiry validation, throttling, and PostgreSQL persistence.
+An evidence-led portfolio with three source-grounded case studies, a capability map, writing, and a persisted inquiry flow. The repository has two application boundaries:
 
-## Local start
+| Path        | Responsibility                                                                                                       |
+| ----------- | -------------------------------------------------------------------------------------------------------------------- |
+| `frontend/` | Next.js 16, React 19, strict TypeScript, public routes, content, assets, browser behavior, frontend tests.           |
+| `backend/`  | Private FastAPI inquiry API, Pydantic input, SQLAlchemy persistence, Alembic migrations, API tests, maintenance CLI. |
+| `docs/`     | Architecture, security, operations, and decisions.                                                                   |
+| `infra/`    | Local-only Compose override for exposing PostgreSQL to a host development process.                                   |
+| `scripts/`  | Repeatable local development and isolated PostgreSQL/Compose verification.                                           |
 
-Requirements: Node 24+, npm 11+, Python 3.12+, [uv](https://docs.astral.sh/uv/), and optionally Docker.
+Frontend and backend communicate over HTTP. The browser uses the same-origin `/api/contact` route; the private backend keeps its `/inquiries`, `/health/live`, and `/health/ready` contracts. No cross-application source imports or generated API client are needed for this single private request shape.
 
-```sh
-npm ci
-cd api && uv sync --group dev && DATABASE_URL=sqlite:///./portfolio.db uv run alembic upgrade head
-```
+## Local development
 
-In one terminal:
-
-```sh
-cd api
-DATABASE_URL=sqlite:///./portfolio.db CONTACT_INTERNAL_TOKEN=local-development-token-at-least-32-characters uv run uvicorn app.main:app --reload --port 8000
-```
-
-In another terminal:
+Requirements: Node 24+, npm 11+, Python 3.12+, [uv](https://docs.astral.sh/uv/), Docker, and GNU Make. On macOS, the system `make` is sufficient.
 
 ```sh
-NEXT_PUBLIC_SITE_URL=http://localhost:3000 CONTACT_API_URL=http://localhost:8000 CONTACT_INTERNAL_TOKEN=local-development-token-at-least-32-characters npm run dev
+cp .env.example .env
+# Set a local POSTGRES_PASSWORD and the matching password in DATABASE_URL.
+# Replace CONTACT_INTERNAL_TOKEN with at least 32 random characters.
+make install
+make dev
 ```
 
-Open `http://localhost:3000`. The contact form commits to local SQLite. Without configured SMTP, records remain `pending` and can be reviewed with `cd api && uv run python -m app.maintenance pending`. Never use that command in a public shell/session.
+`make dev` starts the local PostgreSQL service using `infra/compose.dev.yaml`, applies migrations, and runs both applications with reload. Open `http://localhost:3000`. `Ctrl-C` stops the host application processes; `make compose-down` stops the database container without deleting its data. The production Compose stack binds only the frontend on localhost and does not expose the database or private API.
 
-## Verify
+Without SMTP configuration, contact inquiries commit to the database and remain `pending`. Review them from a private shell with `cd backend && uv run python -m app.maintenance pending`; that command prints email addresses and must not run in public logs.
 
-```sh
-npm run format:check
-npm run lint
-npm run typecheck
-npm run test
-npm run build
-npm run e2e
-cd api && uv run ruff check . && uv run ruff format --check . && uv run pytest -q
-cd api && DATABASE_URL=sqlite:///./migration-check.db uv run alembic upgrade head
-```
+## Verification
 
-The browser suite starts its own API and web servers. `npx playwright install chromium` is needed once. A PostgreSQL integration test runs when `TEST_DATABASE_URL` is set. The CI workflow supplies a PostgreSQL service.
+Run the complete local gate with `make verify`. It covers format, lint, types, frontend and backend tests, a fresh isolated PostgreSQL migration/integration test, production build, browser journeys, accessibility, dependency/secret scans, both Docker builds, and an isolated Compose readiness/contact smoke test. The scripts use disposable Docker resources and remove them afterward. Install the Playwright browser once with `cd frontend && npx playwright install chromium`.
 
-## Deploy
+Individual commands: `make test`, `make lint`, `make typecheck`, `make e2e`, `make build`, `make security`, `make compose-up`, and `make compose-down`. `make compose-up` uses `.env` and starts the deployable topology; it is not a public deployment.
 
-`compose.yaml` builds a local topology with PostgreSQL, private API and web service. Put a trusted TLS reverse proxy in front of the bound `127.0.0.1:3000` web port. Set `NEXT_PUBLIC_SITE_URL` to the real HTTPS domain, a strong `CONTACT_INTERNAL_TOKEN`, `POSTGRES_PASSWORD`, and SMTP variables through a secret manager. Never commit actual values. The API is intentionally not published. See [OPERATIONS.md](OPERATIONS.md) for readiness, backup, retention and rollback requirements.
+## Deployment boundary
 
-## Evidence and constraints
+Set `NEXT_PUBLIC_SITE_URL` to the real HTTPS origin and provide a trusted TLS reverse proxy that overwrites forwarded IP headers. Supply production PostgreSQL credentials, secret storage, SMTP or a staffed pending-inquiry process, backup/restore, retention scheduling, and alerts. See [operations](docs/operations.md) and [security](docs/security.md). No production deployment is claimed here.
 
-[PORTFOLIO_SPEC.md](PORTFOLIO_SPEC.md) records inspected sources and claim confidence. [ARCHITECTURE.md](ARCHITECTURE.md) and [SECURITY.md](SECURITY.md) describe the implemented boundaries. Production deployment, field performance, SMTP delivery and external recovery operations are not claimed until verified.
-
-[RELEASE_CERTIFICATION.md](RELEASE_CERTIFICATION.md) records the local verification results and the remaining production gates.
+The [portfolio specification](PORTFOLIO_SPEC.md) records evidence confidence. The [architecture](docs/architecture.md), [decisions](docs/decisions.md), [implementation plan](IMPLEMENTATION_PLAN.md), and [release certification](RELEASE_CERTIFICATION.md) explain the system and its verified limits.

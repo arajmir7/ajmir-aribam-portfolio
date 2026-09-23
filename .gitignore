@@ -1,13 +1,31 @@
-node_modules/
-.next/
+# Generated dependencies and build output
+**/node_modules/
+**/.next/
+**/next-env.d.ts
+**/.venv/
+**/venv/
+**/dist/
+**/build/
+**/coverage/
+**/test-results/
+**/playwright-report/
+**/.pytest_cache/
+**/.ruff_cache/
+**/__pycache__/
+*.pyc
+*.tsbuildinfo
+
+# Local state and secrets
 .env
 .env.*.local
-!.env.example
-api/.venv/
-api/*.db
-api/.pytest_cache/
-api/**/__pycache__/
-test-results/
-playwright-report/
-coverage/
-*.tsbuildinfo
+**/.env
+**/.env.*.local
+*.db
+*.sqlite
+*.sqlite3
+*.log
+
+# Developer machines
+.DS_Store
+.idea/
+.vscode/

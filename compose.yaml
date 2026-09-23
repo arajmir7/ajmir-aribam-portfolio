@@ -1,5 +1,5 @@
 services:
-  db:
+  postgres:
     image: postgres:17-alpine
     environment:
       POSTGRES_DB: portfolio
@@ -13,10 +13,10 @@ services:
       timeout: 3s
       retries: 10
     restart: unless-stopped
-  api:
-    build: ./api
+  backend:
+    build: ./backend
     environment:
-      DATABASE_URL: postgresql+psycopg://portfolio:${POSTGRES_PASSWORD}@db:5432/portfolio
+      DATABASE_URL: postgresql+psycopg://portfolio:${POSTGRES_PASSWORD}@postgres:5432/portfolio
       CONTACT_INTERNAL_TOKEN: ${CONTACT_INTERNAL_TOKEN:?set CONTACT_INTERNAL_TOKEN}
       EMAIL_HOST: ${EMAIL_HOST:-}
       EMAIL_PORT: ${EMAIL_PORT:-587}
@@ -26,22 +26,46 @@ services:
       EMAIL_TO: ${EMAIL_TO:-}
       BUILD_REVISION: ${BUILD_REVISION:-unknown}
     depends_on:
-      db: { condition: service_healthy }
+      postgres: { condition: service_healthy }
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "python",
+          "-c",
+          "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health/ready', timeout=2)",
+        ]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+      start_period: 10s
     restart: unless-stopped
-  web:
+  frontend:
     build:
-      context: .
+      context: ./frontend
       args:
         NEXT_PUBLIC_SITE_URL: ${NEXT_PUBLIC_SITE_URL:?set NEXT_PUBLIC_SITE_URL}
     environment:
       NEXT_PUBLIC_SITE_URL: ${NEXT_PUBLIC_SITE_URL}
-      CONTACT_API_URL: http://api:8000
+      CONTACT_API_URL: http://backend:8000
       CONTACT_INTERNAL_TOKEN: ${CONTACT_INTERNAL_TOKEN}
       BUILD_REVISION: ${BUILD_REVISION:-unknown}
     depends_on:
-      - api
+      backend: { condition: service_healthy }
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "node",
+          "-e",
+          "fetch('http://127.0.0.1:3000/api/health').then(r => process.exit(r.ok ? 0 : 1)).catch(() => process.exit(1))",
+        ]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+      start_period: 10s
     ports:
-      - "127.0.0.1:3000:3000"
+      - "127.0.0.1:${PORTFOLIO_WEB_PORT:-3000}:3000"
     restart: unless-stopped
 volumes:
   portfolio_db:
