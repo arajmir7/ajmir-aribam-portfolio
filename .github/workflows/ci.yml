@@ -1,0 +1,50 @@
+name: quality-gate
+on:
+  push:
+  pull_request:
+jobs:
+  web:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with: { node-version: '24', cache: npm }
+      - run: npm ci
+      - run: npm run format:check
+      - run: npm run lint
+      - run: npm run typecheck
+      - run: npm run test
+      - run: npm run build
+      - run: npm audit --audit-level=high
+      - run: npx playwright install --with-deps chromium
+      - run: npm run e2e
+      - run: docker build --build-arg NEXT_PUBLIC_SITE_URL=https://example.com -t portfolio-web:ci .
+  api:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env: { POSTGRES_DB: portfolio_test, POSTGRES_USER: portfolio, POSTGRES_PASSWORD: portfolio_test }
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd "pg_isready -U portfolio -d portfolio_test"
+          --health-interval 5s --health-timeout 5s --health-retries 10
+    steps:
+      - uses: actions/checkout@v6
+      - uses: astral-sh/setup-uv@v9
+        with: { version: '0.12.16' }
+      - run: cd api && uv sync --frozen --group dev
+      - run: cd api && uv run ruff check . && uv run ruff format --check .
+      - run: cd api && uv run pytest -q
+      - run: cd api && DATABASE_URL=postgresql+psycopg://portfolio:portfolio_test@localhost:5432/portfolio_test uv run alembic upgrade head
+      - run: cd api && TEST_DATABASE_URL=postgresql+psycopg://portfolio:portfolio_test@localhost:5432/portfolio_test uv run pytest -q tests/test_postgres_integration.py
+      - run: cd api && uvx pip-audit -r <(uv export --no-dev --format requirements-txt --no-hashes)
+        shell: bash
+      - run: docker build -t portfolio-api:ci api
+  secrets:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with: { fetch-depth: 0 }
+      - uses: gitleaks/gitleaks-action@v3
+        env: { GITHUB_TOKEN: '${{ secrets.GITHUB_TOKEN }}' }
