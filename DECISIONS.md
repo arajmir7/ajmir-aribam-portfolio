@@ -10,7 +10,7 @@ Per-request nonces keep scripts restricted without `unsafe-inline` in production
 
 ## 003 — Database commit defines form success
 
-SMTP is optional and may fail independently. The API acknowledges only after the inquiry record commits. Operators review pending notification records. This prevents a false success when storage fails.
+SMTP is optional and may fail independently. The API acknowledges only after the inquiry record commits, then attempts SMTP after the response. Operators review pending notification records. This prevents a false success when storage fails and avoids delaying the browser response on SMTP latency.
 
 ## 004 — Source-first portfolio copy
 

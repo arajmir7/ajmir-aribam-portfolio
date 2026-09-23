@@ -11,7 +11,7 @@ from email.message import EmailMessage
 from typing import Annotated
 from uuid import uuid4
 
-from fastapi import Depends, FastAPI, Header, HTTPException, Request
+from fastapi import BackgroundTasks, Depends, FastAPI, Header, HTTPException, Request
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel, ConfigDict, EmailStr, Field, field_validator
 from sqlalchemy import select, text
@@ -105,6 +105,27 @@ def notify(inquiry: Inquiry) -> bool:
     return True
 
 
+def deliver_notification(inquiry_id: str, request_id: str) -> None:
+    """Best-effort email after HTTP success; the committed row remains pending on failure."""
+    with SessionLocal() as db:
+        inquiry = db.get(Inquiry, inquiry_id)
+        if inquiry is None:
+            return
+        try:
+            if notify(inquiry):
+                inquiry.notification_status = "sent"
+                db.commit()
+                log("notification_sent", request_id, inquiry_id=inquiry_id)
+        except Exception as exc:
+            db.rollback()
+            log(
+                "notification_failed",
+                request_id,
+                inquiry_id=inquiry_id,
+                error_type=type(exc).__name__,
+            )
+
+
 @app.exception_handler(Exception)
 async def safe_error(request: Request, exception: Exception):
     request_id = request.headers.get("x-request-id", "unknown")[:80]
@@ -133,7 +154,10 @@ def ready(db: Annotated[Session, Depends(session)]):
 
 @app.post("/inquiries", dependencies=[Depends(require_internal_token)])
 def create_inquiry(
-    payload: InquiryInput, request: Request, db: Annotated[Session, Depends(session)]
+    payload: InquiryInput,
+    request: Request,
+    background_tasks: BackgroundTasks,
+    db: Annotated[Session, Depends(session)],
 ):
     request_id = request.headers.get("x-request-id", str(uuid4()))[:80]
     if payload.website:
@@ -160,12 +184,5 @@ def create_inquiry(
         log("persistence_failed", request_id)
         raise HTTPException(status_code=503, detail="Inquiry could not be stored") from None
     log("inquiry_stored", request_id, topic=inquiry.topic, inquiry_id=inquiry.id)
-    try:
-        if notify(inquiry):
-            inquiry.notification_status = "sent"
-            db.commit()
-            log("notification_sent", request_id, inquiry_id=inquiry.id)
-    except Exception as exc:
-        db.rollback()
-        log("notification_failed", request_id, inquiry_id=inquiry.id, error_type=type(exc).__name__)
+    background_tasks.add_task(deliver_notification, inquiry.id, request_id)
     return {"message": "Your inquiry was received.", "request_id": request_id}

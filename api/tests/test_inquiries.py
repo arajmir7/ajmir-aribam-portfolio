@@ -85,3 +85,19 @@ def test_health_and_readiness():
     assert client.get("/health/live").status_code == 200
     assert client.get("/health/ready").json()["status"] == "ready"
     app.dependency_overrides.clear()
+
+
+def test_notification_failure_keeps_committed_inquiry(monkeypatch):
+    client, maker = client_with_db()
+
+    def failed_notification(_inquiry):
+        raise TimeoutError("SMTP did not respond")
+
+    monkeypatch.setattr("app.main.notify", failed_notification)
+    response = client.post("/inquiries", json=payload(), headers=headers("203.0.113.8"))
+    assert response.status_code == 200
+    with maker() as db:
+        rows = db.scalars(select(Inquiry)).all()
+        assert len(rows) == 1
+        assert rows[0].notification_status == "pending"
+    app.dependency_overrides.clear()

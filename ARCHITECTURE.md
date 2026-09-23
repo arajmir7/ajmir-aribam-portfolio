@@ -22,7 +22,7 @@ Case study data lives in `src/content/projects.ts`. It includes sources and `TOD
 
 ## Data and lifecycle
 
-Alembic owns schema changes. The API validates and trims input with Pydantic, discards a filled honeypot, applies a database-backed 15-minute window, commits the inquiry, then attempts SMTP. A failure during persistence returns an error; a notification failure leaves an inspectable pending record. Maintenance commands list pending records and purge old inquiries and throttle windows. A production scheduler must run retention purge daily.
+Alembic owns schema changes. The API validates and trims input with Pydantic, discards a filled honeypot, applies a database-backed 15-minute window, commits the inquiry, then schedules best-effort SMTP delivery after the HTTP response. A failure during persistence returns an error; a notification failure leaves an inspectable pending record. The in-process delivery task is not a durable queue, so operators must review pending records. Maintenance commands list pending records and purge old inquiries and throttle windows. A production scheduler must run retention purge daily.
 
 ## Observability
 
