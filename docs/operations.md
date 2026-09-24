@@ -4,6 +4,8 @@
 
 `NEXT_PUBLIC_SITE_URL` is the canonical HTTPS origin and must match the browser origin. `POSTGRES_PASSWORD` and `CONTACT_INTERNAL_TOKEN` are mandatory; token must be at least 32 random characters. Set `BUILD_REVISION` to the deployed commit. SMTP uses `EMAIL_HOST`, `EMAIL_PORT`, `EMAIL_USER`, `EMAIL_PASSWORD`, `EMAIL_FROM`, `EMAIL_TO`. If SMTP is omitted, the operator must review pending inquiries through the private CLI.
 
+The web contact route checks the browser `Origin` against `NEXT_PUBLIC_SITE_URL`. A server-only `CONTACT_ALLOWED_ORIGIN` may override that value when running a build under a different trusted origin, as the isolated browser tests do. Set it only to the exact intended origin; it does not enable a list or wildcard.
+
 ## Release sequence
 
 1. Run CI gates and build images at one pinned revision.

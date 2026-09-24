@@ -7,7 +7,17 @@ export type Project = {
   summary: string;
   live?: string;
   status?: string;
-  visual: { src: string; alt: string; caption: string };
+  maturity: "live" | "development";
+  role?: string;
+  audience: string;
+  technicalFocus: string;
+  featured: boolean;
+  visual: { src: string; alt: string; caption: string }; // Hero media.
+  gallery: { src: string; alt: string; caption: string }[];
+  repositoryPublic?: string; // Only set after the repository is publicly inspectable.
+  contribution?: string; // TODO_OWNER_VERIFY when individual boundaries are unknown.
+  limitations: string[];
+  caseStudy: boolean;
   source: string; // TODO_OWNER_VERIFY: remotes are not publicly accessible; never render as visitor links.
   revision: string;
   year: string;
@@ -32,6 +42,27 @@ export const projects: Project[] = [
     name: "Azaeron",
     type: "Billing systems · full stack",
     year: "2026",
+    maturity: "live",
+    role: "Full-stack engineering",
+    audience: "Merchants managing sales and customer records",
+    technicalFocus: "Invoice state, authorization, API and release checks",
+    featured: true,
+    caseStudy: true,
+    gallery: [
+      {
+        src: "/images/projects/azaeron-login.webp",
+        alt: "Azaeron public sign-in workspace",
+        caption: "Public sign-in",
+      },
+      {
+        src: "/images/projects/azaeron-documentation.webp",
+        alt: "Azaeron public documentation page",
+        caption: "Public product documentation",
+      },
+    ],
+    limitations: [
+      "Authenticated production flows and active integrations have not been independently inspected.",
+    ],
     lede: "Azaeron brings invoicing, quotations, payments, inventory, and customer records into one business workspace.",
     summary:
       "Invoice and business operations software with a React interface, Express API, and MongoDB persistence.",
@@ -113,6 +144,27 @@ export const projects: Project[] = [
     name: "SHAPES India",
     type: "Institutional platform · production",
     year: "2026",
+    maturity: "live",
+    role: "Application and publishing engineering",
+    audience: "Visitors across six centres and the staff publishing updates",
+    technicalFocus: "Publishing states, permissions and operational checks",
+    featured: true,
+    caseStudy: true,
+    gallery: [
+      {
+        src: "/images/projects/shapes-centres.webp",
+        alt: "SHAPES India six-centre index",
+        caption: "Six-centre public index",
+      },
+      {
+        src: "/images/projects/shapes-home.webp",
+        alt: "SHAPES India public homepage",
+        caption: "Public homepage",
+      },
+    ],
+    limitations: [
+      "Production backup schedule and exact contribution boundaries require owner verification.",
+    ],
     lede: "A public site for six centres, with a controlled publishing workflow behind it.",
     summary:
       "An institutional web platform for six centres, public resources, and content operations.",
@@ -194,6 +246,42 @@ export const projects: Project[] = [
     name: "Friends Aluminium Works",
     type: "Commercial web · frontend delivery",
     year: "2026",
+    maturity: "live",
+    role: "Frontend delivery",
+    audience: "Customers exploring fabrication work in Imphal",
+    technicalFocus: "Product discovery, responsive pages and inquiry handoff",
+    featured: true,
+    caseStudy: true,
+    gallery: [
+      {
+        src: "/images/projects/friends-banner.webp",
+        alt: "Completed aluminium and glass building work",
+        caption: "Project photography",
+      },
+      {
+        src: "/images/projects/friends-products.webp",
+        alt: "Friends Aluminium Works product catalogue",
+        caption: "Public catalogue",
+      },
+      {
+        src: "/images/projects/friends-window.webp",
+        alt: "Aluminium window installation",
+        caption: "Window installation",
+      },
+      {
+        src: "/images/projects/friends-glass-railing.webp",
+        alt: "Glass railing installation",
+        caption: "Railing work",
+      },
+      {
+        src: "/images/projects/friends-partitions.webp",
+        alt: "Interior partition installation",
+        caption: "Partition work",
+      },
+    ],
+    limitations: [
+      "Commercial outcomes and search results have not been measured.",
+    ],
     lede: "A local fabrication business made clear through products, projects, and a direct path to inquiry.",
     summary:
       "A responsive product, service, project, and inquiry site for an Imphal fabrication business.",
@@ -274,6 +362,28 @@ export const projects: Project[] = [
     name: "Azaeron Verity",
     type: "Document intelligence · in development",
     year: "2026",
+    maturity: "development",
+    technicalFocus: "Document versions, evidence links and human review",
+    audience: "Reviewers assessing document findings and their sources",
+    featured: false,
+    caseStudy: true,
+    gallery: [
+      {
+        src: "/images/projects/verity-review.png",
+        alt: "Verity local review workspace",
+        caption: "Local review workspace",
+      },
+      {
+        src: "/images/projects/verity-evidence-graph.png",
+        alt: "Verity local evidence graph",
+        caption: "Local evidence graph",
+      },
+    ],
+    contribution:
+      "TODO_OWNER_VERIFY: individual and team contribution boundaries.",
+    limitations: [
+      "Not production ready; no approved production generative model or calibrated detector.",
+    ],
     status: "In development",
     lede: "Verity lets reviewers examine document analysis alongside the exact version, recorded text, and sources behind it.",
     summary:
@@ -350,6 +460,23 @@ export const projects: Project[] = [
     name: "The Scent Bar Retail OS",
     type: "Retail operations · in development",
     year: "2026",
+    maturity: "development",
+    technicalFocus: "Tenant identity, branches, SKU and pricing foundations",
+    audience: "Retail teams working across branches",
+    featured: false,
+    caseStudy: true,
+    gallery: [
+      {
+        src: "/images/projects/scent-bar-architecture.svg",
+        alt: "Scent Bar implementation map distinguishing current and planned scope",
+        caption: "Implementation map",
+      },
+    ],
+    contribution:
+      "TODO_OWNER_VERIFY: individual and team contribution boundaries.",
+    limitations: [
+      "Inventory ledger, purchasing and POS are not built in this milestone.",
+    ],
     status: "In development",
     lede: "A multi-branch retail workspace taking shape around identity, catalogue, SKU, pricing, and branch access.",
     summary:

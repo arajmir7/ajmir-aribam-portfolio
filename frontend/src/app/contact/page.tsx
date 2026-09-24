@@ -5,29 +5,34 @@ import { email, pageMeta } from "@/lib/site";
 
 export const metadata: Metadata = pageMeta(
   "Contact",
-  "Contact Ajmir Aribam about software engineering, backend, cloud, AI systems, and quality work.",
+  "Contact Ajmir Aribam about a software engineering project or opportunity.",
   "/contact",
 );
+
 export default function Contact() {
   return (
-    <main id="main" className="shell page">
-      <div className="page-heading">
-        <p className="eyebrow">CONTACT / AJMIR ARIBAM</p>
-        <h1>
-          Let’s talk<span className="period">.</span>
-        </h1>
+    <main id="main" className="contact-page shell">
+      <header className="contact-heading">
+        <p className="kicker">Contact</p>
+        <h1>Tell me what you’re working on.</h1>
         <p>
-          Tell me what you’re building or where you need help. A short note is
-          enough to start.
+          A short note about the product, role or problem is enough to start.
         </p>
-      </div>
-      <div className="contact-grid">
-        <aside className="contact-aside">
-          <p className="eyebrow">DIRECT EMAIL</p>
-          <h2>Prefer your inbox?</h2>
-          <p>You can email me directly. I’ll reply from the same address.</p>
-          <a href={`mailto:${email}`}>{email} ↗</a>
-          <SocialLinks />
+      </header>
+      <div className="contact-layout">
+        <aside className="contact-direct">
+          <span>Direct email</span>
+          <a href={`mailto:${email}`}>
+            {email} <span aria-hidden="true">↗</span>
+          </a>
+          <p>
+            If the form is inconvenient, write to me directly. I’ll reply from
+            this address.
+          </p>
+          <div>
+            <span>Elsewhere</span>
+            <SocialLinks />
+          </div>
         </aside>
         <ContactForm />
       </div>

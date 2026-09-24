@@ -53,14 +53,20 @@ export default async function Article({
         ← All notes
       </Link>
       <div className="article-head">
-        <p className="eyebrow">ENGINEERING NOTE / {article.date}</p>
-        <h1>
-          {article.title}
-          <span className="period">.</span>
-        </h1>
+        <p className="kicker">
+          {article.topic} <span aria-hidden="true">/</span> {article.date} ·{" "}
+          {article.reading}
+        </p>
+        <h1>{article.title}</h1>
         <p>{article.description}</p>
       </div>
       <div className="article-body">
+        <div className="article-principle">
+          <span>Decision in brief</span>
+          <strong>
+            The server owns a state change that affects other records.
+          </strong>
+        </div>
         <p className="lead">
           A status field looks simple until another part of the system depends
           on it.

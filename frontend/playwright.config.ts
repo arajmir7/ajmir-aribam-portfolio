@@ -25,6 +25,7 @@ export default defineConfig({
       url: frontendUrl,
       env: {
         NEXT_PUBLIC_SITE_URL: frontendUrl,
+        CONTACT_ALLOWED_ORIGIN: frontendUrl,
         CONTACT_API_URL: backendUrl,
         CONTACT_INTERNAL_TOKEN: token,
       },

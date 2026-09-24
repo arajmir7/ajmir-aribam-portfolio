@@ -11,8 +11,16 @@ import {
   xUrl,
 } from "@/lib/site";
 import { headers } from "next/headers";
+import localFont from "next/font/local";
 import "./globals.css";
 import "./product.css";
+
+const instrumentSans = localFont({
+  src: "../assets/instrument-sans-latin.woff2",
+  variable: "--font-instrument",
+  display: "swap",
+  weight: "400 700",
+});
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
@@ -54,7 +62,7 @@ export default async function RootLayout({
     jobTitle: "Software Engineer",
   };
   return (
-    <html lang="en">
+    <html lang="en" className={instrumentSans.variable}>
       <body>
         <a className="skip-link" href="#main">
           Skip to content

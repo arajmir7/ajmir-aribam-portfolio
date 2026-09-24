@@ -5,7 +5,8 @@ import { isAllowedOrigin } from "@/lib/contact-security";
 export const runtime = "nodejs";
 export async function POST(request: NextRequest) {
   const id = randomUUID();
-  const expected = process.env.NEXT_PUBLIC_SITE_URL;
+  const expected =
+    process.env.CONTACT_ALLOWED_ORIGIN || process.env.NEXT_PUBLIC_SITE_URL;
   const origin = request.headers.get("origin");
   if (!isAllowedOrigin(origin, expected))
     return NextResponse.json(

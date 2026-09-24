@@ -4,125 +4,185 @@ import { pageMeta } from "@/lib/site";
 
 export const metadata: Metadata = pageMeta(
   "Engineering",
-  "Backend, AI systems, quality engineering, cloud delivery, and product development through Ajmir Aribam's projects.",
+  "How Ajmir Aribam builds, checks and delivers application systems, AI-enabled workflows and product interfaces.",
   "/engineering",
 );
 
-const capabilities = [
+const layers = [
   {
-    label: "Backend & application systems",
-    text: "I put business rules in services that every caller has to use. Azaeron's invoice lifecycle checks the payment state before it changes an invoice; SHAPES does the same for publishing.",
-    refs: [
-      ["Azaeron", "/work/azaeron"],
-      ["SHAPES India", "/work/shapes-india"],
-    ],
+    number: "01",
+    name: "Product surface",
+    detail: "Navigation, forms and feedback that make the next step clear.",
+    proof: "Friends Aluminium Works",
+    href: "/work/friends-aluminium-works",
   },
   {
-    label: "API & data architecture",
-    text: "I design routes and records around the work they represent. That includes invoice and payment data in Azaeron, and versioned content records in SHAPES.",
-    refs: [
-      ["Azaeron", "/work/azaeron"],
-      ["SHAPES India", "/work/shapes-india"],
-    ],
+    number: "02",
+    name: "Application rules",
+    detail:
+      "Permission checks and state changes that every client must pass through.",
+    proof: "Azaeron",
+    href: "/work/azaeron",
   },
   {
-    label: "Authentication & secure systems",
-    text: "The server checks who can act and which records they can reach. Azaeron uses API permissions; The Scent Bar derives tenant and branch access from the signed-in person.",
-    refs: [
-      ["Azaeron", "/work/azaeron"],
-      ["The Scent Bar", "/work/the-scent-bar-retail-os"],
-    ],
+    number: "03",
+    name: "Records & evidence",
+    detail:
+      "Versioned content, payment state and traceable source relationships.",
+    proof: "SHAPES India",
+    href: "/work/shapes-india",
   },
   {
-    label: "Frontend & product engineering",
-    text: "A useful interface makes the next action obvious. I have built merchant screens, a six-centre public site, and a visual catalogue with direct inquiry paths.",
-    refs: [
-      ["Azaeron", "/work/azaeron"],
-      ["Friends Aluminium Works", "/work/friends-aluminium-works"],
-      ["SHAPES India", "/work/shapes-india"],
-    ],
-  },
-  {
-    label: "AI-enabled systems",
-    text: "Verity puts document analysis next to the version and recorded material behind it. Its review flow can abstain when evidence or a calibrated model is unavailable. The project is still in development.",
-    refs: [
-      ["Azaeron Verity", "/work/azaeron-verity"],
-      ["Verity's current limits", "/work/azaeron-verity#limits"],
-    ],
-  },
-  {
-    label: "Quality engineering",
-    text: "I build checks into delivery: unit and API tests for rules, database checks for migrations and tenant scope, browser journeys for the UI, and release gates that stop on failure.",
-    refs: [
-      ["Verity checks", "/work/azaeron-verity#quality"],
-      ["The Scent Bar checks", "/work/the-scent-bar-retail-os#quality"],
-      ["Azaeron", "/work/azaeron"],
-    ],
-  },
-  {
-    label: "Cloud & delivery",
-    text: "I keep build, migration, and deployment steps explicit. Azaeron has a release workflow and separate frontend and API targets; SHAPES includes deployment checks and a migration path.",
-    refs: [
-      ["Azaeron", "/work/azaeron"],
-      ["SHAPES India", "/work/shapes-india"],
-    ],
-  },
-  {
-    label: "Reliability & observability",
-    text: "A service needs to say when it can take traffic and leave enough context to investigate a failure. The inspected APIs use readiness checks and request identifiers.",
-    refs: [
-      ["Azaeron", "/work/azaeron"],
-      ["SHAPES India", "/work/shapes-india"],
-    ],
-  },
-  {
-    label: "Performance & accessibility",
-    text: "I check image delivery, responsive layouts, keyboard paths, and accessibility regressions in the interface itself. The portfolio's browser gate covers mobile widths and automated WCAG checks.",
-    refs: [
-      ["Friends Aluminium Works", "/work/friends-aluminium-works"],
-      ["SHAPES India", "/work/shapes-india"],
-    ],
-  },
-  {
-    label: "Production operations",
-    text: "The job continues after a build passes. I look for a clear startup path, health signals, and recovery instructions, then keep production claims separate from local test results.",
-    refs: [
-      ["SHAPES India", "/work/shapes-india"],
-      ["Azaeron Verity", "/work/azaeron-verity"],
-    ],
+    number: "04",
+    name: "Delivery & recovery",
+    detail:
+      "Tests, migrations, health checks and an explicit route back from failure.",
+    proof: "Quality practice",
+    href: "#quality",
   },
 ] as const;
 
 export default function Engineering() {
   return (
-    <main id="main" className="shell page engineering-page">
-      <div className="page-heading">
-        <p className="eyebrow">ENGINEERING / THROUGH THE WORK</p>
-        <h1>
-          Engineering<span className="period">.</span>
-        </h1>
-        <p>
-          I prefer to show the work itself: the rule that stops an invalid
-          invoice state, the permission check that protects a branch, or the
-          test that catches a broken release.
+    <main id="main" className="engineering-page">
+      <header className="shell engineering-heading">
+        <p className="kicker">Engineering practice</p>
+        <div>
+          <h1>A useful product has more than one layer.</h1>
+          <p>
+            I work across the interface, the rules behind it, and the checks
+            that let a change ship. These examples come from the projects in
+            this portfolio.
+          </p>
+        </div>
+      </header>
+      <section
+        className="shell engineering-map"
+        aria-labelledby="engineering-map-title"
+      >
+        <div className="engineering-map-head">
+          <h2 id="engineering-map-title">One change, four places to think.</h2>
+          <p>
+            A screen can initiate an action. The service decides whether it is
+            allowed, the records preserve what happened, and the release path
+            checks that it still works.
+          </p>
+        </div>
+        <ol>
+          {layers.map((layer) => (
+            <li key={layer.number}>
+              <span className="engineering-layer-index">{layer.number}</span>
+              <div>
+                <h3>{layer.name}</h3>
+                <p>{layer.detail}</p>
+                <Link href={layer.href}>{layer.proof} ↗</Link>
+              </div>
+            </li>
+          ))}
+        </ol>
+      </section>
+      <section
+        className="engineering-evidence"
+        aria-labelledby="engineering-evidence-title"
+      >
+        <div className="shell">
+          <p className="kicker">Through the work</p>
+          <h2 id="engineering-evidence-title">
+            The decisions show the discipline.
+          </h2>
+          <div className="engineering-evidence-list">
+            <article>
+              <span>Rules &amp; data</span>
+              <h3>Can this invoice become paid?</h3>
+              <p>
+                Azaeron’s lifecycle service checks payment summaries before
+                changing invoice status. The API records the transition and
+                audit context so another caller cannot bypass a browser guard.
+              </p>
+              <Link href="/work/azaeron#financial-state">
+                Follow the invoice state ↗
+              </Link>
+            </article>
+            <article>
+              <span>Publishing &amp; access</span>
+              <h3>Who can publish this revision?</h3>
+              <p>
+                SHAPES separates public reading from authenticated editing. A
+                publishing service handles review states and revisions, while
+                server permissions scope administrative actions.
+              </p>
+              <Link href="/work/shapes-india#editorial-workflow">
+                Follow the publishing path ↗
+              </Link>
+            </article>
+            <article>
+              <span>AI systems</span>
+              <h3>What evidence supports the finding?</h3>
+              <p>
+                Verity links review findings to document versions and sources.
+                Its interface can show insufficient evidence; the project
+                remains in development without a production-ready model claim.
+              </p>
+              <Link href="/work/azaeron-verity">
+                See Verity’s current build ↗
+              </Link>
+            </article>
+          </div>
+        </div>
+      </section>
+      <section
+        id="quality"
+        className="shell engineering-quality"
+        aria-labelledby="engineering-quality-title"
+      >
+        <div className="engineering-quality-lead">
+          <p className="kicker">Quality engineering</p>
+          <h2 id="engineering-quality-title">
+            Check the behavior at the boundary where it can fail.
+          </h2>
+          <p>
+            One green test does not cover a product. I use different checks for
+            rules, data, interface behavior and deployment wiring.
+          </p>
+        </div>
+        <div className="quality-lines">
+          <div>
+            <strong>Rules</strong>
+            <p>Unit and API tests for state, validation and authorization.</p>
+          </div>
+          <div>
+            <strong>Data</strong>
+            <p>
+              Fresh migrations, isolated PostgreSQL tests and tenant-boundary
+              checks.
+            </p>
+          </div>
+          <div>
+            <strong>Interface</strong>
+            <p>
+              Playwright journeys, keyboard paths, axe scans and responsive
+              reviews.
+            </p>
+          </div>
+          <div>
+            <strong>Release</strong>
+            <p>
+              Dependency and secret scans, container builds, readiness and
+              contact smoke tests.
+            </p>
+          </div>
+        </div>
+        <p className="engineering-quality-note">
+          The portfolio’s own local gate runs these checks; production
+          monitoring and human accessibility review remain separate work.
         </p>
-      </div>
-      <div className="capability-grid">
-        {capabilities.map((capability, index) => (
-          <article key={capability.label}>
-            <span className="index">{String(index + 1).padStart(2, "0")}</span>
-            <h2>{capability.label}</h2>
-            <p>{capability.text}</p>
-            <div className="capability-links">
-              {capability.refs.map(([label, href]) => (
-                <Link href={href} key={href}>
-                  {label} <span aria-hidden="true">↗</span>
-                </Link>
-              ))}
-            </div>
-          </article>
-        ))}
-      </div>
+      </section>
+      <section className="shell engineering-last">
+        <p>Need someone who can work across product and system boundaries?</p>
+        <Link href="/contact">
+          Get in touch <span aria-hidden="true">↗</span>
+        </Link>
+      </section>
     </main>
   );
 }

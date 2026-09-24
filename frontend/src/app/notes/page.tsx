@@ -5,29 +5,43 @@ import { pageMeta } from "@/lib/site";
 
 export const metadata: Metadata = pageMeta(
   "Engineering notes",
-  "A small collection of engineering notes on product and system decisions.",
+  "Notes on the decisions behind the software projects of Ajmir Aribam.",
   "/notes",
 );
+
 export default function Writing() {
   return (
-    <main id="main" className="shell page">
-      <div className="page-heading">
-        <p className="eyebrow">ENGINEERING / NOTES</p>
-        <h1>
-          Engineering notes<span className="period">.</span>
-        </h1>
-        <p>A short note on a decision that came up in two projects.</p>
-      </div>
-      <div className="writing-list">
-        {writing.map((x) => (
-          <article key={x.slug}>
-            <span>
-              {x.date} / {x.reading}
-            </span>
+    <main id="main" className="notes-page shell">
+      <header className="notes-heading">
+        <p className="kicker">Notes</p>
+        <h1>Decisions worth writing down.</h1>
+        <p>
+          Short essays from the work. One for now; more only when there is
+          something useful to say.
+        </p>
+      </header>
+      <div className="notes-index">
+        <div className="notes-index-label">
+          Latest note <span>01</span>
+        </div>
+        {writing.map((note) => (
+          <article className="note-feature" key={note.slug}>
+            <div className="note-feature-meta">
+              <span>{note.topic}</span>
+              <span>
+                {note.date} · {note.reading}
+              </span>
+            </div>
             <h2>
-              <Link href={`/notes/${x.slug}`}>{x.title} ↗</Link>
+              <Link href={`/notes/${note.slug}`}>{note.title}</Link>
             </h2>
-            <p>{x.description}</p>
+            <p>{note.description}</p>
+            <div className="note-feature-bottom">
+              <span>Related: {note.relatedSystems.join(" · ")}</span>
+              <Link href={`/notes/${note.slug}`}>
+                Read note <span aria-hidden="true">↗</span>
+              </Link>
+            </div>
           </article>
         ))}
       </div>

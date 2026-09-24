@@ -6,82 +6,87 @@ import { pageMeta } from "@/lib/site";
 
 export const metadata: Metadata = pageMeta(
   "About",
-  "About Ajmir Aribam, a software engineer working across backend, cloud, AI systems, and quality engineering.",
+  "About Ajmir Aribam, a software engineer working across product interfaces, backend systems and quality engineering.",
   "/about",
 );
+
 export default function About() {
   return (
-    <main id="main" className="shell page about-page">
-      <div className="page-heading">
-        <p className="eyebrow">ABOUT / AJMIR ARIBAM</p>
-        <h1>
-          The person behind the work<span className="period">.</span>
-        </h1>
-      </div>
-      <div className="about-grid">
-        <div className="portrait-frame">
+    <main id="main" className="about-page">
+      <header className="shell about-heading">
+        <p className="kicker">About Ajmir</p>
+        <h1>I cared about records before I wrote software.</h1>
+      </header>
+      <div className="shell about-story">
+        <figure className="about-portrait">
           <Image
             src="/images/ajmir-portrait.jpg"
             alt="Portrait of Ajmir Aribam"
-            width={960}
-            height={1200}
+            width={768}
+            height={960}
             priority
-            sizes="(max-width: 760px) 100vw, 42vw"
+            sizes="(max-width: 760px) 100vw, 38vw"
           />
-          <span>AJMIR ARIBAM / 2026</span>
-        </div>
-        <div className="about-copy">
-          <p className="lead">
-            I’m Ajmir. I build software that people can rely on.
+          <figcaption>Ajmir Aribam</figcaption>
+        </figure>
+        <div className="about-narrative">
+          <p className="about-lede">
+            I’m a software engineer who works across the product: the screen
+            people see, the rules behind it, and the checks before it ships.
           </p>
           <p>
-            Before working deeply in software, I handled banking transactions
-            and helped people use public digital services. Records, access, and
-            a clear next step mattered to the person standing in front of me.
-            They still matter in the products I build.
+            Before software became my main work, I handled banking transactions
+            and helped people use public digital services. A missing record or
+            an unclear next step had an immediate effect on the person in front
+            of me. That experience still shapes the questions I ask when I
+            build.
           </p>
           <p>
-            Today I work across backend services, APIs, cloud delivery, and
-            frontend products. I’m also building document review software that
-            treats AI output as something a person needs to inspect, and I make
-            testing and release checks part of the work from the start.
+            My recent projects include billing workflows, an institutional
+            publishing platform, a commercial product site and a document review
+            system in development. They call for different tools, but each needs
+            clear boundaries between what a person asks the system to do and
+            what the system can safely promise.
           </p>
-          <div className="about-facts">
-            <div>
-              <span>FOCUS</span>
-              <strong>Backend · Cloud · DevOps · AI · Quality</strong>
-            </div>
-            <div>
-              <span>EDUCATION</span>
-              <strong>
-                MCA, Sharda University <small>(2025–2027)</small>
-              </strong>
-            </div>
-            <div>
-              <span>WORK</span>
-              <strong>Billing · Publishing · Document review</strong>
-            </div>
-          </div>
           <p>
-            I like the practical questions: What should happen when a payment
-            fails? Can an editor undo a bad change? Will the page still work on
-            a small screen? Those answers shape the code as much as the first
-            feature does.
+            I enjoy the practical questions: what happens when a payment fails,
+            who can approve a revision, what evidence supports a finding, and
+            how a change is tested before release.
           </p>
-          <div className="about-links">
+          <div className="about-next">
             <Link className="button button-primary" href="/work">
-              View selected work ↗
+              Explore the work <span aria-hidden="true">↗</span>
             </Link>
             <Link className="text-link" href="/resume">
-              Read resume ↗
+              Read my résumé <span aria-hidden="true">↗</span>
             </Link>
           </div>
-          <nav className="about-social" aria-label="Connect with Ajmir">
-            <span>ELSEWHERE</span>
-            <SocialLinks />
-          </nav>
         </div>
       </div>
+      <section
+        className="shell about-details"
+        aria-label="Background and current focus"
+      >
+        <div>
+          <span>Previously</span>
+          <p>Banking correspondent and public digital-service work.</p>
+        </div>
+        <div>
+          <span>Now</span>
+          <p>Backend, product engineering, cloud delivery and quality.</p>
+        </div>
+        <div>
+          <span>Learning</span>
+          <p>MCA at Sharda University, 2025–2027.</p>
+        </div>
+      </section>
+      <section className="shell about-connect">
+        <div>
+          <p className="kicker">Elsewhere</p>
+          <h2>Follow the work, or say hello.</h2>
+        </div>
+        <SocialLinks />
+      </section>
     </main>
   );
 }

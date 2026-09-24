@@ -4,56 +4,79 @@ import { PrintButton } from "@/features/resume/print-button";
 import { email, githubUrl, linkedinUrl, pageMeta } from "@/lib/site";
 
 export const metadata: Metadata = pageMeta(
-  "Resume",
-  "Resume of Ajmir Aribam, Software Engineer — Backend, Cloud, DevOps, AI Systems, and Quality Engineering.",
+  "Résumé",
+  "Résumé of Ajmir Aribam, Software Engineer, with project, professional experience and technical capabilities.",
   "/resume",
 );
+
 export default function Resume() {
   return (
-    <main id="main" className="shell page resume-page">
-      <div className="resume-top">
+    <main id="main" className="shell resume-page">
+      <header className="resume-top">
         <div>
-          <p className="eyebrow">RESUME / SOFTWARE ENGINEERING</p>
-          <h1>
-            AJMIR
-            <br />
-            ARIBAM<span className="period">.</span>
-          </h1>
+          <p className="kicker">Résumé</p>
+          <h1>Ajmir Aribam</h1>
           <p>Software Engineer</p>
         </div>
         <PrintButton />
-      </div>
+      </header>
       <div className="resume-contact">
         <a href={`mailto:${email}`}>{email}</a>
         <a href={githubUrl} target="_blank" rel="noopener noreferrer">
-          GitHub ↗
+          GitHub
         </a>
         <a href={linkedinUrl} target="_blank" rel="noopener noreferrer">
-          LinkedIn ↗
+          LinkedIn
         </a>
       </div>
-      <div className="resume-section">
+      <section className="resume-section">
         <h2>Profile</h2>
         <p>
-          Software engineer working across backend services, cloud delivery,
-          AI-enabled document review, and quality engineering. Projects include
-          business billing, institutional publishing, and client-facing web
-          work.
+          Software engineer working across backend services, product interfaces,
+          cloud delivery and quality engineering. Recent projects include
+          business billing, institutional publishing, commercial web and an
+          in-development document review system.
         </p>
-      </div>
-      <div className="resume-section">
-        <h2>Selected work</h2>
+      </section>
+      <section className="resume-section">
+        <h2>Professional experience</h2>
+        <div className="resume-items">
+          <article>
+            <span>2021–2025</span>
+            <div>
+              <h3>Banking Correspondent · Axis Bank</h3>
+              <p>
+                Handled customer banking transactions and digital service
+                workflows, with attention to dependable records and clear
+                communication.
+              </p>
+            </div>
+          </article>
+          <article>
+            <span>2020–2025</span>
+            <div>
+              <h3>Village Level Entrepreneur · Common Service Centre</h3>
+              <p>
+                Supported access to government digital services and managed
+                service requests for local residents.
+              </p>
+            </div>
+          </article>
+        </div>
+      </section>
+      <section className="resume-section">
+        <h2>Selected software projects</h2>
         <div className="resume-items">
           <article>
             <span>2026</span>
             <div>
               <h3>
-                <Link href="/work/azaeron">Azaeron ↗</Link>
+                <Link href="/work/azaeron">Azaeron</Link> · Billing system
               </h3>
               <p>
-                Invoice and business operations platform. React/TypeScript
-                interface, Express API, MongoDB persistence, invoice lifecycle
-                checks, access permissions and release configuration.
+                React and TypeScript interface, Express API, MongoDB
+                persistence, invoice lifecycle checks, access permissions and
+                release configuration.
               </p>
             </div>
           </article>
@@ -61,25 +84,12 @@ export default function Resume() {
             <span>2026</span>
             <div>
               <h3>
-                <Link href="/work/shapes-india">SHAPES India ↗</Link>
+                <Link href="/work/shapes-india">SHAPES India</Link> ·
+                Institutional platform
               </h3>
               <p>
-                Institutional Flask platform with SQLAlchemy content models,
-                publishing lifecycle, administrative permissions and operational
-                checks.
-              </p>
-            </div>
-          </article>
-          <article>
-            <span>2026</span>
-            <div>
-              <h3>
-                <Link href="/work/azaeron-verity">Azaeron Verity ↗</Link>
-              </h3>
-              <p>
-                In-development document review workspace with versioned
-                findings, linked sources, explicit uncertainty, and local unit,
-                database, and browser checks.
+                Flask and SQLAlchemy content models, publishing lifecycle,
+                administrative permissions and operational checks.
               </p>
             </div>
           </article>
@@ -88,46 +98,35 @@ export default function Resume() {
             <div>
               <h3>
                 <Link href="/work/friends-aluminium-works">
-                  Friends Aluminium Works ↗
-                </Link>
+                  Friends Aluminium Works
+                </Link>{" "}
+                · Commercial site
               </h3>
               <p>
-                React/TypeScript commercial site for product discovery, project
-                browsing, search metadata and email/WhatsApp inquiry handoff.
-              </p>
-            </div>
-          </article>
-        </div>
-      </div>
-      <div className="resume-section resume-section--operations">
-        <h2>Operations experience</h2>
-        <div className="resume-items">
-          <article>
-            <span>2021–25</span>
-            <div>
-              <h3>Banking Correspondent · Axis Bank</h3>
-              <p>
-                Handled customer banking transactions and digital service
-                workflows, with a focus on dependable records and clear
-                communication.
+                React and TypeScript product and project pages, responsive UI,
+                search metadata and email/WhatsApp inquiry handoff.
               </p>
             </div>
           </article>
           <article>
-            <span>2020–25</span>
+            <span>2026</span>
             <div>
-              <h3>Village Level Entrepreneur · Common Service Centre</h3>
+              <h3>
+                <Link href="/work/azaeron-verity">Azaeron Verity</Link> · In
+                development
+              </h3>
               <p>
-                Supported access to government digital services and managed
-                end-to-end service requests for local residents.
+                Document review workspace with versioned findings, linked
+                sources and explicit unavailable-analysis states. Production
+                model and release gates remain open.
               </p>
             </div>
           </article>
         </div>
-      </div>
-      <div className="resume-section resume-columns">
+      </section>
+      <section className="resume-section resume-columns">
         <div>
-          <h2>Technical areas</h2>
+          <h2>Technical capabilities</h2>
           <dl className="resume-skills">
             <div>
               <dt>Languages</dt>
@@ -154,7 +153,7 @@ export default function Resume() {
             <div>
               <dt>Quality</dt>
               <dd>
-                Playwright · API and database testing · accessibility checks ·
+                Playwright · API and database tests · accessibility checks ·
                 release verification
               </dd>
             </div>
@@ -171,7 +170,7 @@ export default function Resume() {
           <p>B.Sc. Botany · Manipur University · 2019–2022</p>
           <p>DCA · NIELIT · 2022</p>
         </div>
-      </div>
+      </section>
     </main>
   );
 }

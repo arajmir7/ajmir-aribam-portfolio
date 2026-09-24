@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 254 28" role="img" aria-labelledby="title">
+  <title id="title">Ajmir Aribam</title>
+  <g fill="none" stroke="#1a2924" stroke-width="2.45" stroke-linecap="square" stroke-linejoin="miter">
+    <path d="M1 24 9 4l8 20M4 17h10"/>
+    <path d="M23 4h16m-4 0v14c0 5-3 7-8 7-4 0-6-2-7-5"/>
+    <path d="M46 24V4l9 13 9-13v20"/>
+    <path d="M72 4h13m-6.5 0v20M72 24h13"/>
+    <path d="M93 24V4h9c5 0 8 2 8 6s-3 7-8 7h-9m9 0 9 7"/>
+    <path d="m124 24 8-20 8 20m-13-7h10"/>
+    <path d="M147 24V4h9c5 0 8 2 8 6s-3 7-8 7h-9m9 0 9 7"/>
+    <path d="M172 4h13m-6.5 0v20M172 24h13"/>
+    <path d="M193 24V4h8c5 0 8 2 8 6 0 3-2 5-5 6 4 1 6 3 6 6 0 4-3 6-9 6h-8m0-12h8"/>
+    <path d="m217 24 8-20 8 20m-13-7h10"/>
+    <path d="M240 24V4l6 9 6-9v20"/>
+  </g>
+</svg>

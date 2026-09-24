@@ -1,29 +1,31 @@
-# Release certification — local V4 candidate
+# Release certification — local V5 frontend candidate
 
 - **Candidate:** Current working tree; the final commit hash identifies the certified local state after creation.
-- **Review date:** 2026-09-23.
+- **Review date:** 2026-09-24.
 - **Status:** Local release gate passed. No push, hosted CI run, or production deployment is claimed.
 
 ## Product scope
 
-The portfolio presents Ajmir Aribam as a Software Engineer across Backend, Cloud, DevOps, AI Systems, and Quality Engineering. Azaeron is the flagship. SHAPES India and Friends Aluminium Works are live public work. Azaeron Verity and The Scent Bar Retail OS are explicitly in development. SCMIRN and Zam Zam Academy remain labeled prototypes in Labs. AccessForge is omitted pending inspectable source.
+The rebuilt frontend presents Ajmir Aribam as a Software Engineer through real product surfaces, case-study decisions and quality practice. It uses a new vector AA identity, locally hosted Instrument Sans, a warm paper/green/oxide design system and a designed dark theme. Azaeron is the flagship. SHAPES India and Friends Aluminium Works are live public work. Azaeron Verity and The Scent Bar Retail OS are explicitly in development. SCMIRN and Zam Zam Academy remain labeled prototypes in Labs. AccessForge is omitted pending inspectable source.
 
 The frontend and backend remain separate applications connected over HTTP. The public same-origin `/api/contact` route and private `/inquiries`, `/health/live`, and `/health/ready` contracts are unchanged. Visitor pages do not expose private project repository URLs, local source paths, or `TODO_OWNER_VERIFY` markers.
 
 ## Local verification
 
-`make verify` passed on the V4 candidate. It covers:
+`make verify` passed on the rebuilt candidate. It covers:
 
 - Prettier, ESLint, strict TypeScript, Ruff format and lint, and a production Next.js build.
 - Two frontend unit tests, four backend API/unit tests, a fresh isolated PostgreSQL migration and persisted-inquiry integration test. The SQLite-only backend suite skips one PostgreSQL-specific test, which runs in the separate database gate.
-- Six Playwright tests across 15 public routes, including metadata, internal links, image decoding, 404, navigation, keyboard menu behavior, contact success and fallback, and truthful in-development project labels.
+- Seven Playwright tests across 15 public routes, including metadata, internal links, image decoding, 404, navigation, keyboard menu behavior, contact success and fallback, truthful in-development labels, and browser error/hydration checks.
 - Axe scans on all 15 routes in light and dark themes with zero automated WCAG 2/2.1/2.2 A/AA violations. A responsive sweep covers 14 widths from 320 to 1920 px with no document overflow.
-- Full-page local screenshots of all 15 routes at 390 and 1440 px in both themes. These generated artifacts stay out of Git.
+- Full-page local screenshots of all 15 routes at 390, 768, 1440 and 1728 px in both themes. These generated artifacts stay out of Git.
 - `npm audit` and `pip-audit` with no known vulnerabilities at the configured high-severity gate; Gitleaks scans of committed and staged source.
 - Frontend and backend Docker builds and isolated Compose startup from an empty PostgreSQL volume, with healthy services, a persisted contact response, and foreign-origin rejection.
 - `git diff --check`.
 
-The print résumé was rendered as a two-page selectable-text A4 PDF and visually checked after fixing page breaks. The screenshots and copy review are documented in [Final design review](docs/quality/FINAL_DESIGN_REVIEW.md). Current local mobile Lighthouse runs returned Home 97 and Work 99 for performance, with 100 for accessibility, best practices, and SEO on both. Work CLS was 0 after a loading-layout fix; Home LCP was 2.6 s, 0.1 s above the 2.5 s target. About 155 KB of script transferred on each route. These are lab results, not field metrics.
+The print résumé rendered as a one-page selectable-text A4 PDF with no clipping. The redesign and visual checks are recorded in [Frontend reinvention review](docs/quality/FRONTEND_REINVENTION_REVIEW.md); the previous V4 review remains in [Final design review](docs/quality/FINAL_DESIGN_REVIEW.md). Final local mobile Lighthouse performance scores were Home 98, Work 98, Azaeron 97 and About 100, with 100 for accessibility, best practices and SEO on all four. CLS was 0 on all four. Azaeron LCP was 2.6 s, 0.1 s above the 2.5 s target; Home and Work were 2.4 s, and About was 1.8 s. These are lab results, not field metrics.
+
+The deployable Compose topology was rebuilt and is healthy locally at `http://localhost:3000`. This is a local running site, not a public deployment. The contact route still accepts same-origin submissions and has a server-only `CONTACT_ALLOWED_ORIGIN` override for isolated browser testing when a build embeds a different public site URL.
 
 ## Evidence limits
 

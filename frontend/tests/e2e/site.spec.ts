@@ -24,14 +24,18 @@ test("orientation, routes, metadata, and evidence links", async ({
   request,
 }) => {
   await page.goto("/");
-  await expect(page.getByRole("heading", { level: 1 })).toContainText("Ajmir");
-  await expect(page.getByRole("heading", { level: 1 })).toContainText("Aribam");
-  await expect(page.locator(".home-role")).toContainText("Software Engineer");
-  await expect(page.locator(".home-capability-line")).toContainText(
-    "Quality Engineering",
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText(
+    "I build the product and the system behind it.",
   );
+  await expect(page.locator(".home-intro .kicker")).toContainText(
+    "Ajmir Aribam",
+  );
+  await expect(page.locator(".home-intro .kicker")).toContainText(
+    "Software Engineer",
+  );
+  await expect(page.locator(".home-intro-note")).toContainText("Quality");
   await expect(
-    page.getByRole("link", { name: /View selected work/ }),
+    page.getByRole("link", { name: /Explore the work/ }),
   ).toBeVisible();
   await page.screenshot({
     path: "test-results/home-desktop.png",
@@ -122,28 +126,30 @@ test("orientation, routes, metadata, and evidence links", async ({
         heroImage.evaluate((image: HTMLImageElement) => image.naturalWidth),
       )
       .toBeGreaterThan(0);
-    await expect(page.locator(".site-footer--compact")).toBeVisible();
+    await expect(page.locator(".case-hero-facts")).toBeVisible();
   }
   await page.goto("/work/friends-aluminium-works");
   await expect(page.locator(".friends-gallery img")).toHaveCount(3);
   await page.goto("/contact");
   await expect(
     page
-      .locator(".site-footer--large")
-      .getByRole("link", { name: /Explore selected work/ }),
+      .getByRole("navigation", { name: "Footer navigation" })
+      .getByRole("link", { name: "Work" }),
   ).toHaveAttribute("href", "/work");
   await page.goto("/labs");
-  await expect(
-    page.getByText("PROTOTYPE / TEMPLATE EXPLORATION"),
-  ).toBeVisible();
-  await expect(page.getByRole("heading", { name: "SCMIRN" })).toBeVisible();
+  await expect(page.getByText("02 / Prototype")).toBeVisible();
+  await expect(page.getByText("SCMIRN", { exact: true })).toBeVisible();
   await page.goto("/work/azaeron-verity");
-  await expect(page.locator(".case-status")).toHaveText("In development");
+  await expect(page.locator(".case-hero .kicker")).toContainText(
+    "In development",
+  );
   await expect(
     page.getByText(/No approved production generative model/),
   ).toBeVisible();
   await page.goto("/work/the-scent-bar-retail-os");
-  await expect(page.locator(".case-status")).toHaveText("In development");
+  await expect(page.locator(".case-hero .kicker")).toContainText(
+    "In development",
+  );
   await expect(
     page.getByText(
       /Inventory ledger, purchasing, and point of sale have not been implemented/,
@@ -213,7 +219,7 @@ test("keyboard navigation and mobile menu", async ({ page }) => {
     "About",
   );
   await page.goto("/work/azaeron");
-  const contents = page.getByRole("navigation", { name: "On this page" });
+  const contents = page.getByRole("navigation", { name: "In this case study" });
   await expect(contents).toBeVisible();
   await contents.getByRole("link", { name: "Financial state" }).click();
   await expect(page).toHaveURL(/#financial-state$/);
@@ -263,9 +269,23 @@ test("responsive routes have no horizontal overflow", async ({ page }) => {
   }
 });
 
+test("public routes hydrate without browser errors", async ({ page }) => {
+  const errors: string[] = [];
+  page.on("pageerror", (error) => errors.push(error.message));
+  page.on("console", (message) => {
+    if (message.type() === "error") errors.push(message.text());
+  });
+  for (const path of routes) {
+    await page.goto(path);
+    await expect(page.locator("#main h1")).toBeVisible();
+    await page.waitForTimeout(100);
+  }
+  expect(errors).toEqual([]);
+});
+
 test("representative visual states are captured", async ({ page }) => {
-  test.setTimeout(120_000);
-  for (const width of [1440, 390]) {
+  test.setTimeout(180_000);
+  for (const width of [390, 768, 1440, 1728]) {
     await page.setViewportSize({ width, height: 900 });
     for (const theme of ["light", "dark"]) {
       for (const path of routes) {

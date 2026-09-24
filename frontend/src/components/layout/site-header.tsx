@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useRef, useState } from "react";
 import { ThemeToggle } from "./theme-toggle";
@@ -10,6 +11,7 @@ const links = [
   ["Engineering", "/engineering"],
   ["About", "/about"],
   ["Notes", "/notes"],
+  ["Résumé", "/resume"],
   ["Contact", "/contact"],
 ] as const;
 
@@ -32,14 +34,22 @@ export function SiteHeader() {
     >
       <div className="shell header-inner">
         <Link className="brand" href="/" aria-label="Ajmir Aribam, home">
-          <span className="brand-mark">
-            A<span>.</span>
-          </span>
-          <span className="brand-name">
-            AJMIR
-            <br />
-            ARIBAM
-          </span>
+          <Image
+            className="brand-mark"
+            src="/brand/mark.svg"
+            alt=""
+            width={36}
+            height={36}
+            loading="eager"
+          />
+          <Image
+            className="brand-wordmark"
+            src="/brand/wordmark.svg"
+            alt=""
+            width={178}
+            height={20}
+            loading="eager"
+          />
         </Link>
         <nav
           id="primary-navigation"
@@ -59,8 +69,12 @@ export function SiteHeader() {
         </nav>
         <div className="header-actions">
           <ThemeToggle />
-          <Link href="/resume" className="header-resume">
-            Resume <span aria-hidden="true">↗</span>
+          <Link
+            href="/contact"
+            className="header-contact"
+            aria-current={active("/contact") ? "page" : undefined}
+          >
+            Contact <span aria-hidden="true">↗</span>
           </Link>
           <button
             className="menu-toggle"
@@ -73,7 +87,7 @@ export function SiteHeader() {
           >
             <span aria-hidden="true">{menuOpen ? "Close" : "Menu"}</span>
             <span className="menu-glyph" aria-hidden="true">
-              {menuOpen ? "×" : "+"}
+              {menuOpen ? "×" : "="}
             </span>
           </button>
         </div>
