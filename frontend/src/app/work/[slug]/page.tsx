@@ -60,9 +60,11 @@ export default async function CaseStudy({
       {slug === "azaeron" && <AzaeronCase project={project} />}
       {slug === "shapes-india" && <ShapesCase />}
       {slug === "friends-aluminium-works" && <FriendsCase />}
-      {(slug === "azaeron-verity" || slug === "the-scent-bar-retail-os") && (
-        <DevelopingCase project={project} />
-      )}
+      {slug !== "azaeron" &&
+        slug !== "shapes-india" &&
+        slug !== "friends-aluminium-works" && (
+          <DevelopingCase project={project} />
+        )}
     </main>
   );
 }

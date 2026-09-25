@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 760" role="img" aria-labelledby="title desc">
+  <title id="title">SCMIRN civic service flow</title>
+  <desc id="desc">A citizen issue moves through guidance, office discovery, complaint and progress.</desc>
+  <rect width="1200" height="760" rx="36" fill="#f5f8ff"/>
+  <text x="76" y="86" fill="#315bd6" font-family="Arial,sans-serif" font-size="22" font-weight="700" letter-spacing="4">SCMIRN / CIVIC SERVICES PROTOTYPE</text>
+  <text x="76" y="152" fill="#111a33" font-family="Arial,sans-serif" font-size="54" font-weight="800">Make the next civic step clear.</text>
+  <g font-family="Arial,sans-serif">
+    <g transform="translate(76 252)"><circle cx="92" cy="80" r="72" fill="#315bd6"/><text x="55" y="88" fill="#fff" font-size="26" font-weight="700">ISSUE</text><text x="0" y="194" fill="#111a33" font-size="22" font-weight="700">Describe the problem</text><text x="0" y="228" fill="#65718d" font-size="17">plain-language intake</text></g>
+    <g transform="translate(326 252)"><circle cx="92" cy="80" r="72" fill="#fff" stroke="#9fb8ff" stroke-width="5"/><text x="49" y="88" fill="#315bd6" font-size="25" font-weight="700">GUIDE</text><text x="0" y="194" fill="#111a33" font-size="22" font-weight="700">Know your rights</text><text x="0" y="228" fill="#65718d" font-size="17">informational guidance</text></g>
+    <g transform="translate(576 252)"><circle cx="92" cy="80" r="72" fill="#fff" stroke="#9fb8ff" stroke-width="5"/><text x="45" y="88" fill="#315bd6" font-size="25" font-weight="700">ROUTE</text><text x="0" y="194" fill="#111a33" font-size="22" font-weight="700">Find the office</text><text x="0" y="228" fill="#65718d" font-size="17">service map + authority</text></g>
+    <g transform="translate(826 252)"><circle cx="92" cy="80" r="72" fill="#e7efff" stroke="#315bd6" stroke-width="5"/><text x="42" y="88" fill="#315bd6" font-size="25" font-weight="700">TRACK</text><text x="0" y="194" fill="#111a33" font-size="22" font-weight="700">Follow progress</text><text x="0" y="228" fill="#65718d" font-size="17">status + updates</text></g>
+  </g>
+  <g stroke="#315bd6" stroke-width="4" fill="none"><path d="M240 332h70"/><path d="M490 332h70"/><path d="M740 332h70"/></g>
+  <text x="76" y="590" fill="#65718d" font-family="Arial,sans-serif" font-size="20">Prototype boundary: local source includes API and UI paths; some views remain mock-backed.</text>
+  <text x="76" y="660" fill="#315bd6" font-family="Arial,sans-serif" font-size="18" font-weight="700" letter-spacing="3">NOT AN OFFICIAL GOVERNMENT SERVICE  /  NOT LEGAL COUNSEL</text>
+</svg>

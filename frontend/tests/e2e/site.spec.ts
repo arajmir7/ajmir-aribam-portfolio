@@ -1,14 +1,11 @@
 import { test, expect } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
+import { projects } from "../../src/content/projects";
 
 const routes = [
   "/",
   "/work",
-  "/work/azaeron",
-  "/work/shapes-india",
-  "/work/friends-aluminium-works",
-  "/work/azaeron-verity",
-  "/work/the-scent-bar-retail-os",
+  ...projects.map((project) => `/work/${project.slug}`),
   "/engineering",
   "/labs",
   "/about",
@@ -111,13 +108,8 @@ test("orientation, routes, metadata, and evidence links", async ({
     }),
   ).toBeVisible();
   await expect(page.getByText("Partially paid", { exact: true })).toBeVisible();
-  for (const path of [
-    "/work/azaeron",
-    "/work/shapes-india",
-    "/work/friends-aluminium-works",
-    "/work/azaeron-verity",
-    "/work/the-scent-bar-retail-os",
-  ]) {
+  for (const project of projects) {
+    const path = `/work/${project.slug}`;
     await page.goto(path);
     const heroImage = page.locator(".case-hero-image img");
     await expect(heroImage).toBeVisible();
@@ -155,6 +147,22 @@ test("orientation, routes, metadata, and evidence links", async ({
       /Inventory ledger, purchasing, and point of sale have not been implemented/,
     ),
   ).toBeVisible();
+  await page.goto("/work/accessforge");
+  await expect(page.locator(".case-hero .kicker")).toContainText(
+    "In development",
+  );
+  await expect(
+    page.getByRole("heading", { name: /Accessibility findings become useful/ }),
+  ).toBeVisible();
+  await page.goto("/work/scmirn");
+  await expect(page.locator(".case-hero .kicker")).toContainText("Prototype");
+  await expect(
+    page.getByRole("heading", { name: /civic-service prototype/ }),
+  ).toBeVisible();
+  await page.goto("/work/zam-zam-academy");
+  await expect(page.locator(".case-hero .kicker")).toContainText("Prototype");
+  await page.goto("/work/civicpulse-resilience-network");
+  await expect(page.locator(".case-hero .kicker")).toContainText("Prototype");
   expect((await request.get("/missing-route")).status()).toBe(404);
 });
 

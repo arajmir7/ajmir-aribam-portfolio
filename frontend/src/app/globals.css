@@ -1313,6 +1313,20 @@ p {
   font-weight: 650;
   border-bottom: 1px solid var(--line);
 }
+.lab-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.8rem 1.2rem;
+}
+.lab-project--research .lab-project-sign {
+  overflow: hidden;
+}
+.lab-project--research .lab-project-sign img {
+  width: 100%;
+  height: auto;
+  margin-top: 1rem;
+  border-radius: 0.8rem;
+}
 .notes-index {
   border-top: 1px solid var(--ink);
 }

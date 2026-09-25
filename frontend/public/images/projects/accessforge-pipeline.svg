@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 760" role="img" aria-labelledby="title desc">
+  <title id="title">AccessForge proof pipeline</title>
+  <desc id="desc">A nine-step accessibility engineering workflow from scan to proof.</desc>
+  <rect width="1200" height="760" rx="36" fill="#f4f7fb"/>
+  <text x="76" y="86" fill="#2457db" font-family="Arial,sans-serif" font-size="22" font-weight="700" letter-spacing="4">ACCESSFORGE / QUALITY ENGINEERING</text>
+  <text x="76" y="152" fill="#111827" font-family="Arial,sans-serif" font-size="54" font-weight="800">Findings become proof.</text>
+  <text x="76" y="198" fill="#64748b" font-family="Arial,sans-serif" font-size="22">Detected ≠ fixed · Applied ≠ verified · AI confidence ≠ proof</text>
+  <g font-family="Arial,sans-serif" font-weight="700" font-size="18">
+    <g transform="translate(76 278)"><rect width="108" height="90" rx="16" fill="#2457db"/><text x="23" y="40" fill="#fff">01 SCAN</text><text x="23" y="66" fill="#cddaff" font-size="14">crawl</text></g>
+    <g transform="translate(204 278)"><rect width="108" height="90" rx="16" fill="#fff" stroke="#bed0f4" stroke-width="3"/><text x="18" y="40" fill="#172554">02 EXPLAIN</text><text x="23" y="66" fill="#64748b" font-size="14">classify</text></g>
+    <g transform="translate(332 278)"><rect width="108" height="90" rx="16" fill="#fff" stroke="#bed0f4" stroke-width="3"/><text x="18" y="40" fill="#172554">03 DECIDE</text><text x="23" y="66" fill="#64748b" font-size="14">bound</text></g>
+    <g transform="translate(460 278)"><rect width="108" height="90" rx="16" fill="#fff" stroke="#bed0f4" stroke-width="3"/><text x="24" y="40" fill="#172554">04 FIX</text><text x="23" y="66" fill="#64748b" font-size="14">patch</text></g>
+    <g transform="translate(588 278)"><rect width="108" height="90" rx="16" fill="#fff" stroke="#bed0f4" stroke-width="3"/><text x="19" y="40" fill="#172554">05 SECURE</text><text x="23" y="66" fill="#64748b" font-size="14">gate</text></g>
+    <g transform="translate(716 278)"><rect width="108" height="90" rx="16" fill="#fff" stroke="#bed0f4" stroke-width="3"/><text x="17" y="40" fill="#172554">06 RE-SCAN</text><text x="23" y="66" fill="#64748b" font-size="14">repeat</text></g>
+    <g transform="translate(844 278)"><rect width="108" height="90" rx="16" fill="#fff" stroke="#bed0f4" stroke-width="3"/><text x="18" y="40" fill="#172554">07 REGRESS</text><text x="23" y="66" fill="#64748b" font-size="14">compare</text></g>
+    <g transform="translate(972 278)"><rect width="108" height="90" rx="16" fill="#e8f8ef" stroke="#8dd2a9" stroke-width="3"/><text x="20" y="40" fill="#197348">08 VERIFY</text><text x="23" y="66" fill="#438362" font-size="14">evidence</text></g>
+  </g>
+  <path d="M130 458h940" stroke="#bed0f4" stroke-width="3"/><circle cx="130" cy="458" r="12" fill="#2457db"/><circle cx="1068" cy="458" r="12" fill="#26a269"/>
+  <text x="76" y="535" fill="#111827" font-family="Arial,sans-serif" font-size="30" font-weight="700">09 / PROVE</text>
+  <text x="76" y="580" fill="#64748b" font-family="Arial,sans-serif" font-size="20">Report, evidence bundle and scope disclaimer make the result inspectable.</text>
+  <text x="76" y="660" fill="#2457db" font-family="Arial,sans-serif" font-size="18" font-weight="700" letter-spacing="3">DETERMINISTIC FIRST  /  BOUNDED CHANGES  /  NO REGRESSION</text>
+</svg>

@@ -40,6 +40,22 @@ const layers = [
     proof: "Quality practice",
     href: "#quality",
   },
+  {
+    number: "05",
+    name: "Evidence & verification",
+    detail:
+      "A change earns trust when the scan, decision, re-test and proof remain connected.",
+    proof: "AccessForge",
+    href: "/work/accessforge",
+  },
+  {
+    number: "06",
+    name: "Human workflows",
+    detail:
+      "Product boundaries make the next action clear while leaving authority and uncertainty visible.",
+    proof: "SCMIRN",
+    href: "/work/scmirn",
+  },
 ] as const;
 
 export default function Engineering() {
@@ -126,6 +142,24 @@ export default function Engineering() {
               <Link href="/work/azaeron-verity">
                 See Verity’s current build ↗
               </Link>
+            </article>
+            <article>
+              <span>Quality engineering</span>
+              <h3>When is a finding actually verified?</h3>
+              <p>
+                AccessForge keeps detection, remediation, security checks,
+                re-scans and regression evidence as separate steps.
+              </p>
+              <Link href="/work/accessforge">Follow the proof pipeline ↗</Link>
+            </article>
+            <article>
+              <span>Civic product systems</span>
+              <h3>What should happen after a report?</h3>
+              <p>
+                SCMIRN connects guidance, authority discovery, complaint filing
+                and progress tracking while keeping its prototype scope visible.
+              </p>
+              <Link href="/work/scmirn">See the civic workflow ↗</Link>
             </article>
           </div>
         </div>

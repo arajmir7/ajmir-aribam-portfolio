@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 760" role="img" aria-labelledby="title desc">
+  <title id="title">Zam Zam Academy prototype route map</title>
+  <desc id="desc">A school website prototype with routes for home, about, academics, admissions, faculty, gallery and contact.</desc>
+  <rect width="1200" height="760" rx="36" fill="#f7f8f6"/>
+  <rect x="0" y="0" width="1200" height="150" rx="36" fill="#18385f"/>
+  <text x="76" y="78" fill="#fff" font-family="Arial,sans-serif" font-size="32" font-weight="800">Zam Zam Academy</text>
+  <text x="76" y="116" fill="#e9b94f" font-family="Arial,sans-serif" font-size="18" font-weight="700" letter-spacing="3">EDUCATION WEB PROTOTYPE</text>
+  <text x="76" y="232" fill="#18385f" font-family="Arial,sans-serif" font-size="46" font-weight="800">A route map for families.</text>
+  <text x="76" y="276" fill="#66748b" font-family="Arial,sans-serif" font-size="21">Vite + React public pages · hosted preview</text>
+  <g font-family="Arial,sans-serif" font-weight="700" font-size="19">
+    <g transform="translate(76 350)"><rect width="180" height="100" rx="16" fill="#e9b94f"/><text x="57" y="58" fill="#18385f">HOME</text></g>
+    <g transform="translate(286 350)"><rect width="180" height="100" rx="16" fill="#fff" stroke="#c7d2e1" stroke-width="3"/><text x="44" y="58" fill="#18385f">ACADEMICS</text></g>
+    <g transform="translate(496 350)"><rect width="180" height="100" rx="16" fill="#fff" stroke="#c7d2e1" stroke-width="3"/><text x="50" y="58" fill="#18385f">ADMISSIONS</text></g>
+    <g transform="translate(706 350)"><rect width="180" height="100" rx="16" fill="#fff" stroke="#c7d2e1" stroke-width="3"/><text x="52" y="58" fill="#18385f">FACULTY</text></g>
+    <g transform="translate(916 350)"><rect width="180" height="100" rx="16" fill="#fff" stroke="#c7d2e1" stroke-width="3"/><text x="55" y="58" fill="#18385f">CONTACT</text></g>
+  </g>
+  <path d="M166 470v54h840v-54M376 470v54M586 470v54M796 470v54" stroke="#c7d2e1" stroke-width="3" fill="none"/>
+  <text x="76" y="610" fill="#66748b" font-family="Arial,sans-serif" font-size="20">A hosted preview demonstrates delivery; client ownership and production operations remain unverified.</text>
+  <text x="76" y="682" fill="#18385f" font-family="Arial,sans-serif" font-size="18" font-weight="700" letter-spacing="3">ROUTES  /  RESPONSIVE LAYOUT  /  PUBLIC PRESENTATION</text>
+</svg>

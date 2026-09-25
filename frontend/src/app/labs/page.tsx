@@ -1,9 +1,11 @@
 import type { Metadata } from "next";
+import Image from "next/image";
+import Link from "next/link";
 import { pageMeta } from "@/lib/site";
 
 export const metadata: Metadata = pageMeta(
   "Labs & experiments",
-  "SCMIRN and Zam Zam Academy are prototypes, separate from shipped work.",
+  "Civic systems, web studies and research prototypes by Ajmir Aribam.",
   "/labs",
 );
 
@@ -16,7 +18,8 @@ export default function Labs() {
         <h1>Ideas with working parts.</h1>
         <p>
           Early explorations live here, with their prototype status visible.
-          They are separate from the live work.
+          They are separate from shipped work and make the research questions
+          inspectable.
         </p>
       </header>
       <div className="lab-list">
@@ -35,10 +38,10 @@ export default function Labs() {
             <h2>A place to start and follow a civic request.</h2>
             <p>
               SCMIRN explores complaint screens, service discovery and request
-              tracking. Local source also includes experimental specialist-agent
-              code. Its deployment and end-to-end behavior have not been
-              verified.
+              tracking. Its AI and rights surfaces are informational guidance,
+              not legal counsel or an official service.
             </p>
+            <Link href="/work/scmirn">Read the SCMIRN case ↗</Link>
           </div>
         </article>
         <article className="lab-project lab-project--academy">
@@ -58,13 +61,39 @@ export default function Labs() {
               A template study of website structure, navigation and
               presentation. It remains a prototype.
             </p>
-            <a
-              href="https://storied-bombolone-5d4a8f.netlify.app/"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Open prototype ↗
-            </a>
+            <div className="lab-links">
+              <Link href="/work/zam-zam-academy">Read the case ↗</Link>
+              <a
+                href="https://storied-bombolone-5d4a8f.netlify.app/"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Open hosted preview ↗
+              </a>
+            </div>
+          </div>
+        </article>
+        <article className="lab-project lab-project--research">
+          <div className="lab-project-sign">
+            <span>03 / Research prototype</span>
+            <strong>CivicPulse</strong>
+            <Image
+              src="/images/projects/civicpulse-flow.svg"
+              alt="CivicPulse research flow"
+              width={720}
+              height={456}
+            />
+          </div>
+          <div className="lab-project-copy">
+            <span>Resilience systems</span>
+            <h2>Connect a report to the person who can act.</h2>
+            <p>
+              CivicPulse combines citizen reports, sensor readings, explainable
+              risk scoring and maintenance tasks in a local MVP.
+            </p>
+            <Link href="/work/civicpulse-resilience-network">
+              Read the research case ↗
+            </Link>
           </div>
         </article>
       </div>

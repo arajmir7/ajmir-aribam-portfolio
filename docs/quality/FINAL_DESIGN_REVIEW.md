@@ -1,8 +1,10 @@
-# Final design review
+# Final design review (historical V4 record)
+
+This document records the V4 pass. The current V7 inventory and release decision are in [Final portfolio release review](FINAL_PORTFOLIO_RELEASE_REVIEW.md).
 
 - **Candidate:** Portfolio V4, built on the prior local product pass at `7215fab8ea1e0fd2f4372a92c03d69693cd52ced`.
 - **Review date:** 2026-09-23.
-- **Scope:** Public frontend, project content, browser behavior, and print résumé. The private inquiry API contract remains unchanged.
+- **Scope:** Public frontend, project content, browser behavior, and print résumé at the V4 checkpoint. The private inquiry API contract remains unchanged.
 
 ## What changed
 
@@ -23,8 +25,8 @@
 - **SHAPES India and Friends Aluminium Works:** Live public sites, each with a distinct case narrative and genuine imagery.
 - **Azaeron Verity:** Local document review and evidence graph implementation. Its own execution ledger says it is **not production ready** and has no approved production generative model or calibrated detector. The case uses local development captures and describes abstention explicitly.
 - **The Scent Bar Retail OS:** Identity, branch, catalogue, and pricing foundations are implemented. The case states that inventory, purchasing, and POS remain future work and that current database/API runtime gates are open.
-- **SCMIRN:** Local civic complaint and tracking code with experimental specialist-agent modules; shown as a prototype in Labs. Its README claims exceed what was independently demonstrated.
-- **AccessForge:** No inspectable source was found in the available local projects. It is omitted pending `TODO_OWNER_VERIFY`, rather than given an unsupported case study.
+- **SCMIRN:** At V4 it was shown only in Labs. V7 now has a direct prototype case grounded in the React/FastAPI source and explicitly labels mock-backed and authority limits.
+- **AccessForge:** At V4 no inspectable source was available. V7 adds a local-build case after source, tests and the supplied local UI captures became available; no production service is claimed.
 
 ## Browser and copy review
 

@@ -14,6 +14,9 @@ const live = projects.filter((project) => project.maturity === "live");
 const building = projects.filter(
   (project) => project.maturity === "development",
 );
+const prototypes = projects.filter(
+  (project) => project.maturity === "prototype",
+);
 const lead = live.find((project) => project.featured) ?? live[0];
 
 export default function Work() {
@@ -46,7 +49,7 @@ export default function Work() {
         </Link>
         <div className="work-lead-copy">
           <span className="project-sequence">
-            01 <span>/</span> Live · Billing system
+            01 <span>/</span> Live · {lead.type.split(" · ")[0]}
           </span>
           <h2 id="work-lead-title">{lead.name}</h2>
           <p className="work-lead-intro">{lead.lede}</p>
@@ -187,12 +190,59 @@ export default function Work() {
           </div>
         </div>
       </section>
+      <section
+        className="work-prototypes"
+        aria-labelledby="work-prototypes-title"
+      >
+        <div className="shell">
+          <div className="section-heading">
+            <p className="kicker">Prototypes &amp; research</p>
+            <div>
+              <h2 id="work-prototypes-title">
+                Working ideas with a visible boundary.
+              </h2>
+              <p>
+                These systems have real source and product surfaces, while
+                deployment, ownership or end-to-end behavior still needs
+                verification.
+              </p>
+            </div>
+          </div>
+          <div className="work-prototype-list">
+            {prototypes.map((project) => (
+              <article key={project.slug} className="work-prototype-row">
+                <Link
+                  className="work-prototype-media"
+                  href={`/work/${project.slug}`}
+                >
+                  <Image
+                    src={project.visual.src}
+                    alt={project.visual.alt}
+                    fill
+                    sizes="(max-width: 720px) 100vw, 25vw"
+                  />
+                </Link>
+                <div>
+                  <span className="project-sequence">
+                    Prototype <span>/</span> {project.year}
+                  </span>
+                  <h3>{project.name}</h3>
+                  <p>{project.lede}</p>
+                  <Link href={`/work/${project.slug}`}>
+                    Read the boundary ↗
+                  </Link>
+                </div>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
       <aside className="shell work-labs">
         <div>
           <span className="kicker">Labs &amp; experiments</span>
           <p>
-            SCMIRN and Zam Zam Academy are prototypes, separate from shipped
-            work.
+            CivicPulse is a research prototype. SCMIRN and Zam Zam are direct
+            product studies; all three remain separate from shipped work.
           </p>
         </div>
         <Link href="/labs">

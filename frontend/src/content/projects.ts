@@ -7,7 +7,7 @@ export type Project = {
   summary: string;
   live?: string;
   status?: string;
-  maturity: "live" | "development";
+  maturity: "live" | "development" | "prototype";
   role?: string;
   audience: string;
   technicalFocus: string;
@@ -546,6 +546,450 @@ export const projects: Project[] = [
     lessons:
       "Retail operations need reliable product identity and branch permissions before stock or sales can be trusted.",
     verify: ["Runtime integration and final feature scope — TODO_OWNER_VERIFY"],
+  },
+  {
+    slug: "azaeron-construction-procurement",
+    number: "06",
+    name: "Azaeron Construction Procurement",
+    type: "Procurement systems · in development",
+    year: "2026",
+    maturity: "development",
+    role: "Product and backend engineering",
+    audience: "Contractors and teams sourcing material for projects",
+    technicalFocus: "Server pricing, project scope, RFQs and approval paths",
+    featured: false,
+    caseStudy: true,
+    gallery: [],
+    status: "In development",
+    limitations: [
+      "External payment, supplier, warehouse and deployment integrations are not verified.",
+    ],
+    lede: "A separate procurement system for project-based construction buying, from catalogue to request for quote.",
+    summary:
+      "A construction procurement foundation with server-authoritative catalogue pricing, project scope, checkout and RFQ records.",
+    visual: {
+      src: "/images/projects/azaeron-construction.svg",
+      alt: "Azaeron construction procurement flow from project catalogue to RFQ and approval",
+      caption: "Procurement flow · local implementation map",
+    },
+    source: "TODO_OWNER_VERIFY: construction repository publication status",
+    revision: "TODO_OWNER_VERIFY: local source snapshot has no Git metadata",
+    stack: ["Next.js", "Prisma", "PostgreSQL", "Auth.js"],
+    context:
+      "This system is independent from the merchant billing product and models construction catalogue, projects, pricing, checkout, RFQs and procurement records.",
+    problem:
+      "Project buying needs material context, reliable totals and a request path that can survive review instead of treating a browser cart as the source of truth.",
+    ownership:
+      "TODO_OWNER_VERIFY: exact individual and team contribution boundaries.",
+    constraints: [
+      "Prices, tax and delivery are resolved on the server",
+      "Project and organization scope must survive each procurement write",
+      "External payment and supplier operations remain release gates",
+    ],
+    boundaries: [
+      {
+        label: "Catalogue",
+        detail: "Project-aware construction materials and search surfaces.",
+      },
+      {
+        label: "Commerce",
+        detail:
+          "Server-resolved totals, checkout idempotency and conditional reservation rules.",
+      },
+      {
+        label: "Procurement",
+        detail:
+          "RFQ, supplier quote, approval and purchase-order records with policy checks.",
+      },
+      {
+        label: "Data",
+        detail:
+          "Prisma and PostgreSQL migrations with organization-scoped relationships.",
+      },
+    ],
+    decisions: [
+      {
+        title: "Make totals server-owned",
+        body: "Checkout re-resolves product identity, price, tax and delivery before writing an order.",
+        evidence: "src/app/api/checkout/route.ts",
+      },
+      {
+        title: "Keep procurement distinct",
+        body: "RFQs and approvals are separate domain records from merchant invoices and payment lifecycle state.",
+        evidence: "prisma/schema.prisma",
+      },
+      {
+        title: "Name the missing integrations",
+        body: "Live Razorpay calls, supplier credentials, warehouse operations and production deployment remain unverified.",
+        evidence: "docs/IMPLEMENTATION_STATUS.md",
+      },
+    ],
+    delivery:
+      "Local source documentation records PostgreSQL migration, API and runtime smoke checks for the procurement tranche; external integrations and deployment remain open.",
+    operations:
+      "The repository includes readiness and operational foundations. Production recovery, alerts and supplier/warehouse runtime behavior are unverified.",
+    outcome:
+      "A distinct, locally inspected procurement system with substantial modeled workflows and explicit release boundaries.",
+    lessons:
+      "Construction commerce becomes safer when project scope, pricing and approval policy are part of the domain model.",
+    verify: [
+      "Production deployment, integrations and ownership — TODO_OWNER_VERIFY",
+    ],
+  },
+  {
+    slug: "accessforge",
+    number: "07",
+    name: "AccessForge",
+    type: "Accessibility engineering · local build",
+    year: "2026",
+    maturity: "development",
+    role: "Product and quality engineering",
+    audience: "Teams turning accessibility findings into verified changes",
+    technicalFocus: "Deterministic scanning, remediation, security and proof",
+    featured: false,
+    caseStudy: true,
+    gallery: [],
+    status: "Local build",
+    limitations: [
+      "The inspected local build reports an offline state and is not a production service.",
+      "Benchmark metrics are kept in internal project evidence rather than presented as portfolio outcomes.",
+    ],
+    lede: "Accessibility findings become useful when a fix can be re-tested, security-checked and proved.",
+    summary:
+      "A local accessibility remediation platform with deterministic scans, bounded changes, security checks, re-scans and evidence bundles.",
+    visual: {
+      src: "/images/projects/accessforge-pipeline.svg",
+      alt: "AccessForge pipeline from accessibility scan through proof",
+      caption: "Nine-step proof pipeline · local build",
+    },
+    source: "TODO_OWNER_VERIFY: public repository publication status",
+    revision: "efbe5ee",
+    stack: ["FastAPI", "Playwright", "Python", "React", "Semgrep"],
+    context:
+      "Local source includes a FastAPI API, React interface, deterministic scanner, remediation workflow, MCP analysis tools and unit, integration, security and end-to-end tests.",
+    problem:
+      "A detected defect is not the same as a fixed or verified defect. Accessibility work needs an evidence chain that can survive a re-scan and regression check.",
+    ownership:
+      "The local source is attributed to Ajmir Aribam; exact project ownership and any future public repository status remain TODO_OWNER_VERIFY.",
+    constraints: [
+      "Deterministic checks run before optional model assistance",
+      "Patches are bounded and security-checked",
+      "Verification requires evidence, re-scan and no regression",
+    ],
+    boundaries: [
+      {
+        label: "Scan",
+        detail: "Playwright crawl and WCAG-oriented deterministic analysis.",
+      },
+      {
+        label: "Remediate",
+        detail:
+          "Targeted ARIA, keyboard, contrast and content changes produce change records.",
+      },
+      {
+        label: "Secure",
+        detail: "Semgrep and safety checks gate accepted remediations.",
+      },
+      {
+        label: "Prove",
+        detail:
+          "Reports, evidence and proof endpoints preserve the result and its scope.",
+      },
+    ],
+    decisions: [
+      {
+        title: "Keep AI out of the critical path",
+        body: "The deterministic crawl and core accessibility checks use zero model tokens; model assistance is optional for semantic image description.",
+        evidence: "src/scanning/deterministic_scan.py",
+      },
+      {
+        title: "Treat proof as a state",
+        body: "Detected, applied and verified are separate states, with re-scan and regression checks between them.",
+        evidence: "src/workflows/accessibility_workflow.py",
+      },
+      {
+        title: "Test the boundaries",
+        body: "The source includes API, MCP, security and full-workflow tests, while production deployment remains unverified.",
+        evidence: "tests/integration, tests/security, tests/e2e",
+      },
+    ],
+    delivery:
+      "The source contains local test and Docker workflows. The portfolio records it as a local build because no deployed service or active operational environment was independently verified.",
+    operations:
+      "Health, readiness, correlation IDs and evidence storage exist in source. Production storage, alerting and model-provider operation are unverified.",
+    outcome:
+      "A substantive quality-engineering product surface that makes the distinction between a suggestion and proof visible.",
+    lessons:
+      "Accessibility automation earns trust when the result can show what changed, what was checked and what remains uncertain.",
+    verify: ["Production deployment and ownership — TODO_OWNER_VERIFY"],
+  },
+  {
+    slug: "scmirn",
+    number: "08",
+    name: "SCMIRN",
+    type: "Civic technology · prototype",
+    year: "2026",
+    maturity: "prototype",
+    role: "Product and full-stack prototyping",
+    audience: "Citizens navigating complaints, offices and service guidance",
+    technicalFocus: "Civic workflows, structured guidance and API boundaries",
+    featured: false,
+    caseStudy: true,
+    gallery: [],
+    status: "Prototype",
+    limitations: [
+      "Deployment and end-to-end production behavior are not verified.",
+      "AI and rights guidance is informational and is not legal advice or an official government service.",
+    ],
+    lede: "A civic-service prototype that brings complaint filing, rights guidance, office discovery and progress into one workflow.",
+    summary:
+      "A React and FastAPI civic-service prototype with complaint, tracker, office, document and guidance surfaces.",
+    visual: {
+      src: "/images/projects/scmirn-flow.svg",
+      alt: "SCMIRN civic request flow from issue to guidance, office and tracking",
+      caption: "Civic request flow · prototype",
+    },
+    source: "TODO_OWNER_VERIFY: source publication status",
+    revision: "TODO_OWNER_VERIFY: local source snapshot has multiple worktrees",
+    stack: ["React", "TypeScript", "FastAPI", "PostgreSQL", "Vite"],
+    context:
+      "Local source includes a React/Vite interface, FastAPI routes and data models for issues, tracker, offices, documents, analytics, rights and AI-assistant surfaces. Several UI paths still use mock data.",
+    problem:
+      "Civic requests are difficult to start when the user must know the department, right process and tracking path in advance.",
+    ownership:
+      "TODO_OWNER_VERIFY: exact individual and team contribution boundaries.",
+    constraints: [
+      "Guidance must not impersonate an authority or legal counsel",
+      "A complaint needs a visible status path",
+      "Mock-backed surfaces must remain labeled as prototype behavior",
+    ],
+    boundaries: [
+      {
+        label: "Citizen UX",
+        detail:
+          "Complaint, rights, office, map, documents and progress routes.",
+      },
+      {
+        label: "API",
+        detail:
+          "FastAPI issue, tracker, office, document and guidance endpoints.",
+      },
+      {
+        label: "Data",
+        detail: "Local models and seed data support the prototype workflow.",
+      },
+      {
+        label: "Guidance",
+        detail:
+          "Structured and AI-assisted guidance is presented as informational.",
+      },
+    ],
+    decisions: [
+      {
+        title: "Make the next action clear",
+        body: "The prototype brings file, understand, find and track actions into the primary navigation.",
+        evidence: "frontend/src/pages, frontend/src/routes",
+      },
+      {
+        title: "Keep guidance bounded",
+        body: "AI Help and rights surfaces are framed as plain-language guidance, with urgent cases directed to official channels.",
+        evidence: "frontend/src/pages/AIAssistant.tsx",
+      },
+      {
+        title: "Label the prototype boundary",
+        body: "Local source and mock-backed UI paths are evidence of a working exploration, not production civic infrastructure.",
+        evidence: "frontend/src/data/mockData.ts",
+      },
+    ],
+    delivery:
+      "The local frontend and backend source were inspected, including API modules and an agent test. Hosted deployment and complete end-to-end execution remain unverified.",
+    operations:
+      "The source contains authentication, issue, document, tracker and analytics paths. Production data, authority integrations, uptime and privacy review remain open.",
+    outcome:
+      "A substantial civic workflow prototype that demonstrates information architecture and backend/product integration without claiming official status.",
+    lessons:
+      "Civic software should reduce the first step while keeping guidance honest about authority and uncertainty.",
+    verify: ["Deployment, data provenance and ownership — TODO_OWNER_VERIFY"],
+  },
+  {
+    slug: "zam-zam-academy",
+    number: "09",
+    name: "Zam Zam Academy",
+    type: "Education web · prototype",
+    year: "2026",
+    maturity: "prototype",
+    role: "Web delivery",
+    audience: "Families exploring an academy website",
+    technicalFocus:
+      "Responsive information architecture and public presentation",
+    featured: false,
+    caseStudy: true,
+    gallery: [],
+    status: "Prototype",
+    limitations: [
+      "The public Netlify URL proves hosting, not client ownership, adoption or production operations.",
+      "Template content and school figures are not repeated as portfolio claims.",
+    ],
+    lede: "A hosted school-site prototype exploring clear navigation for academics, admissions, faculty and contact.",
+    summary:
+      "A Vite/React education website study with multiple public routes and a hosted Netlify preview.",
+    live: "https://storied-bombolone-5d4a8f.netlify.app/",
+    visual: {
+      src: "/images/projects/zam-zam-prototype.svg",
+      alt: "Zam Zam Academy prototype site map with home, academics, admissions and contact",
+      caption: "Hosted prototype · route map",
+    },
+    source: "TODO_OWNER_VERIFY: source repository and ownership",
+    revision: "TODO_OWNER_VERIFY: local source snapshot has no Git metadata",
+    stack: ["React", "TypeScript", "Vite", "React Router", "Tailwind CSS"],
+    context:
+      "Local source implements home, about, academics, admissions, faculty, student life, gallery, notices and contact routes; the hosted preview was reachable during inspection.",
+    problem:
+      "An academy website needs a readable path from first impression to practical information without relying on a single landing page.",
+    ownership:
+      "TODO_OWNER_VERIFY: exact client and individual contribution boundaries.",
+    constraints: [
+      "Keep the portfolio claim about web delivery, not school operations",
+      "Treat template copy and supplied figures as source content, not independently verified facts",
+      "Provide a responsive route structure",
+    ],
+    boundaries: [
+      {
+        label: "Routes",
+        detail: "React Router pages for the main public information areas.",
+      },
+      {
+        label: "Presentation",
+        detail: "Responsive layout, navigation, notices and contact surfaces.",
+      },
+      {
+        label: "Hosting",
+        detail:
+          "A public Netlify preview was reachable during the evidence pass.",
+      },
+      {
+        label: "Status",
+        detail: "Prototype/template study; no client production claim is made.",
+      },
+    ],
+    decisions: [
+      {
+        title: "Use direct routes",
+        body: "Families can reach academics, admissions, faculty and contact without searching a single long page.",
+        evidence: "src/App.tsx",
+      },
+      {
+        title: "Keep the claim narrow",
+        body: "The portfolio describes a hosted web prototype and does not repeat enrollment, staffing or business results.",
+        evidence: "Local source and hosted preview",
+      },
+      {
+        title: "Preserve the original surface",
+        body: "The case study documents the delivery example without redesigning the academy website itself.",
+        evidence: "public preview",
+      },
+    ],
+    delivery:
+      "The local Vite source built a multi-route site and the supplied Netlify preview returned HTTP 200 during inspection.",
+    operations:
+      "Hosting is visible; ownership, deployment pipeline, content governance and production support are unverified.",
+    outcome: "A clear web-delivery example presented at prototype maturity.",
+    lessons:
+      "A route map can do more for a public site than a crowded first page when people arrive with different questions.",
+    verify: [
+      "Client relationship, ownership and production status — TODO_OWNER_VERIFY",
+    ],
+  },
+  {
+    slug: "civicpulse-resilience-network",
+    number: "10",
+    name: "CivicPulse Resilience Network",
+    type: "Research & labs · civic systems",
+    year: "2026",
+    maturity: "prototype",
+    role: "Full-stack systems prototyping",
+    audience: "Civic operations teams monitoring local infrastructure",
+    technicalFocus: "Risk scoring, sensor ingestion and operational workflows",
+    featured: false,
+    caseStudy: true,
+    gallery: [],
+    status: "Research prototype",
+    limitations: [
+      "The local MVP is not a deployed city service and uses SQLite by default.",
+      "Risk scoring is rule-based; no operational outcome is asserted.",
+    ],
+    lede: "A research MVP connecting citizen reports, infrastructure assets, sensor readings and maintenance work.",
+    summary:
+      "A React/FastAPI civic infrastructure prototype with role-based workflows, sensor ingestion, maps and rule-based risk scoring.",
+    visual: {
+      src: "/images/projects/civicpulse-flow.svg",
+      alt: "CivicPulse flow from report and sensor signal to risk score and maintenance task",
+      caption: "Research flow · local MVP",
+    },
+    source: "TODO_OWNER_VERIFY: repository publication status",
+    revision: "TODO_OWNER_VERIFY: local source snapshot",
+    stack: [
+      "React",
+      "TypeScript",
+      "FastAPI",
+      "SQLAlchemy",
+      "SQLite/PostgreSQL",
+    ],
+    context:
+      "The inspected MVP includes citizen, admin and worker surfaces, infrastructure assets, sensor ingestion, analytics, uploads and an API smoke test.",
+    problem:
+      "Small infrastructure failures are easier to act on when reports, sensor signals and maintenance ownership share one operational view.",
+    ownership:
+      "TODO_OWNER_VERIFY: exact individual and research contribution boundaries.",
+    constraints: [
+      "Keep rule-based risk scoring explainable",
+      "Protect sensor ingestion with a device key",
+      "Keep local demo infrastructure distinct from public operations",
+    ],
+    boundaries: [
+      {
+        label: "Reports",
+        detail: "Citizen issue submission and status tracking.",
+      },
+      {
+        label: "Signals",
+        detail: "Device-key protected sensor readings and anomaly alerts.",
+      },
+      {
+        label: "Operations",
+        detail: "Asset, task, worker and admin workflows.",
+      },
+      {
+        label: "Analysis",
+        detail: "Rule-based severity, risk, resilience and priority scoring.",
+      },
+    ],
+    decisions: [
+      {
+        title: "Keep scoring explainable",
+        body: "The local AI layer is a rule-based scoring module whose inputs can be inspected.",
+        evidence: "backend/app/ai/scoring.py",
+      },
+      {
+        title: "Separate roles",
+        body: "Citizen, admin and worker paths are represented in both the API and UI.",
+        evidence: "backend/app/deps.py, frontend/src",
+      },
+      {
+        title: "Exercise the path",
+        body: "A smoke script covers health, admin login, asset lookup and sensor anomaly ingestion.",
+        evidence: "backend/smoke_test.py",
+      },
+    ],
+    delivery:
+      "A local full-stack MVP and smoke script were inspected. No deployment or field operations are claimed.",
+    operations:
+      "The source is PostgreSQL-ready but defaults to SQLite for local demonstration; monitoring and recovery are unverified.",
+    outcome:
+      "A focused research prototype showing how AI-assisted scoring can sit inside an operational workflow.",
+    lessons:
+      "An explainable score is more useful when it connects directly to the person and task that must respond.",
+    verify: ["Deployment, field use and ownership — TODO_OWNER_VERIFY"],
   },
 ];
 

@@ -12,7 +12,11 @@ export function CaseHero({ project }: { project: Project }) {
         <div className="case-hero-top">
           <div>
             <p className="kicker">
-              {project.maturity === "live" ? "Live project" : "In development"}{" "}
+              {project.maturity === "live"
+                ? "Live project"
+                : project.maturity === "prototype"
+                  ? "Prototype"
+                  : "In development"}{" "}
               <span aria-hidden="true">/</span> {project.year}
             </p>
             <h1>{project.name}</h1>

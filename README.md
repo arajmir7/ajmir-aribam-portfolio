@@ -1,6 +1,6 @@
 # Ajmir Aribam — engineering portfolio
 
-An evidence-led portfolio with five source-grounded case studies, a capability map across backend, cloud, AI systems, and quality engineering, one engineering note, and a persisted inquiry flow. Verity and The Scent Bar are clearly labeled in development. The repository has two application boundaries:
+An evidence-led portfolio with ten source-grounded project records, a capability map across backend, cloud, AI systems, and quality engineering, one engineering note, and a persisted inquiry flow. Live work, in-development systems, and prototypes are grouped by evidence maturity. The repository has two application boundaries:
 
 | Path        | Responsibility                                                                                                       |
 | ----------- | -------------------------------------------------------------------------------------------------------------------- |
