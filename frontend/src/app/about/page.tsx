@@ -6,7 +6,7 @@ import { pageMeta } from "@/lib/site";
 
 export const metadata: Metadata = pageMeta(
   "About",
-  "About Ajmir Aribam, a software engineer working across product interfaces, backend systems and quality engineering.",
+  "About Ajmir Aribam, a software engineer building products across interfaces, backend systems, delivery and quality engineering.",
   "/about",
 );
 
@@ -15,7 +15,7 @@ export default function About() {
     <main id="main" className="about-page">
       <header className="shell about-heading">
         <p className="kicker">About Ajmir</p>
-        <h1>I cared about records before I wrote software.</h1>
+        <h1>Reliability mattered before I wrote software.</h1>
       </header>
       <div className="shell about-story">
         <figure className="about-portrait">
@@ -35,18 +35,16 @@ export default function About() {
             people see, the rules behind it, and the checks before it ships.
           </p>
           <p>
-            Before software became my main work, I handled banking transactions
-            and helped people use public digital services. A missing record or
-            an unclear next step had an immediate effect on the person in front
-            of me. That experience still shapes the questions I ask when I
-            build.
+            Before working deeply in software, I spent years handling banking
+            and public digital-service workflows. A wrong record, unclear
+            status, or broken process affected a real person immediately. That
+            experience still shapes the questions I ask when I build.
           </p>
           <p>
-            My recent projects include billing workflows, an institutional
-            publishing platform, a commercial product site and a document review
-            system in development. They call for different tools, but each needs
-            clear boundaries between what a person asks the system to do and
-            what the system can safely promise.
+            My current work spans billing, procurement, institutional
+            publishing, commercial web, accessibility engineering and document
+            review. The tools differ, but each system needs a clear boundary
+            between what a person asks it to do and what it can safely promise.
           </p>
           <p>
             I enjoy the practical questions: what happens when a payment fails,
@@ -76,7 +74,7 @@ export default function About() {
           <p>Backend, product engineering, cloud delivery and quality.</p>
         </div>
         <div>
-          <span>Learning</span>
+          <span>Education</span>
           <p>MCA at Sharda University, 2025–2027.</p>
         </div>
       </section>

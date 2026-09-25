@@ -14,6 +14,8 @@ The portfolio presents **Ajmir Aribam** as a Software Engineer who works across 
 
 The billing Azaeron system and construction procurement system are separate records. AccessForge and SCMIRN have direct case pages. Zam Zam is presented as a hosted web prototype. CivicPulse is kept in Research & Labs. Detailed evidence and limits are recorded in [Final portfolio release review](docs/quality/FINAL_PORTFOLIO_RELEASE_REVIEW.md).
 
+The final editorial pass now leads with software products and the systems behind them, explains each case in product-first language, and keeps maturity, ownership, authority, and release limits visible.
+
 The frontend and backend remain separate applications connected over HTTP. The public same-origin `/api/contact` route and private `/inquiries`, `/health/live`, and `/health/ready` contracts are unchanged. Visitor pages do not expose private project repository URLs, local source paths, credentials, or `TODO_OWNER_VERIFY` markers.
 
 ## Local verification

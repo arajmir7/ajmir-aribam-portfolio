@@ -29,14 +29,14 @@ export const metadata: Metadata = {
     template: "%s — Ajmir Aribam",
   },
   description:
-    "Ajmir Aribam is a software engineer working across backend, cloud, DevOps, AI systems, and quality engineering. Explore the projects behind the work.",
+    "Ajmir Aribam is a software engineer building products across backend systems, full-stack interfaces, cloud delivery, AI-enabled workflows and quality engineering.",
   alternates: { canonical: "/" },
   openGraph: {
     type: "website",
     siteName: "Ajmir Aribam",
     title: "Ajmir Aribam — Software Engineer",
     description:
-      "Backend · Cloud · DevOps · AI Systems · Quality Engineering. Real projects and their engineering decisions.",
+      "Backend · Full stack · Cloud delivery · AI-enabled systems · Quality engineering. Real projects and the decisions behind them.",
     url: "/",
     images: ["/opengraph-image"],
   },

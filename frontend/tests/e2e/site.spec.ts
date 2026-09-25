@@ -22,7 +22,7 @@ test("orientation, routes, metadata, and evidence links", async ({
 }) => {
   await page.goto("/");
   await expect(page.getByRole("heading", { level: 1 })).toHaveText(
-    "I build the product and the system behind it.",
+    "I build software products and the systems behind them.",
   );
   await expect(page.locator(".home-intro .kicker")).toContainText(
     "Ajmir Aribam",
@@ -102,9 +102,12 @@ test("orientation, routes, metadata, and evidence links", async ({
     );
   }
   await page.goto("/work/azaeron");
+  await expect(page.locator(".case-hero-facts")).not.toContainText(
+    "Built with",
+  );
   await expect(
     page.getByRole("heading", {
-      name: "A paid invoice needs a settled balance.",
+      name: "Keeping financial state consistent.",
     }),
   ).toBeVisible();
   await expect(page.getByText("Partially paid", { exact: true })).toBeVisible();
@@ -119,6 +122,31 @@ test("orientation, routes, metadata, and evidence links", async ({
       )
       .toBeGreaterThan(0);
     await expect(page.locator(".case-hero-facts")).toBeVisible();
+    await expect(page.locator(".case-hero-facts")).not.toContainText(
+      "Built with",
+    );
+    if (
+      ![
+        "azaeron",
+        "shapes-india",
+        "friends-aluminium-works",
+        "azaeron-verity",
+        "the-scent-bar-retail-os",
+      ].includes(project.slug)
+    ) {
+      const sectionIds = await page
+        .locator(".case-section")
+        .evaluateAll((sections) =>
+          sections.map((section) => section.getAttribute("id")),
+        );
+      expect(sectionIds).toEqual([
+        "product",
+        "problem",
+        "decisions",
+        "implementation",
+        "limits",
+      ]);
+    }
   }
   await page.goto("/work/friends-aluminium-works");
   await expect(page.locator(".friends-gallery img")).toHaveCount(3);
@@ -144,25 +172,32 @@ test("orientation, routes, metadata, and evidence links", async ({
   );
   await expect(
     page.getByText(
-      /Inventory ledger, purchasing, and point of sale have not been implemented/,
+      /inventory ledger, purchasing, and point of sale are not implemented/,
     ),
   ).toBeVisible();
   await page.goto("/work/accessforge");
-  await expect(page.locator(".case-hero .kicker")).toContainText(
-    "In development",
-  );
+  await expect(page.locator(".case-hero .kicker")).toContainText("Local build");
   await expect(
-    page.getByRole("heading", { name: /Accessibility findings become useful/ }),
+    page.getByRole("heading", {
+      name: /Accessibility remediation should produce evidence/,
+    }),
   ).toBeVisible();
   await page.goto("/work/scmirn");
   await expect(page.locator(".case-hero .kicker")).toContainText("Prototype");
   await expect(
-    page.getByRole("heading", { name: /civic-service prototype/ }),
+    page.getByRole("heading", {
+      name: /Informational guidance, not legal advice/,
+    }),
   ).toBeVisible();
   await page.goto("/work/zam-zam-academy");
   await expect(page.locator(".case-hero .kicker")).toContainText("Prototype");
+  await expect(
+    page.getByRole("link", { name: /Visit hosted preview/ }),
+  ).toHaveAttribute("href", "https://storied-bombolone-5d4a8f.netlify.app/");
   await page.goto("/work/civicpulse-resilience-network");
-  await expect(page.locator(".case-hero .kicker")).toContainText("Prototype");
+  await expect(page.locator(".case-hero .kicker")).toContainText(
+    "Research prototype",
+  );
   expect((await request.get("/missing-route")).status()).toBe(404);
 });
 

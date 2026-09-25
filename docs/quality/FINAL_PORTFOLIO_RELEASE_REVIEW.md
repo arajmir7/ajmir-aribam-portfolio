@@ -40,6 +40,8 @@ The existing paper/graphite, cobalt, emerald and copper system remains coherent 
 
 The copy describes the work that source supports: server-owned totals, evidence-linked review, deterministic accessibility checks, civic workflow design and local prototype boundaries. It excludes unsupported school figures, business outcomes, production AI accuracy, legal authority, and private source paths. Social links use the supplied GitHub, LinkedIn, Instagram and X URLs.
 
+The final human-copy pass now starts the homepage with the products and systems behind them, explains each case in product-first order, presents Engineering as an evidence map, and keeps the résumé and About page factual and recruiter-readable. Frameworks follow the product and engineering decisions. Maturity labels and known limits remain visible. Calls to action name the next step instead of using generic marketing language.
+
 The user-supplied Verity, SCMIRN, AccessForge and Zam Zam captures were reviewed as visual evidence. The portfolio uses clean native diagrams for the new case hero surfaces so browser chrome and inaccessible attachment paths are not shipped as site assets.
 
 ## Quality review

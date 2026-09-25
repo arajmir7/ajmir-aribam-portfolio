@@ -11,14 +11,14 @@ export const metadata: Metadata = pageMeta(
 const layers = [
   {
     number: "01",
-    name: "Product surface",
+    name: "Frontend & product engineering",
     detail: "Navigation, forms and feedback that make the next step clear.",
     proof: "Friends Aluminium Works",
     href: "/work/friends-aluminium-works",
   },
   {
     number: "02",
-    name: "Application rules",
+    name: "Backend & application systems",
     detail:
       "Permission checks and state changes that every client must pass through.",
     proof: "Azaeron",
@@ -26,7 +26,7 @@ const layers = [
   },
   {
     number: "03",
-    name: "Records & evidence",
+    name: "API & data architecture",
     detail:
       "Versioned content, payment state and traceable source relationships.",
     proof: "SHAPES India",
@@ -34,27 +34,59 @@ const layers = [
   },
   {
     number: "04",
-    name: "Delivery & recovery",
+    name: "Authentication & secure systems",
     detail:
-      "Tests, migrations, health checks and an explicit route back from failure.",
-    proof: "Quality practice",
-    href: "#quality",
+      "Identity, tenant scope and permission checks are enforced where requests are handled.",
+    proof: "Azaeron",
+    href: "/work/azaeron#access",
   },
   {
     number: "05",
-    name: "Evidence & verification",
+    name: "AI-enabled systems",
     detail:
-      "A change earns trust when the scan, decision, re-test and proof remain connected.",
+      "Versioned evidence, abstention and human review keep analysis within what the system can support.",
+    proof: "Azaeron Verity",
+    href: "/work/azaeron-verity",
+  },
+  {
+    number: "06",
+    name: "Quality engineering",
+    detail:
+      "Different checks cover rules, data, browser behavior and release wiring.",
     proof: "AccessForge",
     href: "/work/accessforge",
   },
   {
-    number: "06",
+    number: "07",
+    name: "Cloud & delivery",
+    detail:
+      "Migrations, health checks and release validation make deployment inspectable.",
+    proof: "SHAPES India",
+    href: "/work/shapes-india#continuity",
+  },
+  {
+    number: "08",
+    name: "Performance & accessibility",
+    detail:
+      "Responsive layouts, image delivery, keyboard paths and re-scans are part of the product.",
+    proof: "AccessForge",
+    href: "/work/accessforge",
+  },
+  {
+    number: "09",
     name: "Human workflows",
     detail:
       "Product boundaries make the next action clear while leaving authority and uncertainty visible.",
     proof: "SCMIRN",
     href: "/work/scmirn",
+  },
+  {
+    number: "10",
+    name: "Reliability & operations",
+    detail:
+      "Health checks, migrations, and recovery paths help diagnose failures; live monitoring and recovery results still need verification.",
+    proof: "SHAPES India",
+    href: "/work/shapes-india#continuity",
   },
 ] as const;
 
@@ -77,7 +109,9 @@ export default function Engineering() {
         aria-labelledby="engineering-map-title"
       >
         <div className="engineering-map-head">
-          <h2 id="engineering-map-title">One change, four places to think.</h2>
+          <h2 id="engineering-map-title">
+            One change, several places to think.
+          </h2>
           <p>
             A screen can initiate an action. The service decides whether it is
             allowed, the records preserve what happened, and the release path
@@ -104,7 +138,7 @@ export default function Engineering() {
         <div className="shell">
           <p className="kicker">Through the work</p>
           <h2 id="engineering-evidence-title">
-            The decisions show the discipline.
+            The decisions are visible in the work.
           </h2>
           <div className="engineering-evidence-list">
             <article>

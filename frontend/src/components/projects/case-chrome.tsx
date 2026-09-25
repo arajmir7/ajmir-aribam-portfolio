@@ -3,6 +3,13 @@ import Link from "next/link";
 import type { Project } from "@/content/projects";
 
 export function CaseHero({ project }: { project: Project }) {
+  const statusLabel =
+    project.status ??
+    (project.maturity === "live"
+      ? "Live"
+      : project.maturity === "prototype"
+        ? "Prototype"
+        : "In development");
   return (
     <header className={`case-hero case-hero--${project.slug}`}>
       <div className="shell">
@@ -12,12 +19,7 @@ export function CaseHero({ project }: { project: Project }) {
         <div className="case-hero-top">
           <div>
             <p className="kicker">
-              {project.maturity === "live"
-                ? "Live project"
-                : project.maturity === "prototype"
-                  ? "Prototype"
-                  : "In development"}{" "}
-              <span aria-hidden="true">/</span> {project.year}
+              {statusLabel} <span aria-hidden="true">/</span> {project.year}
             </p>
             <h1>{project.name}</h1>
             <p className="case-lede">{project.lede}</p>
@@ -27,10 +29,12 @@ export function CaseHero({ project }: { project: Project }) {
             <p>{project.technicalFocus}</p>
             {project.live ? (
               <a href={project.live} target="_blank" rel="noopener noreferrer">
-                Visit live product ↗
+                {project.maturity === "prototype"
+                  ? "Visit hosted preview ↗"
+                  : "Visit live site ↗"}
               </a>
             ) : (
-              <strong>In development</strong>
+              <strong>{statusLabel}</strong>
             )}
           </div>
         </div>
@@ -53,12 +57,12 @@ export function CaseHero({ project }: { project: Project }) {
             <dd>{project.audience}</dd>
           </div>
           <div>
-            <dt>{project.role ? "My work" : "Current build"}</dt>
-            <dd>{project.role ?? project.technicalFocus}</dd>
+            <dt>Status</dt>
+            <dd>{statusLabel}</dd>
           </div>
           <div>
-            <dt>Built with</dt>
-            <dd>{project.stack.slice(0, 4).join(" · ")}</dd>
+            <dt>{project.role ? "My work" : "Current build"}</dt>
+            <dd>{project.role ?? project.technicalFocus}</dd>
           </div>
         </dl>
       </div>

@@ -7,9 +7,10 @@ import { CaseEnd, ImplementationNotes } from "./case-chrome";
 const sections = [
   { id: "product", label: "Product" },
   { id: "financial-state", label: "Financial state" },
+  { id: "decisions", label: "Decisions" },
   { id: "architecture", label: "Architecture" },
   { id: "access", label: "Access & delivery" },
-  { id: "decisions", label: "Decisions" },
+  { id: "status", label: "Status & limits" },
 ] as const;
 
 export function AzaeronCase({ project }: { project: Project }) {
@@ -19,12 +20,14 @@ export function AzaeronCase({ project }: { project: Project }) {
       <div className="case-main">
         <section id="product" className="case-section">
           <p className="eyebrow">01 / THE PRODUCT</p>
-          <h2>An invoice touches more than billing.</h2>
+          <h2>Keeping financial state consistent.</h2>
           <p className="section-lede">
             Azaeron brings invoicing, quotations, point of sale, inventory,
             payments, and customer records into a merchant workspace. These
             surfaces are connected: a payment changes an invoice, and an invoice
-            must still make sense to the customer and the business ledger.
+            must still make sense to the customer and the business ledger. The
+            difficult part is keeping payment state, inventory, permissions, and
+            invoice status consistent as work moves through the system.
           </p>
           <div
             className="product-capabilities"
@@ -53,9 +56,9 @@ export function AzaeronCase({ project }: { project: Project }) {
               />
             </div>
             <figcaption>
-              Public documentation is a second inspectable product surface.
-              Authenticated workspace behavior below is described from the
-              implementation, not a staged screenshot.{" "}
+              The public docs and sign-in pages are reachable. Authenticated
+              production behavior and active integrations have not been
+              independently inspected; no usage or uptime claim is made here.{" "}
               <a
                 href="https://invoice.web-com.live/documentation"
                 target="_blank"
@@ -71,7 +74,7 @@ export function AzaeronCase({ project }: { project: Project }) {
           id="financial-state"
           className="case-section case-section--state"
         >
-          <p className="eyebrow">02 / FINANCIAL STATE</p>
+          <p className="eyebrow">02 / USER &amp; BUSINESS PROBLEM</p>
           <h2>A paid invoice needs a settled balance.</h2>
           <p className="section-lede">
             The invoice lifecycle checks allowed moves against payment
@@ -121,9 +124,25 @@ export function AzaeronCase({ project }: { project: Project }) {
           </ImplementationNotes>
         </section>
 
+        <section id="decisions" className="case-section">
+          <p className="eyebrow">03 / ENGINEERING DECISIONS</p>
+          <h2>What had to stay true.</h2>
+          <div className="decision-list">
+            {project.decisions.map((decision, index) => (
+              <article key={decision.title}>
+                <span className="index">0{index + 1}</span>
+                <div>
+                  <h3>{decision.title}</h3>
+                  <p>{decision.body}</p>
+                </div>
+              </article>
+            ))}
+          </div>
+        </section>
+
         <section id="architecture" className="case-section">
-          <p className="eyebrow">03 / ARCHITECTURE</p>
-          <h2>The API owns the rules.</h2>
+          <p className="eyebrow">04 / TECHNICAL IMPLEMENTATION</p>
+          <h2>The API owns the business rules.</h2>
           <SystemDiagram project={project} />
           <p className="architecture-caption">
             React and TypeScript handle the merchant interface. Express owns
@@ -133,7 +152,7 @@ export function AzaeronCase({ project }: { project: Project }) {
         </section>
 
         <section id="access" className="case-section">
-          <p className="eyebrow">04 / ACCESS &amp; DELIVERY</p>
+          <p className="eyebrow">05 / ACCESS &amp; DELIVERY</p>
           <h2>Check the request before changing a record.</h2>
           <div className="boundary-steps">
             <div>
@@ -177,24 +196,20 @@ export function AzaeronCase({ project }: { project: Project }) {
           </div>
         </section>
 
-        <section id="decisions" className="case-section case-section--last">
-          <p className="eyebrow">05 / ENGINEERING DECISIONS</p>
-          <h2>What had to stay true.</h2>
-          <div className="decision-list">
-            {project.decisions.map((decision, index) => (
-              <article key={decision.title}>
-                <span className="index">0{index + 1}</span>
-                <div>
-                  <h3>{decision.title}</h3>
-                  <p>{decision.body}</p>
-                </div>
-              </article>
-            ))}
-          </div>
+        <section id="status" className="case-section case-section--last">
+          <p className="eyebrow">06 / CURRENT STATUS &amp; LIMITS</p>
+          <h2>
+            The public surfaces are live; production behavior is unverified.
+          </h2>
+          <p className="section-lede">
+            The public sign-in and documentation pages are reachable.
+            Authenticated behavior, active integrations, and business outcomes
+            have not been independently inspected. No usage, revenue, or uptime
+            claim is made here.
+          </p>
           <p className="case-closing">
-            The central lesson is simple: financial state needs an explicit
-            backend transition, a durable record of what changed, and a release
-            path that can detect a broken dependency before traffic reaches it.
+            Financial state needs an explicit backend transition and a durable
+            record of what changed.
           </p>
         </section>
         <CaseEnd />

@@ -397,7 +397,7 @@ export const projects: Project[] = [
     revision: "TODO_OWNER_VERIFY: local source snapshot has no Git metadata",
     stack: ["Next.js", "FastAPI", "PostgreSQL", "Redis"],
     context:
-      "Local source contains document versions, evidence graph and report services, and a browser review surface. Its execution ledger explicitly says not production ready.",
+      "The current build includes versioned documents, an evidence graph, citations, provenance, report services, and a browser review surface. The project remains in development.",
     problem:
       "A document-analysis result is hard to assess when the source text, document version, and uncertainty are separated from it.",
     ownership:
@@ -490,7 +490,7 @@ export const projects: Project[] = [
     revision: "TODO_OWNER_VERIFY: local worktree revision",
     stack: ["Next.js", "NestJS", "PostgreSQL", "Redis"],
     context:
-      "Local implementation status identifies identity/branch access and catalogue/pricing as implemented, with required runtime and database verification still open.",
+      "The current build covers identity, organization and branch access, product catalogue, SKU and barcode records, tax, and effective-dated pricing. Database and API runtime checks remain open.",
     problem:
       "A branch-specific catalogue needs dependable product identity, price rules, and access control before transactional retail flows can be built on it.",
     ownership:
@@ -564,9 +564,9 @@ export const projects: Project[] = [
     limitations: [
       "External payment, supplier, warehouse and deployment integrations are not verified.",
     ],
-    lede: "A separate procurement system for project-based construction buying, from catalogue to request for quote.",
+    lede: "Construction purchasing brings catalogue, pricing, delivery, approvals, and supplier responses into one workflow.",
     summary:
-      "A construction procurement foundation with server-authoritative catalogue pricing, project scope, checkout and RFQ records.",
+      "A construction procurement workflow for project scope, server-resolved totals, checkout, RFQs, supplier quotes, and approvals.",
     visual: {
       src: "/images/projects/azaeron-construction.svg",
       alt: "Azaeron construction procurement flow from project catalogue to RFQ and approval",
@@ -576,7 +576,7 @@ export const projects: Project[] = [
     revision: "TODO_OWNER_VERIFY: local source snapshot has no Git metadata",
     stack: ["Next.js", "Prisma", "PostgreSQL", "Auth.js"],
     context:
-      "This system is independent from the merchant billing product and models construction catalogue, projects, pricing, checkout, RFQs and procurement records.",
+      "This is separate from the merchant billing product. The current build models construction materials, project scope, server-resolved totals, checkout, RFQs, supplier quotes, approvals, and procurement records.",
     problem:
       "Project buying needs material context, reliable totals and a request path that can survive review instead of treating a browser cart as the source of truth.",
     ownership:
@@ -625,11 +625,11 @@ export const projects: Project[] = [
       },
     ],
     delivery:
-      "Local source documentation records PostgreSQL migration, API and runtime smoke checks for the procurement tranche; external integrations and deployment remain open.",
+      "The local project includes PostgreSQL migration, API, and runtime checks for this stage. External integrations and deployment remain open.",
     operations:
-      "The repository includes readiness and operational foundations. Production recovery, alerts and supplier/warehouse runtime behavior are unverified.",
+      "The build keeps project scope, pricing, checkout, RFQs, and approval policy in separate records. Production recovery, alerts, and supplier or warehouse operations remain unverified.",
     outcome:
-      "A distinct, locally inspected procurement system with substantial modeled workflows and explicit release boundaries.",
+      "The current build models catalogue pricing, checkout, RFQs, quotes, approvals, and procurement records. Live integrations and deployment have not been verified.",
     lessons:
       "Construction commerce becomes safer when project scope, pricing and approval policy are part of the domain model.",
     verify: [
@@ -651,7 +651,7 @@ export const projects: Project[] = [
     gallery: [],
     status: "Local build",
     limitations: [
-      "The inspected local build reports an offline state and is not a production service.",
+      "The local interface reports an offline state; no production service is available.",
       "Benchmark metrics are kept in internal project evidence rather than presented as portfolio outcomes.",
     ],
     lede: "Accessibility findings become useful when a fix can be re-tested, security-checked and proved.",
@@ -666,7 +666,7 @@ export const projects: Project[] = [
     revision: "efbe5ee",
     stack: ["FastAPI", "Playwright", "Python", "React", "Semgrep"],
     context:
-      "Local source includes a FastAPI API, React interface, deterministic scanner, remediation workflow, MCP analysis tools and unit, integration, security and end-to-end tests.",
+      "The current build pairs a React interface with a FastAPI service. Playwright runs deterministic scans; bounded remediations pass security checks before a re-scan. Unit, integration, security, and end-to-end tests cover the workflow.",
     problem:
       "A detected defect is not the same as a fixed or verified defect. Accessibility work needs an evidence chain that can survive a re-scan and regression check.",
     ownership:
@@ -714,11 +714,11 @@ export const projects: Project[] = [
       },
     ],
     delivery:
-      "The source contains local test and Docker workflows. The portfolio records it as a local build because no deployed service or active operational environment was independently verified.",
+      "Local tests and Docker workflows are available. No deployed service or active operational environment has been verified.",
     operations:
-      "Health, readiness, correlation IDs and evidence storage exist in source. Production storage, alerting and model-provider operation are unverified.",
+      "The build includes health checks, correlation IDs, and evidence storage. Production storage, alerting, and model-provider operation are unverified.",
     outcome:
-      "A substantive quality-engineering product surface that makes the distinction between a suggestion and proof visible.",
+      "The build separates a finding, an applied change, and a verified fix. It is a local build; no deployed service has been verified.",
     lessons:
       "Accessibility automation earns trust when the result can show what changed, what was checked and what remains uncertain.",
     verify: ["Production deployment and ownership — TODO_OWNER_VERIFY"],
@@ -741,7 +741,7 @@ export const projects: Project[] = [
       "Deployment and end-to-end production behavior are not verified.",
       "AI and rights guidance is informational and is not legal advice or an official government service.",
     ],
-    lede: "A civic-service prototype that brings complaint filing, rights guidance, office discovery and progress into one workflow.",
+    lede: "SCMIRN explores a clearer path from complaint to guidance, office discovery, documents, and progress tracking.",
     summary:
       "A React and FastAPI civic-service prototype with complaint, tracker, office, document and guidance surfaces.",
     visual: {
@@ -753,7 +753,7 @@ export const projects: Project[] = [
     revision: "TODO_OWNER_VERIFY: local source snapshot has multiple worktrees",
     stack: ["React", "TypeScript", "FastAPI", "PostgreSQL", "Vite"],
     context:
-      "Local source includes a React/Vite interface, FastAPI routes and data models for issues, tracker, offices, documents, analytics, rights and AI-assistant surfaces. Several UI paths still use mock data.",
+      "The prototype pairs React/Vite screens with FastAPI modules for complaints, progress, office discovery, documents, rights information, analytics, and AI Help. Some interface paths still use mock data.",
     problem:
       "Civic requests are difficult to start when the user must know the department, right process and tracking path in advance.",
     ownership:
@@ -802,11 +802,11 @@ export const projects: Project[] = [
       },
     ],
     delivery:
-      "The local frontend and backend source were inspected, including API modules and an agent test. Hosted deployment and complete end-to-end execution remain unverified.",
+      "The prototype was reviewed against its API modules and an agent test. Hosted deployment and complete end-to-end execution remain unverified.",
     operations:
-      "The source contains authentication, issue, document, tracker and analytics paths. Production data, authority integrations, uptime and privacy review remain open.",
+      "Authentication, complaint, document, progress, and analytics paths are present. Production data, authority integrations, uptime, and privacy review remain open.",
     outcome:
-      "A substantial civic workflow prototype that demonstrates information architecture and backend/product integration without claiming official status.",
+      "A working prototype connects citizen-facing service paths with backend modules. Some screens use mock data, and deployment is unverified.",
     lessons:
       "Civic software should reduce the first step while keeping guidance honest about authority and uncertainty.",
     verify: ["Deployment, data provenance and ownership — TODO_OWNER_VERIFY"],
@@ -830,7 +830,7 @@ export const projects: Project[] = [
       "The public Netlify URL proves hosting, not client ownership, adoption or production operations.",
       "Template content and school figures are not repeated as portfolio claims.",
     ],
-    lede: "A hosted school-site prototype exploring clear navigation for academics, admissions, faculty and contact.",
+    lede: "A multi-page school website prototype for academics, admissions, faculty, student life, notices, and contact.",
     summary:
       "A Vite/React education website study with multiple public routes and a hosted Netlify preview.",
     live: "https://storied-bombolone-5d4a8f.netlify.app/",
@@ -843,7 +843,7 @@ export const projects: Project[] = [
     revision: "TODO_OWNER_VERIFY: local source snapshot has no Git metadata",
     stack: ["React", "TypeScript", "Vite", "React Router", "Tailwind CSS"],
     context:
-      "Local source implements home, about, academics, admissions, faculty, student life, gallery, notices and contact routes; the hosted preview was reachable during inspection.",
+      "The hosted prototype has routes for home, about, academics, admissions, faculty, student life, gallery, notices, and contact. The public preview is available, but ownership and production use are unverified.",
     problem:
       "An academy website needs a readable path from first impression to practical information without relying on a single landing page.",
     ownership:
@@ -890,10 +890,11 @@ export const projects: Project[] = [
       },
     ],
     delivery:
-      "The local Vite source built a multi-route site and the supplied Netlify preview returned HTTP 200 during inspection.",
+      "The Vite application builds a multi-route site, and a hosted Netlify preview is available. Client ownership and production support have not been verified.",
     operations:
       "Hosting is visible; ownership, deployment pipeline, content governance and production support are unverified.",
-    outcome: "A clear web-delivery example presented at prototype maturity.",
+    outcome:
+      "A hosted, multi-page website prototype. The portfolio makes no claim about school ownership or day-to-day operations.",
     lessons:
       "A route map can do more for a public site than a crowded first page when people arrive with different questions.",
     verify: [
@@ -918,7 +919,7 @@ export const projects: Project[] = [
       "The local MVP is not a deployed city service and uses SQLite by default.",
       "Risk scoring is rule-based; no operational outcome is asserted.",
     ],
-    lede: "A research MVP connecting citizen reports, infrastructure assets, sensor readings and maintenance work.",
+    lede: "A research prototype for connecting citizen reports, infrastructure assets, sensor readings and maintenance work.",
     summary:
       "A React/FastAPI civic infrastructure prototype with role-based workflows, sensor ingestion, maps and rule-based risk scoring.",
     visual: {
@@ -936,7 +937,7 @@ export const projects: Project[] = [
       "SQLite/PostgreSQL",
     ],
     context:
-      "The inspected MVP includes citizen, admin and worker surfaces, infrastructure assets, sensor ingestion, analytics, uploads and an API smoke test.",
+      "The current build includes citizen, admin, and worker surfaces, infrastructure assets, sensor ingestion, analytics, uploads, and an API smoke test.",
     problem:
       "Small infrastructure failures are easier to act on when reports, sensor signals and maintenance ownership share one operational view.",
     ownership:
@@ -967,7 +968,7 @@ export const projects: Project[] = [
     decisions: [
       {
         title: "Keep scoring explainable",
-        body: "The local AI layer is a rule-based scoring module whose inputs can be inspected.",
+        body: "The scoring module is rule-based, and its inputs can be inspected.",
         evidence: "backend/app/ai/scoring.py",
       },
       {
@@ -984,9 +985,9 @@ export const projects: Project[] = [
     delivery:
       "A local full-stack MVP and smoke script were inspected. No deployment or field operations are claimed.",
     operations:
-      "The source is PostgreSQL-ready but defaults to SQLite for local demonstration; monitoring and recovery are unverified.",
+      "The application is configured for local SQLite and has a PostgreSQL-ready path. Monitoring and recovery have not been demonstrated.",
     outcome:
-      "A focused research prototype showing how AI-assisted scoring can sit inside an operational workflow.",
+      "A research prototype connects reports, infrastructure records, rule-based scoring, and maintenance tasks. It has not been used in field operations.",
     lessons:
       "An explainable score is more useful when it connects directly to the person and task that must respond.",
     verify: ["Deployment, field use and ownership — TODO_OWNER_VERIFY"],

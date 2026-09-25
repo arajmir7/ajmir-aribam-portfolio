@@ -32,10 +32,10 @@ export default function Resume() {
       <section className="resume-section">
         <h2>Profile</h2>
         <p>
-          Software engineer working across backend services, product interfaces,
-          cloud delivery and quality engineering. Recent projects include
-          business billing, institutional publishing, commercial web and an
-          in-development document review system.
+          Software engineer working across backend services, full-stack
+          products, cloud delivery, AI-enabled document workflows and quality
+          engineering. Recent projects include business billing, institutional
+          publishing, procurement, accessibility engineering and commercial web.
         </p>
       </section>
       <section className="resume-section">

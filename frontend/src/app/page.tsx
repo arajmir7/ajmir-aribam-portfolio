@@ -12,7 +12,9 @@ export default function Home() {
           <p className="kicker">
             Ajmir Aribam <span aria-hidden="true">/</span> Software Engineer
           </p>
-          <h1 id="home-title">I build the product and the system behind it.</h1>
+          <h1 id="home-title">
+            I build software products and the systems behind them.
+          </h1>
           <p className="home-intro-lede">
             Interfaces, APIs, business rules, tests and releases. I work across
             the pieces that need to agree before software is useful.
@@ -26,8 +28,8 @@ export default function Home() {
             </Link>
           </div>
           <p className="home-intro-note">
-            Backend · Product engineering · Cloud delivery · AI systems ·
-            Quality
+            Backend · Full-stack products · Cloud delivery · AI-enabled systems
+            · Quality engineering
           </p>
         </div>
         <div className="home-showcase" aria-label="Selected product surfaces">

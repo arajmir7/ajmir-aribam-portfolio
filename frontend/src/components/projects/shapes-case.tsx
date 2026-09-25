@@ -118,9 +118,9 @@ export function ShapesCase() {
             </div>
           </div>
           <p className="case-closing">
-            The design connects a calm public experience to a controlled
-            publishing system. The work behind the page is state, permission,
-            history, and a way to keep publishing safely.
+            The public site is live. Its production backup schedule and exact
+            contribution boundaries remain to be confirmed; no audience or
+            operating outcome is claimed here.
           </p>
         </section>
         <CaseEnd />

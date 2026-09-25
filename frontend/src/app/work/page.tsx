@@ -6,7 +6,7 @@ import { pageMeta } from "@/lib/site";
 
 export const metadata: Metadata = pageMeta(
   "Work",
-  "Billing, institutional publishing, commercial web, document review and retail systems by Ajmir Aribam.",
+  "Software products by Ajmir Aribam across billing, publishing, procurement, accessibility, civic workflows and retail systems.",
   "/work",
 );
 
@@ -28,11 +28,11 @@ export default function Work() {
           projects
         </p>
         <div>
-          <h1>Products with real work behind them.</h1>
+          <h1>Software built for different kinds of work.</h1>
           <p>
-            From merchant invoices to institutional publishing, each project
-            solves a different problem. The status and scope are shown with the
-            work.
+            From billing and publishing to procurement and accessibility
+            tooling, each project solves a different problem. The status and
+            scope are shown with the work.
           </p>
         </div>
       </header>
@@ -174,7 +174,8 @@ export default function Work() {
                 </Link>
                 <div>
                   <span className="project-sequence">
-                    In development <span>/</span> {project.year}
+                    {project.status ?? "In development"} <span>/</span>{" "}
+                    {project.year}
                   </span>
                   <h3>{project.name}</h3>
                   <p>{project.lede}</p>
@@ -196,7 +197,7 @@ export default function Work() {
       >
         <div className="shell">
           <div className="section-heading">
-            <p className="kicker">Prototypes &amp; research</p>
+            <p className="kicker">Research &amp; prototypes</p>
             <div>
               <h2 id="work-prototypes-title">
                 Working ideas with a visible boundary.

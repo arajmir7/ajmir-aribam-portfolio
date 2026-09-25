@@ -558,6 +558,13 @@ p {
 .case-hero--azaeron .case-hero-image img {
   object-fit: contain;
 }
+.case-hero--azaeron-construction-procurement .case-hero-image img,
+.case-hero--accessforge .case-hero-image img,
+.case-hero--scmirn .case-hero-image img,
+.case-hero--zam-zam-academy .case-hero-image img,
+.case-hero--civicpulse-resilience-network .case-hero-image img {
+  object-fit: contain;
+}
 .case-hero--shapes-india .case-hero-image img {
   object-fit: contain;
 }
@@ -866,6 +873,13 @@ p {
 }
 .architecture-caption {
   margin-top: 0;
+}
+.project-limitations {
+  display: grid;
+  gap: var(--s2);
+  margin-block: var(--s3);
+  padding-left: 1.2rem;
+  color: var(--muted);
 }
 .two-col-copy {
   display: grid;
