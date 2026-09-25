@@ -1,7 +1,7 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-labelledby="title">
-  <title id="title">Ajmir Aribam</title>
-  <rect width="64" height="64" rx="12" fill="#F8F6F1"/>
-  <svg x="5" y="11" width="54" height="42" viewBox="145 10 410 300" aria-hidden="true">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="title">
+  <title id="title">Ajmir Aribam app icon</title>
+  <rect width="512" height="512" fill="#F8F6F1"/>
+  <svg x="57" y="105" width="398" height="292" viewBox="145 10 410 300" aria-hidden="true">
     <path d="M360 76h15c24 0 39 12 52 37l74 140c10 21 24 34 38 42h-63z" fill="#6B8BA7"/>
     <path d="m160 295 107-185 15 25-89 160z" fill="#0F1F1E"/>
     <path d="m322 22-43 73 90 170c10 19 25 30 46 30h41z" fill="#0F1F1E"/>

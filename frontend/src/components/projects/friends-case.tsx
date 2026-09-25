@@ -33,7 +33,7 @@ export function FriendsCase() {
       <CaseContents sections={sections} />
       <div className="case-main">
         <section id="business" className="case-section">
-          <p className="eyebrow">01 / THE BUSINESS</p>
+          <p className="eyebrow">THE BUSINESS</p>
           <h2>See the work, then ask for a quote.</h2>
           <p className="section-lede">
             Friends Aluminium Works makes aluminium, steel, and glass work in
@@ -49,7 +49,7 @@ export function FriendsCase() {
         </section>
 
         <section id="discovery" className="case-section">
-          <p className="eyebrow">02 / DISCOVERY</p>
+          <p className="eyebrow">DISCOVERY</p>
           <h2>Find the right service quickly.</h2>
           <p className="section-lede">
             Products, services, and projects have distinct routes. Category
@@ -76,7 +76,7 @@ export function FriendsCase() {
           id="product-gallery"
           className="case-section case-section--gallery"
         >
-          <p className="eyebrow">03 / VISUAL SYSTEM</p>
+          <p className="eyebrow">VISUAL SYSTEM</p>
           <h2>Photographs do the explaining.</h2>
           <p className="section-lede">
             The visual language comes from the work itself. Photographs show
@@ -101,7 +101,7 @@ export function FriendsCase() {
         </section>
 
         <section id="inquiry" className="case-section case-section--last">
-          <p className="eyebrow">04 / FRONTEND DELIVERY</p>
+          <p className="eyebrow">FRONTEND DELIVERY</p>
           <h2>From browsing to a useful first message.</h2>
           <div className="inquiry-path" aria-label="Website inquiry path">
             <span>Discover a service</span>

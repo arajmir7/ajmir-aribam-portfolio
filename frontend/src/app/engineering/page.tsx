@@ -10,14 +10,12 @@ export const metadata: Metadata = pageMeta(
 
 const layers = [
   {
-    number: "01",
     name: "Frontend & product engineering",
     detail: "Navigation, forms and feedback that make the next step clear.",
     proof: "Friends Aluminium Works",
     href: "/work/friends-aluminium-works",
   },
   {
-    number: "02",
     name: "Backend & application systems",
     detail:
       "Permission checks and state changes that every client must pass through.",
@@ -25,7 +23,6 @@ const layers = [
     href: "/work/azaeron",
   },
   {
-    number: "03",
     name: "API & data architecture",
     detail:
       "Versioned content, payment state and traceable source relationships.",
@@ -33,7 +30,6 @@ const layers = [
     href: "/work/shapes-india",
   },
   {
-    number: "04",
     name: "Authentication & secure systems",
     detail:
       "Identity, tenant scope and permission checks are enforced where requests are handled.",
@@ -41,7 +37,6 @@ const layers = [
     href: "/work/azaeron#access",
   },
   {
-    number: "05",
     name: "AI-enabled systems",
     detail:
       "Versioned evidence, abstention and human review keep analysis within what the system can support.",
@@ -49,7 +44,6 @@ const layers = [
     href: "/work/azaeron-verity",
   },
   {
-    number: "06",
     name: "Quality engineering",
     detail:
       "Different checks cover rules, data, browser behavior and release wiring.",
@@ -57,7 +51,6 @@ const layers = [
     href: "/work/accessforge",
   },
   {
-    number: "07",
     name: "Cloud & delivery",
     detail:
       "Migrations, health checks and release validation make deployment inspectable.",
@@ -65,7 +58,6 @@ const layers = [
     href: "/work/shapes-india#continuity",
   },
   {
-    number: "08",
     name: "Performance & accessibility",
     detail:
       "Responsive layouts, image delivery, keyboard paths and re-scans are part of the product.",
@@ -73,7 +65,6 @@ const layers = [
     href: "/work/accessforge",
   },
   {
-    number: "09",
     name: "Human workflows",
     detail:
       "Product boundaries make the next action clear while leaving authority and uncertainty visible.",
@@ -81,7 +72,6 @@ const layers = [
     href: "/work/scmirn",
   },
   {
-    number: "10",
     name: "Reliability & operations",
     detail:
       "Health checks, migrations, and recovery paths help diagnose failures; live monitoring and recovery results still need verification.",
@@ -120,8 +110,7 @@ export default function Engineering() {
         </div>
         <ol>
           {layers.map((layer) => (
-            <li key={layer.number}>
-              <span className="engineering-layer-index">{layer.number}</span>
+            <li key={layer.name}>
               <div>
                 <h3>{layer.name}</h3>
                 <p>{layer.detail}</p>

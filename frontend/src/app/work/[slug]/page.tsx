@@ -13,6 +13,8 @@ export function generateStaticParams() {
   return projects.map(({ slug }) => ({ slug }));
 }
 
+export const dynamicParams = false;
+
 export async function generateMetadata({
   params,
 }: {

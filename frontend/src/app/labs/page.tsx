@@ -1,11 +1,10 @@
 import type { Metadata } from "next";
-import Image from "next/image";
 import Link from "next/link";
 import { pageMeta } from "@/lib/site";
 
 export const metadata: Metadata = pageMeta(
   "Labs & experiments",
-  "Civic systems, web studies and research prototypes by Ajmir Aribam.",
+  "Early civic-service and education website prototypes by Ajmir Aribam.",
   "/labs",
 );
 
@@ -25,7 +24,7 @@ export default function Labs() {
       <div className="lab-list">
         <article className="lab-project">
           <div className="lab-project-sign">
-            <span>01 / Prototype</span>
+            <span>Prototype</span>
             <strong>SCMIRN</strong>
             <div className="lab-flow" aria-label="Explored civic request flow">
               <span>Report</span>
@@ -46,7 +45,7 @@ export default function Labs() {
         </article>
         <article className="lab-project lab-project--academy">
           <div className="lab-project-sign">
-            <span>02 / Prototype</span>
+            <span>Hosted prototype</span>
             <strong>
               Zam Zam
               <br />
@@ -71,29 +70,6 @@ export default function Labs() {
                 Open hosted preview ↗
               </a>
             </div>
-          </div>
-        </article>
-        <article className="lab-project lab-project--research">
-          <div className="lab-project-sign">
-            <span>03 / Research prototype</span>
-            <strong>CivicPulse</strong>
-            <Image
-              src="/images/projects/civicpulse-flow.svg"
-              alt="CivicPulse research flow"
-              width={720}
-              height={456}
-            />
-          </div>
-          <div className="lab-project-copy">
-            <span>Resilience systems</span>
-            <h2>Connect a report to the person who can act.</h2>
-            <p>
-              CivicPulse combines citizen reports, sensor readings, explainable
-              risk scoring and maintenance tasks in a local MVP.
-            </p>
-            <Link href="/work/civicpulse-resilience-network">
-              Read the research case ↗
-            </Link>
           </div>
         </article>
       </div>

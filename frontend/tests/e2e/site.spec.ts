@@ -20,6 +20,16 @@ test("orientation, routes, metadata, and evidence links", async ({
   page,
   request,
 }) => {
+  expect(projects).toHaveLength(9);
+  expect(
+    projects.filter((project) => project.maturity === "live"),
+  ).toHaveLength(3);
+  expect(
+    projects.filter((project) => project.maturity === "development"),
+  ).toHaveLength(4);
+  expect(
+    projects.filter((project) => project.maturity === "prototype"),
+  ).toHaveLength(2);
   await page.goto("/");
   await expect(page.getByRole("heading", { level: 1 })).toHaveText(
     "I build software products and the systems behind them.",
@@ -75,6 +85,13 @@ test("orientation, routes, metadata, and evidence links", async ({
     (match) => new URL(match[1]).pathname,
   );
   for (const path of routes) expect(locations).toContain(path);
+  const retiredProjectPath = "/work/civicpulse-resilience-network";
+  expect(locations).not.toContain(retiredProjectPath);
+  const retiredProjectResponse = await page.goto(retiredProjectPath);
+  expect(retiredProjectResponse?.status()).toBe(404);
+  await expect(
+    page.getByRole("heading", { name: "This page isn’t here." }),
+  ).toBeVisible();
   expect(await (await request.get("/robots.txt")).text()).toContain(
     "sitemap.xml",
   );
@@ -98,7 +115,7 @@ test("orientation, routes, metadata, and evidence links", async ({
     await expect(page.locator("#main h1")).toBeVisible();
     const visibleText = await page.locator("body").innerText();
     expect(visibleText, `${path} public copy`).not.toMatch(
-      /TODO_OWNER_VERIFY|source inspection|inspected source|verification boundary|per supplied resume|local Git history|backend\/src|Users\/ajmiraribam/i,
+      /CivicPulse|Civic Pulse|Resilience Network|Three products, three different jobs|TODO_OWNER_VERIFY|source inspection|inspected source|verification boundary|per supplied resume|local Git history|backend\/src|Users\/ajmiraribam/i,
     );
   }
   await page.goto("/work/azaeron");
@@ -157,8 +174,8 @@ test("orientation, routes, metadata, and evidence links", async ({
       .getByRole("link", { name: "Work" }),
   ).toHaveAttribute("href", "/work");
   await page.goto("/labs");
-  await expect(page.getByText("02 / Prototype")).toBeVisible();
   await expect(page.getByText("SCMIRN", { exact: true })).toBeVisible();
+  await expect(page.locator(".lab-project")).toHaveCount(2);
   await page.goto("/work/azaeron-verity");
   await expect(page.locator(".case-hero .kicker")).toContainText(
     "In development",
@@ -194,10 +211,6 @@ test("orientation, routes, metadata, and evidence links", async ({
   await expect(
     page.getByRole("link", { name: /Visit hosted preview/ }),
   ).toHaveAttribute("href", "https://storied-bombolone-5d4a8f.netlify.app/");
-  await page.goto("/work/civicpulse-resilience-network");
-  await expect(page.locator(".case-hero .kicker")).toContainText(
-    "Research prototype",
-  );
   expect((await request.get("/missing-route")).status()).toBe(404);
 });
 
@@ -268,6 +281,45 @@ test("keyboard navigation and mobile menu", async ({ page }) => {
   await expect(page).toHaveURL(/#financial-state$/);
 });
 
+test("brand lockup stays visible at responsive widths in both themes", async ({
+  page,
+}) => {
+  await page.goto("/");
+  for (const width of [320, 390, 1440]) {
+    await page.setViewportSize({ width, height: 900 });
+    for (const theme of ["light", "dark"]) {
+      await page.evaluate((value) => {
+        document.documentElement.dataset.theme = value;
+      }, theme);
+      const visibleBrand = page.locator(".brand-asset:visible");
+      await expect(visibleBrand).toHaveCount(1);
+      const expectedVariant =
+        width <= 360
+          ? "brand-monogram"
+          : width <= 820
+            ? "brand-compact"
+            : "brand-full";
+      await expect(visibleBrand).toHaveClass(new RegExp(expectedVariant));
+      const bounds = await visibleBrand.boundingBox();
+      expect(
+        bounds?.height,
+        `${theme} logo height at ${width}px`,
+      ).toBeGreaterThan(20);
+      expect(
+        bounds?.width,
+        `${theme} logo width at ${width}px`,
+      ).toBeGreaterThan(30);
+      await expect
+        .poll(() =>
+          visibleBrand.evaluate(
+            (image: HTMLImageElement) => image.naturalWidth,
+          ),
+        )
+        .toBeGreaterThan(0);
+    }
+  }
+});
+
 test("themes and automated accessibility", async ({ page }) => {
   test.setTimeout(90_000);
   await page.goto("/");
@@ -304,10 +356,29 @@ test("responsive routes have no horizontal overflow", async ({ page }) => {
     for (const path of routes) {
       await page.goto(path);
       await expect(page.locator("#main h1")).toBeVisible();
-      const overflow = await page.evaluate(
-        () => document.documentElement.scrollWidth > window.innerWidth,
-      );
-      expect(overflow, `${path} horizontal overflow at ${width}px`).toBe(false);
+      const overflow = await page.evaluate(() => {
+        if (document.documentElement.scrollWidth <= window.innerWidth)
+          return null;
+        return {
+          documentWidth: document.documentElement.scrollWidth,
+          elements: Array.from(document.querySelectorAll("body *"))
+            .map((element) => {
+              const bounds = element.getBoundingClientRect();
+              return {
+                element: element.tagName.toLowerCase(),
+                className:
+                  typeof element.className === "string"
+                    ? element.className
+                    : "",
+                right: Math.round(bounds.right),
+                width: Math.round(bounds.width),
+              };
+            })
+            .filter((element) => element.right > window.innerWidth + 1)
+            .slice(0, 8),
+        };
+      });
+      expect(overflow, `${path} horizontal overflow at ${width}px`).toBeNull();
     }
   }
 });

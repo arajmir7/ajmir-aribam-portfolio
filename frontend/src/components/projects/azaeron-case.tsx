@@ -19,7 +19,7 @@ export function AzaeronCase({ project }: { project: Project }) {
       <CaseContents sections={sections} />
       <div className="case-main">
         <section id="product" className="case-section">
-          <p className="eyebrow">01 / THE PRODUCT</p>
+          <p className="eyebrow">THE PRODUCT</p>
           <h2>Keeping financial state consistent.</h2>
           <p className="section-lede">
             Azaeron brings invoicing, quotations, point of sale, inventory,
@@ -34,14 +34,22 @@ export function AzaeronCase({ project }: { project: Project }) {
             aria-label="Azaeron product areas"
           >
             {[
-              ["01", "Sell", "Quotations, invoices, and point of sale"],
-              ["02", "Collect", "Payments, balances, and customer records"],
-              ["03", "Operate", "Inventory, team access, and audit history"],
-            ].map(([number, title, body]) => (
-              <div key={title}>
-                <span className="index">{number}</span>
-                <h3>{title}</h3>
-                <p>{body}</p>
+              {
+                title: "Sell",
+                body: "Quotations, invoices, and point of sale",
+              },
+              {
+                title: "Collect",
+                body: "Payments, balances, and customer records",
+              },
+              {
+                title: "Operate",
+                body: "Inventory, team access, and audit history",
+              },
+            ].map((area) => (
+              <div key={area.title}>
+                <h3>{area.title}</h3>
+                <p>{area.body}</p>
               </div>
             ))}
           </div>
@@ -74,7 +82,7 @@ export function AzaeronCase({ project }: { project: Project }) {
           id="financial-state"
           className="case-section case-section--state"
         >
-          <p className="eyebrow">02 / USER &amp; BUSINESS PROBLEM</p>
+          <p className="eyebrow">USER &amp; BUSINESS PROBLEM</p>
           <h2>A paid invoice needs a settled balance.</h2>
           <p className="section-lede">
             The invoice lifecycle checks allowed moves against payment
@@ -125,12 +133,11 @@ export function AzaeronCase({ project }: { project: Project }) {
         </section>
 
         <section id="decisions" className="case-section">
-          <p className="eyebrow">03 / ENGINEERING DECISIONS</p>
+          <p className="eyebrow">ENGINEERING DECISIONS</p>
           <h2>What had to stay true.</h2>
           <div className="decision-list">
-            {project.decisions.map((decision, index) => (
+            {project.decisions.map((decision) => (
               <article key={decision.title}>
-                <span className="index">0{index + 1}</span>
                 <div>
                   <h3>{decision.title}</h3>
                   <p>{decision.body}</p>
@@ -141,9 +148,9 @@ export function AzaeronCase({ project }: { project: Project }) {
         </section>
 
         <section id="architecture" className="case-section">
-          <p className="eyebrow">04 / TECHNICAL IMPLEMENTATION</p>
+          <p className="eyebrow">TECHNICAL IMPLEMENTATION</p>
           <h2>The API owns the business rules.</h2>
-          <SystemDiagram project={project} />
+          <SystemDiagram boundaries={project.boundaries} />
           <p className="architecture-caption">
             React and TypeScript handle the merchant interface. Express owns
             validation, authorization, and lifecycle rules. MongoDB stores the
@@ -152,7 +159,7 @@ export function AzaeronCase({ project }: { project: Project }) {
         </section>
 
         <section id="access" className="case-section">
-          <p className="eyebrow">05 / ACCESS &amp; DELIVERY</p>
+          <p className="eyebrow">ACCESS &amp; DELIVERY</p>
           <h2>Check the request before changing a record.</h2>
           <div className="boundary-steps">
             <div>
@@ -197,7 +204,7 @@ export function AzaeronCase({ project }: { project: Project }) {
         </section>
 
         <section id="status" className="case-section case-section--last">
-          <p className="eyebrow">06 / CURRENT STATUS &amp; LIMITS</p>
+          <p className="eyebrow">CURRENT STATUS &amp; LIMITS</p>
           <h2>
             The public surfaces are live; production behavior is unverified.
           </h2>

@@ -40,6 +40,13 @@ export const metadata: Metadata = {
     url: "/",
     images: ["/opengraph-image"],
   },
+  icons: {
+    icon: [
+      { url: "/icon.svg", type: "image/svg+xml" },
+      { url: "/icon-192.png", sizes: "192x192", type: "image/png" },
+    ],
+    apple: "/apple-icon.png",
+  },
   twitter: { card: "summary_large_image" },
   robots: { index: true, follow: true },
 };
@@ -47,6 +54,10 @@ export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
   colorScheme: "light dark",
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#F8F6F1" },
+    { media: "(prefers-color-scheme: dark)", color: "#0F1F1E" },
+  ],
 };
 
 export default async function RootLayout({

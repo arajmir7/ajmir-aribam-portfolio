@@ -8,7 +8,20 @@ export function SiteFooter() {
     <footer className="site-footer">
       <div className="shell footer-main">
         <div className="footer-identity">
-          <Image src="/brand/mark.svg" alt="" width={34} height={34} />
+          <Image
+            className="footer-mark brand-light"
+            src="/brand/mark.svg"
+            alt=""
+            width={410}
+            height={300}
+          />
+          <Image
+            className="footer-mark brand-dark"
+            src="/brand/mark-dark.svg"
+            alt=""
+            width={410}
+            height={300}
+          />
           <div>
             <strong>Ajmir Aribam</strong>
             <span>Software Engineer</span>

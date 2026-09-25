@@ -1,6 +1,5 @@
 export type Project = {
   slug: string;
-  number: string;
   name: string;
   type: string;
   lede: string;
@@ -38,7 +37,6 @@ export type Project = {
 export const projects: Project[] = [
   {
     slug: "azaeron",
-    number: "01",
     name: "Azaeron",
     type: "Billing systems · full stack",
     year: "2026",
@@ -140,7 +138,6 @@ export const projects: Project[] = [
   },
   {
     slug: "shapes-india",
-    number: "02",
     name: "SHAPES India",
     type: "Institutional platform · production",
     year: "2026",
@@ -242,7 +239,6 @@ export const projects: Project[] = [
   },
   {
     slug: "friends-aluminium-works",
-    number: "03",
     name: "Friends Aluminium Works",
     type: "Commercial web · frontend delivery",
     year: "2026",
@@ -358,7 +354,6 @@ export const projects: Project[] = [
   },
   {
     slug: "azaeron-verity",
-    number: "04",
     name: "Azaeron Verity",
     type: "Document intelligence · in development",
     year: "2026",
@@ -456,7 +451,6 @@ export const projects: Project[] = [
   },
   {
     slug: "the-scent-bar-retail-os",
-    number: "05",
     name: "The Scent Bar Retail OS",
     type: "Retail operations · in development",
     year: "2026",
@@ -549,7 +543,6 @@ export const projects: Project[] = [
   },
   {
     slug: "azaeron-construction-procurement",
-    number: "06",
     name: "Azaeron Construction Procurement",
     type: "Procurement systems · in development",
     year: "2026",
@@ -638,7 +631,6 @@ export const projects: Project[] = [
   },
   {
     slug: "accessforge",
-    number: "07",
     name: "AccessForge",
     type: "Accessibility engineering · local build",
     year: "2026",
@@ -725,7 +717,6 @@ export const projects: Project[] = [
   },
   {
     slug: "scmirn",
-    number: "08",
     name: "SCMIRN",
     type: "Civic technology · prototype",
     year: "2026",
@@ -813,7 +804,6 @@ export const projects: Project[] = [
   },
   {
     slug: "zam-zam-academy",
-    number: "09",
     name: "Zam Zam Academy",
     type: "Education web · prototype",
     year: "2026",
@@ -900,97 +890,6 @@ export const projects: Project[] = [
     verify: [
       "Client relationship, ownership and production status — TODO_OWNER_VERIFY",
     ],
-  },
-  {
-    slug: "civicpulse-resilience-network",
-    number: "10",
-    name: "CivicPulse Resilience Network",
-    type: "Research & labs · civic systems",
-    year: "2026",
-    maturity: "prototype",
-    role: "Full-stack systems prototyping",
-    audience: "Civic operations teams monitoring local infrastructure",
-    technicalFocus: "Risk scoring, sensor ingestion and operational workflows",
-    featured: false,
-    caseStudy: true,
-    gallery: [],
-    status: "Research prototype",
-    limitations: [
-      "The local MVP is not a deployed city service and uses SQLite by default.",
-      "Risk scoring is rule-based; no operational outcome is asserted.",
-    ],
-    lede: "A research prototype for connecting citizen reports, infrastructure assets, sensor readings and maintenance work.",
-    summary:
-      "A React/FastAPI civic infrastructure prototype with role-based workflows, sensor ingestion, maps and rule-based risk scoring.",
-    visual: {
-      src: "/images/projects/civicpulse-flow.svg",
-      alt: "CivicPulse flow from report and sensor signal to risk score and maintenance task",
-      caption: "Research flow · local MVP",
-    },
-    source: "TODO_OWNER_VERIFY: repository publication status",
-    revision: "TODO_OWNER_VERIFY: local source snapshot",
-    stack: [
-      "React",
-      "TypeScript",
-      "FastAPI",
-      "SQLAlchemy",
-      "SQLite/PostgreSQL",
-    ],
-    context:
-      "The current build includes citizen, admin, and worker surfaces, infrastructure assets, sensor ingestion, analytics, uploads, and an API smoke test.",
-    problem:
-      "Small infrastructure failures are easier to act on when reports, sensor signals and maintenance ownership share one operational view.",
-    ownership:
-      "TODO_OWNER_VERIFY: exact individual and research contribution boundaries.",
-    constraints: [
-      "Keep rule-based risk scoring explainable",
-      "Protect sensor ingestion with a device key",
-      "Keep local demo infrastructure distinct from public operations",
-    ],
-    boundaries: [
-      {
-        label: "Reports",
-        detail: "Citizen issue submission and status tracking.",
-      },
-      {
-        label: "Signals",
-        detail: "Device-key protected sensor readings and anomaly alerts.",
-      },
-      {
-        label: "Operations",
-        detail: "Asset, task, worker and admin workflows.",
-      },
-      {
-        label: "Analysis",
-        detail: "Rule-based severity, risk, resilience and priority scoring.",
-      },
-    ],
-    decisions: [
-      {
-        title: "Keep scoring explainable",
-        body: "The scoring module is rule-based, and its inputs can be inspected.",
-        evidence: "backend/app/ai/scoring.py",
-      },
-      {
-        title: "Separate roles",
-        body: "Citizen, admin and worker paths are represented in both the API and UI.",
-        evidence: "backend/app/deps.py, frontend/src",
-      },
-      {
-        title: "Exercise the path",
-        body: "A smoke script covers health, admin login, asset lookup and sensor anomaly ingestion.",
-        evidence: "backend/smoke_test.py",
-      },
-    ],
-    delivery:
-      "A local full-stack MVP and smoke script were inspected. No deployment or field operations are claimed.",
-    operations:
-      "The application is configured for local SQLite and has a PostgreSQL-ready path. Monitoring and recovery have not been demonstrated.",
-    outcome:
-      "A research prototype connects reports, infrastructure records, rule-based scoring, and maintenance tasks. It has not been used in field operations.",
-    lessons:
-      "An explainable score is more useful when it connects directly to the person and task that must respond.",
-    verify: ["Deployment, field use and ownership — TODO_OWNER_VERIFY"],
   },
 ];
 

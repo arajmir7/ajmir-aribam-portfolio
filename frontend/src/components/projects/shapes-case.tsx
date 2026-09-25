@@ -15,7 +15,7 @@ export function ShapesCase() {
       <CaseContents sections={sections} />
       <div className="case-main">
         <section id="public-experience" className="case-section">
-          <p className="eyebrow">01 / PUBLIC EXPERIENCE</p>
+          <p className="eyebrow">PUBLIC EXPERIENCE</p>
           <h2>Six centres, one place to start.</h2>
           <p className="section-lede">
             SHAPES connects learning, psychological services, research, and
@@ -39,7 +39,7 @@ export function ShapesCase() {
         </section>
 
         <section id="editorial-workflow" className="case-section">
-          <p className="eyebrow">02 / EDITORIAL SYSTEM</p>
+          <p className="eyebrow">EDITORIAL SYSTEM</p>
           <h2>Editors can review before they publish.</h2>
           <p className="section-lede">
             Editors need room to revise content without making unfinished work
@@ -69,7 +69,7 @@ export function ShapesCase() {
         </section>
 
         <section id="platform" className="case-section">
-          <p className="eyebrow">03 / PLATFORM DESIGN</p>
+          <p className="eyebrow">PLATFORM DESIGN</p>
           <h2>Public pages and editor tools share the same records.</h2>
           <div
             className="institution-flow"
@@ -97,7 +97,7 @@ export function ShapesCase() {
         </section>
 
         <section id="continuity" className="case-section case-section--last">
-          <p className="eyebrow">04 / CONTINUITY</p>
+          <p className="eyebrow">CONTINUITY</p>
           <h2>How the site is released and checked.</h2>
           <div className="two-col-copy">
             <div>

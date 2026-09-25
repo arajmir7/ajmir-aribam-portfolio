@@ -78,16 +78,11 @@ export default function Home() {
         className="shell home-projects"
         aria-labelledby="home-projects-title"
       >
-        <div className="section-heading">
-          <p className="kicker">Selected work</p>
-          <div>
-            <h2 id="home-projects-title">
-              Three products, three different jobs.
-            </h2>
-            <Link className="text-link" href="/work">
-              See all work <span aria-hidden="true">↗</span>
-            </Link>
-          </div>
+        <div className="home-projects-heading">
+          <h2 id="home-projects-title">Selected work</h2>
+          <Link className="text-link" href="/work">
+            Full work archive <span aria-hidden="true">↗</span>
+          </Link>
         </div>
         <article className="home-project home-project--shapes">
           <div className="home-project-media">
@@ -100,7 +95,7 @@ export default function Home() {
           </div>
           <div className="home-project-content">
             <span className="project-sequence">
-              01 <span>/</span> Live institutional platform
+              Live · institutional platform
             </span>
             <h3>One public home for six centres.</h3>
             <p>
@@ -115,9 +110,7 @@ export default function Home() {
         </article>
         <article className="home-project home-project--friends">
           <div className="home-project-content">
-            <span className="project-sequence">
-              02 <span>/</span> Live commercial site
-            </span>
+            <span className="project-sequence">Live · commercial site</span>
             <h3>Show the work. Make it easy to ask.</h3>
             <p>
               For Friends Aluminium Works in Imphal, product and project pages

@@ -29,7 +29,7 @@ export function DevelopingCase({ project }: { project: Project }) {
       <CaseContents sections={verity ? veritySections : scentSections} />
       <div className="case-main">
         <section id="product" className="case-section">
-          <p className="eyebrow">01 / THE PRODUCT</p>
+          <p className="eyebrow">THE PRODUCT</p>
           <h2>
             {verity
               ? "Keep analysis with its document and evidence."
@@ -61,23 +61,19 @@ export function DevelopingCase({ project }: { project: Project }) {
             >
               {[
                 [
-                  "01",
                   "People & branches",
                   "Access depends on the signed-in person's organization and assigned branches.",
                 ],
                 [
-                  "02",
                   "Products & prices",
                   "The current catalogue handles SKUs, barcodes, and time-bound price records.",
                 ],
                 [
-                  "03",
                   "Still to build",
                   "Stock, purchasing, and sales remain later milestones.",
                 ],
-              ].map(([number, title, description]) => (
+              ].map(([title, description]) => (
                 <div key={title}>
-                  <span className="index">{number}</span>
                   <h3>{title}</h3>
                   <p>{description}</p>
                 </div>
@@ -86,7 +82,7 @@ export function DevelopingCase({ project }: { project: Project }) {
           )}
         </section>
         <section id="problem" className="case-section">
-          <p className="eyebrow">02 / THE PROBLEM</p>
+          <p className="eyebrow">THE PROBLEM</p>
           <h2>
             {verity
               ? "Useful analysis needs its source and limits."
@@ -99,7 +95,7 @@ export function DevelopingCase({ project }: { project: Project }) {
           </p>
         </section>
         <section id="decisions" className="case-section">
-          <p className="eyebrow">03 / ENGINEERING DECISIONS</p>
+          <p className="eyebrow">ENGINEERING DECISIONS</p>
           <h2>
             {verity
               ? "Keep evidence tied to the version."
@@ -111,9 +107,8 @@ export function DevelopingCase({ project }: { project: Project }) {
               : "Database checks cover tenant scope, cross-tenant relations, duplicate barcodes, and overlapping prices. The current milestone still needs fresh checks against its PostgreSQL and API runtime."}
           </p>
           <div className="decision-list">
-            {project.decisions.map((decision, index) => (
+            {project.decisions.map((decision) => (
               <article key={decision.title}>
-                <span className="index">0{index + 1}</span>
                 <div>
                   <h3>{decision.title}</h3>
                   <p>{decision.body}</p>
@@ -124,7 +119,7 @@ export function DevelopingCase({ project }: { project: Project }) {
           <p className="case-closing">{project.lessons}</p>
         </section>
         <section id="implementation" className="case-section">
-          <p className="eyebrow">04 / TECHNICAL IMPLEMENTATION</p>
+          <p className="eyebrow">TECHNICAL IMPLEMENTATION</p>
           <h2>
             {verity
               ? "Trace a finding to the exact version."
@@ -153,7 +148,7 @@ export function DevelopingCase({ project }: { project: Project }) {
           </div>
         </section>
         <section id="limits" className="case-section case-section--last">
-          <p className="eyebrow">05 / CURRENT STATUS &amp; LIMITS</p>
+          <p className="eyebrow">CURRENT STATUS &amp; LIMITS</p>
           <h2>
             {verity
               ? "Show a limit instead of a guess."
@@ -227,17 +222,6 @@ function GenericProjectCase({ project }: { project: Project }) {
       limits: "A hosted preview proves hosting, not ownership.",
       decisions: "Content structure carries the experience.",
     },
-    "civicpulse-resilience-network": {
-      product: "One operational view for reports, assets, and response tasks.",
-      problem:
-        "A report or sensor alert needs context: which asset is affected and who owns the next action.",
-      problemDetail:
-        "The prototype links reports and sensor signals to rule-based scoring and maintenance tasks. It has not been used in field operations.",
-      implementation:
-        "Keep risk scoring explainable inside the operational workflow.",
-      limits: "A research prototype has no verified field use.",
-      decisions: "Make the score and the response path inspectable.",
-    },
   }[project.slug] ?? {
     product: project.lede,
     problem: project.problem,
@@ -252,7 +236,7 @@ function GenericProjectCase({ project }: { project: Project }) {
       <CaseContents sections={sections} />
       <div className="case-main">
         <section id="product" className="case-section">
-          <p className="eyebrow">01 / THE PRODUCT</p>
+          <p className="eyebrow">THE PRODUCT</p>
           <h2>{copy.product}</h2>
           <p className="section-lede">{project.context}</p>
           <figure className="editorial-figure development-figure">
@@ -268,18 +252,17 @@ function GenericProjectCase({ project }: { project: Project }) {
           </figure>
         </section>
         <section id="problem" className="case-section">
-          <p className="eyebrow">02 / THE PROBLEM</p>
+          <p className="eyebrow">THE PROBLEM</p>
           <h2>{copy.problem}</h2>
           <p className="section-lede">{copy.problemDetail}</p>
         </section>
         <section id="decisions" className="case-section">
-          <p className="eyebrow">03 / ENGINEERING DECISIONS</p>
+          <p className="eyebrow">ENGINEERING DECISIONS</p>
           <h2>{copy.decisions}</h2>
           <p className="section-lede">{project.operations}</p>
           <div className="decision-list">
-            {project.decisions.map((decision, index) => (
+            {project.decisions.map((decision) => (
               <article key={decision.title}>
-                <span className="index">0{index + 1}</span>
                 <div>
                   <h3>{decision.title}</h3>
                   <p>{decision.body}</p>
@@ -290,7 +273,7 @@ function GenericProjectCase({ project }: { project: Project }) {
           <p className="case-closing">{project.lessons}</p>
         </section>
         <section id="implementation" className="case-section">
-          <p className="eyebrow">04 / TECHNICAL IMPLEMENTATION</p>
+          <p className="eyebrow">TECHNICAL IMPLEMENTATION</p>
           <h2>{copy.implementation}</h2>
           <p className="section-lede">
             The current build focuses on {project.technicalFocus.toLowerCase()}.
@@ -313,7 +296,7 @@ function GenericProjectCase({ project }: { project: Project }) {
           </div>
         </section>
         <section id="limits" className="case-section case-section--last">
-          <p className="eyebrow">05 / CURRENT STATUS &amp; LIMITS</p>
+          <p className="eyebrow">CURRENT STATUS &amp; LIMITS</p>
           <h2>{copy.limits}</h2>
           <p className="section-lede">{project.outcome}</p>
           <ul className="project-limitations">

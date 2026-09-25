@@ -21,9 +21,7 @@ export default function Writing() {
         </p>
       </header>
       <div className="notes-index">
-        <div className="notes-index-label">
-          Latest note <span>01</span>
-        </div>
+        <div className="notes-index-label">Latest note</div>
         {writing.map((note) => (
           <article className="note-feature" key={note.slug}>
             <div className="note-feature-meta">

@@ -35,19 +35,51 @@ export function SiteHeader() {
       <div className="shell header-inner">
         <Link className="brand" href="/" aria-label="Ajmir Aribam, home">
           <Image
-            className="brand-mark"
-            src="/brand/mark.svg"
+            className="brand-asset brand-full brand-light"
+            src="/brand/lockup.svg"
             alt=""
-            width={36}
-            height={36}
+            width={600}
+            height={116}
             loading="eager"
           />
           <Image
-            className="brand-wordmark"
-            src="/brand/wordmark.svg"
+            className="brand-asset brand-full brand-dark"
+            src="/brand/lockup-dark.svg"
             alt=""
-            width={178}
-            height={20}
+            width={600}
+            height={116}
+            loading="eager"
+          />
+          <Image
+            className="brand-asset brand-compact brand-light"
+            src="/brand/compact.svg"
+            alt=""
+            width={360}
+            height={78}
+            loading="eager"
+          />
+          <Image
+            className="brand-asset brand-compact brand-dark"
+            src="/brand/compact-dark.svg"
+            alt=""
+            width={360}
+            height={78}
+            loading="eager"
+          />
+          <Image
+            className="brand-asset brand-monogram brand-light"
+            src="/brand/mark.svg"
+            alt=""
+            width={410}
+            height={300}
+            loading="eager"
+          />
+          <Image
+            className="brand-asset brand-monogram brand-dark"
+            src="/brand/mark-dark.svg"
+            alt=""
+            width={410}
+            height={300}
             loading="eager"
           />
         </Link>

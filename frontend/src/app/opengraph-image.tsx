@@ -13,57 +13,73 @@ export default function Image() {
         display: "flex",
         flexDirection: "column",
         justifyContent: "space-between",
-        padding: "54px 64px",
-        background: "#f5f1e9",
-        color: "#18211e",
-        fontFamily: "sans-serif",
+        padding: "58px 70px",
+        background: "#F8F6F1",
+        color: "#0F1F1E",
+        fontFamily: "Arial, sans-serif",
       }}
     >
-      <div style={{ display: "flex", alignItems: "center", gap: 22 }}>
-        <svg width="68" height="68" viewBox="0 0 64 64" aria-hidden="true">
+      <div style={{ display: "flex", alignItems: "center", gap: 24 }}>
+        <svg width="72" height="58" viewBox="145 10 410 300" aria-hidden="true">
           <path
-            d="M5 52 21 11 37 52M27 52 43 11 59 52M12 38h40"
-            fill="none"
-            stroke="#2e5a49"
-            strokeWidth="5"
-            strokeLinecap="square"
-            strokeLinejoin="miter"
+            d="M360 76h15c24 0 39 12 52 37l74 140c10 21 24 34 38 42h-63z"
+            fill="#6B8BA7"
+          />
+          <path d="m160 295 107-185 15 25-89 160z" fill="#0F1F1E" />
+          <path d="m322 22-43 73 90 170c10 19 25 30 46 30h41z" fill="#0F1F1E" />
+          <path
+            d="M252 213h45c17 0 30 9 40 27l33 55h-48l-18-37c-11-23-27-42-52-42z"
+            fill="#0F1F1E"
           />
         </svg>
-        <div style={{ fontSize: 25, letterSpacing: 3, fontWeight: 700 }}>
-          AJMIR ARIBAM
+        <div style={{ display: "flex", flexDirection: "column" }}>
+          <span style={{ fontSize: 28, letterSpacing: 5, fontWeight: 500 }}>
+            AJMIR ARIBAM
+          </span>
+          <span
+            style={{
+              marginTop: 4,
+              color: "#526A7A",
+              fontSize: 11,
+              letterSpacing: 4,
+            }}
+          >
+            BUILDING USEFUL SYSTEMS
+          </span>
         </div>
       </div>
-      <div style={{ display: "flex", flexDirection: "column", maxWidth: 980 }}>
+      <div style={{ display: "flex", flexDirection: "column", gap: 22 }}>
+        <span style={{ color: "#365D76", fontSize: 18, letterSpacing: 3 }}>
+          SOFTWARE ENGINEER
+        </span>
         <div
           style={{
             display: "flex",
             flexDirection: "column",
-            fontSize: 80,
-            fontWeight: 700,
-            lineHeight: 1.05,
-            letterSpacing: -4,
+            maxWidth: 1040,
+            fontSize: 66,
+            fontWeight: 650,
+            lineHeight: 1.08,
+            letterSpacing: -2.5,
           }}
         >
-          <span>I build the product and</span>
-          <span>the system behind it.</span>
-        </div>
-        <div style={{ fontSize: 29, color: "#2e5a49", marginTop: 27 }}>
-          Software Engineer · Backend · Product · Quality
+          <span>I build software products</span>
+          <span>and the systems behind them.</span>
         </div>
       </div>
       <div
         style={{
           display: "flex",
           justifyContent: "space-between",
-          borderTop: "2px solid #cad4ca",
-          paddingTop: 20,
-          fontSize: 19,
+          borderTop: "1px solid #C9C5BC",
+          paddingTop: 17,
+          color: "#4E5C5E",
+          fontSize: 15,
           letterSpacing: 2,
         }}
       >
-        <span>PORTFOLIO / 2026</span>
-        <span>SELECTED WORK · ENGINEERING · ABOUT</span>
+        <span>SELECTED WORK · ENGINEERING · NOTES</span>
+        <span>AJMIRARIBAM.COM</span>
       </div>
     </div>,
     size,

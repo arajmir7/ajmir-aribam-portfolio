@@ -6,7 +6,7 @@ import { pageMeta } from "@/lib/site";
 
 export const metadata: Metadata = pageMeta(
   "Work",
-  "Software products by Ajmir Aribam across billing, publishing, procurement, accessibility, civic workflows and retail systems.",
+  "Live products, institutional websites, active software builds and prototypes by Ajmir Aribam.",
   "/work",
 );
 
@@ -23,16 +23,12 @@ export default function Work() {
   return (
     <main id="main" className="work-page">
       <header className="shell work-heading">
-        <p className="kicker">
-          Selected work <span aria-hidden="true">/</span> {projects.length}{" "}
-          projects
-        </p>
+        <p className="kicker">Projects</p>
         <div>
-          <h1>Software built for different kinds of work.</h1>
+          <h1>Work</h1>
           <p>
-            From billing and publishing to procurement and accessibility
-            tooling, each project solves a different problem. The status and
-            scope are shown with the work.
+            Live products, active builds and prototypes. Each case shows what I
+            worked on and what remains unverified.
           </p>
         </div>
       </header>
@@ -49,7 +45,7 @@ export default function Work() {
         </Link>
         <div className="work-lead-copy">
           <span className="project-sequence">
-            01 <span>/</span> Live · {lead.type.split(" · ")[0]}
+            Live <span>/</span> {lead.type.split(" · ")[0]}
           </span>
           <h2 id="work-lead-title">{lead.name}</h2>
           <p className="work-lead-intro">{lead.lede}</p>
@@ -80,19 +76,13 @@ export default function Work() {
         </div>
       </section>
       <section className="shell work-live" aria-labelledby="work-live-title">
-        <div className="section-heading">
-          <p className="kicker">Live work</p>
-          <div>
-            <h2 id="work-live-title">Different people. Different products.</h2>
-            <p>
-              The interface changes with the job; the underlying rules matter in
-              each.
-            </p>
-          </div>
+        <div className="work-section-intro">
+          <h2 id="work-live-title">Other live work</h2>
+          <p>One institutional platform and one commercial website.</p>
         </div>
         {live
           .filter((project) => project.slug !== lead.slug)
-          .map((project, index) => (
+          .map((project) => (
             <article
               className={`work-live-row work-live-row--${project.slug}`}
               key={project.slug}
@@ -107,8 +97,7 @@ export default function Work() {
               </Link>
               <div className="work-live-copy">
                 <span className="project-sequence">
-                  0{index + 2} <span>/</span> Live ·{" "}
-                  {project.type.split(" · ")[0]}
+                  Live · {project.type.split(" · ")[0]}
                 </span>
                 <h3>{project.name}</h3>
                 <p>{project.lede}</p>
@@ -146,17 +135,9 @@ export default function Work() {
       </section>
       <section className="work-building" aria-labelledby="work-building-title">
         <div className="shell">
-          <div className="section-heading">
-            <p className="kicker">In development</p>
-            <div>
-              <h2 id="work-building-title">
-                Working systems, open release gates.
-              </h2>
-              <p>
-                These case studies show implemented scope and current limits.
-                They are not presented as launched products.
-              </p>
-            </div>
+          <div className="work-section-intro">
+            <h2 id="work-building-title">In development</h2>
+            <p>Implemented scope and open release gates are shown per case.</p>
           </div>
           <div className="work-building-list">
             {building.map((project) => (
@@ -179,11 +160,21 @@ export default function Work() {
                   </span>
                   <h3>{project.name}</h3>
                   <p>{project.lede}</p>
-                  <span className="work-building-focus">
-                    Current focus: {project.technicalFocus}
-                  </span>
-                  <Link href={`/work/${project.slug}`}>
-                    See the current build ↗
+                  <dl className="work-project-details">
+                    <div>
+                      <dt>My part</dt>
+                      <dd>{project.role}</dd>
+                    </div>
+                    <div>
+                      <dt>Engineering</dt>
+                      <dd>{project.technicalFocus}</dd>
+                    </div>
+                  </dl>
+                  <Link
+                    className="work-project-action"
+                    href={`/work/${project.slug}`}
+                  >
+                    Read the case study ↗
                   </Link>
                 </div>
               </article>
@@ -196,18 +187,9 @@ export default function Work() {
         aria-labelledby="work-prototypes-title"
       >
         <div className="shell">
-          <div className="section-heading">
-            <p className="kicker">Research &amp; prototypes</p>
-            <div>
-              <h2 id="work-prototypes-title">
-                Working ideas with a visible boundary.
-              </h2>
-              <p>
-                These systems have real source and product surfaces, while
-                deployment, ownership or end-to-end behavior still needs
-                verification.
-              </p>
-            </div>
+          <div className="work-section-intro">
+            <h2 id="work-prototypes-title">Prototypes</h2>
+            <p>Exploratory work is labeled as such, with its limits in view.</p>
           </div>
           <div className="work-prototype-list">
             {prototypes.map((project) => (
@@ -229,8 +211,21 @@ export default function Work() {
                   </span>
                   <h3>{project.name}</h3>
                   <p>{project.lede}</p>
-                  <Link href={`/work/${project.slug}`}>
-                    Read the boundary ↗
+                  <dl className="work-project-details">
+                    <div>
+                      <dt>My part</dt>
+                      <dd>{project.role}</dd>
+                    </div>
+                    <div>
+                      <dt>Engineering</dt>
+                      <dd>{project.technicalFocus}</dd>
+                    </div>
+                  </dl>
+                  <Link
+                    className="work-project-action"
+                    href={`/work/${project.slug}`}
+                  >
+                    Read the case study ↗
                   </Link>
                 </div>
               </article>
@@ -242,8 +237,8 @@ export default function Work() {
         <div>
           <span className="kicker">Labs &amp; experiments</span>
           <p>
-            CivicPulse is a research prototype. SCMIRN and Zam Zam are direct
-            product studies; all three remain separate from shipped work.
+            The two case studies include additional context on these educational
+            and civic-service prototypes.
           </p>
         </div>
         <Link href="/labs">

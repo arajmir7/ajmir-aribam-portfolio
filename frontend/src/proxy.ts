@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { projectBySlug } from "@/content/projects";
 
 export function proxy(request: NextRequest) {
   const nonce = Buffer.from(crypto.randomUUID()).toString("base64");
@@ -24,7 +25,20 @@ export function proxy(request: NextRequest) {
     "x-request-id",
     request.headers.get("x-request-id")?.slice(0, 80) || crypto.randomUUID(),
   );
-  const response = NextResponse.next({ request: { headers: requestHeaders } });
+  const projectRoute = request.nextUrl.pathname.match(/^\/work\/([^/]+)\/?$/);
+  const missingProject = projectRoute && !projectBySlug(projectRoute[1]);
+  let response: NextResponse;
+  if (missingProject) {
+    const notFoundUrl = request.nextUrl.clone();
+    notFoundUrl.pathname = "/404";
+    notFoundUrl.search = "";
+    response = NextResponse.rewrite(notFoundUrl, {
+      status: 404,
+      request: { headers: requestHeaders },
+    });
+  } else {
+    response = NextResponse.next({ request: { headers: requestHeaders } });
+  }
   response.headers.set("Content-Security-Policy", csp);
   response.headers.set("X-Content-Type-Options", "nosniff");
   response.headers.set("Referrer-Policy", "strict-origin-when-cross-origin");
