@@ -117,8 +117,8 @@ export default function Resume() {
               </h3>
               <p>
                 Document review workspace with versioned findings, linked
-                sources and explicit unavailable-analysis states. Production
-                model and release gates remain open.
+                sources and clear unavailable-analysis states. The project is
+                still in development; no production model is running.
               </p>
             </div>
           </article>

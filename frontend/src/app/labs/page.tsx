@@ -16,9 +16,8 @@ export default function Labs() {
         <p className="kicker">Labs &amp; experiments</p>
         <h1>Ideas with working parts.</h1>
         <p>
-          Early explorations live here, with their prototype status visible.
-          They are separate from shipped work and make the research questions
-          inspectable.
+          These early builds show the ideas and their current limits. Neither is
+          presented as a finished service.
         </p>
       </header>
       <div className="lab-list">

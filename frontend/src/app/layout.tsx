@@ -13,7 +13,7 @@ import {
 import { headers } from "next/headers";
 import localFont from "next/font/local";
 import "./globals.css";
-import "./product.css";
+import "./rebuild.css";
 
 const instrumentSans = localFont({
   src: "../assets/instrument-sans-latin.woff2",
@@ -55,8 +55,8 @@ export const viewport: Viewport = {
   initialScale: 1,
   colorScheme: "light dark",
   themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#F8F6F1" },
-    { media: "(prefers-color-scheme: dark)", color: "#0F1F1E" },
+    { media: "(prefers-color-scheme: light)", color: "#edf1f5" },
+    { media: "(prefers-color-scheme: dark)", color: "#0e1623" },
   ],
 };
 

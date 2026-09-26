@@ -32,10 +32,10 @@ export default function Privacy() {
         </p>
         <h2>Storage and retention</h2>
         <p>
-          Inquiry records are stored in the portfolio database. A retention and
-          deletion schedule must be configured by the operator before production
-          launch; until then, deployment remains a conditional gate. Backups may
-          retain data for their configured lifetime.
+          Inquiry records are stored in the site database. A retention period
+          has not yet been set for public operation; it will be published before
+          the form opens on a public domain. Backups may keep records until
+          their configured expiry.
         </p>
         <h2>Your choices</h2>
         <p>

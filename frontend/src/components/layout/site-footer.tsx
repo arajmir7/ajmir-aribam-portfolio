@@ -28,7 +28,7 @@ export function SiteFooter() {
           </div>
         </div>
         <div className="footer-contact">
-          <span>Have a project in mind?</span>
+          <span>Direct email</span>
           <a href={`mailto:${email}`}>
             {email} <span aria-hidden="true">↗</span>
           </a>
@@ -36,6 +36,9 @@ export function SiteFooter() {
         <nav aria-label="Footer navigation" className="footer-nav">
           <Link href="/work">Work</Link>
           <Link href="/engineering">Engineering</Link>
+          <Link href="/about">About</Link>
+          <Link href="/notes">Notes</Link>
+          <Link href="/resume">Résumé</Link>
           <Link href="/contact">Contact</Link>
           <Link href="/privacy">Privacy</Link>
         </nav>
@@ -43,7 +46,6 @@ export function SiteFooter() {
       <div className="shell footer-bottom">
         <span>© {new Date().getFullYear()} Ajmir Aribam</span>
         <SocialLinks compact />
-        <span>Built and checked with care.</span>
       </div>
     </footer>
   );

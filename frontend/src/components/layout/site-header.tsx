@@ -35,39 +35,7 @@ export function SiteHeader() {
       <div className="shell header-inner">
         <Link className="brand" href="/" aria-label="Ajmir Aribam, home">
           <Image
-            className="brand-asset brand-full brand-light"
-            src="/brand/lockup.svg"
-            alt=""
-            width={600}
-            height={116}
-            loading="eager"
-          />
-          <Image
-            className="brand-asset brand-full brand-dark"
-            src="/brand/lockup-dark.svg"
-            alt=""
-            width={600}
-            height={116}
-            loading="eager"
-          />
-          <Image
-            className="brand-asset brand-compact brand-light"
-            src="/brand/compact.svg"
-            alt=""
-            width={360}
-            height={78}
-            loading="eager"
-          />
-          <Image
-            className="brand-asset brand-compact brand-dark"
-            src="/brand/compact-dark.svg"
-            alt=""
-            width={360}
-            height={78}
-            loading="eager"
-          />
-          <Image
-            className="brand-asset brand-monogram brand-light"
+            className="brand-mark brand-light"
             src="/brand/mark.svg"
             alt=""
             width={410}
@@ -75,13 +43,14 @@ export function SiteHeader() {
             loading="eager"
           />
           <Image
-            className="brand-asset brand-monogram brand-dark"
+            className="brand-mark brand-dark"
             src="/brand/mark-dark.svg"
             alt=""
             width={410}
             height={300}
             loading="eager"
           />
+          <span className="brand-name">Ajmir Aribam</span>
         </Link>
         <nav
           id="primary-navigation"
@@ -101,6 +70,24 @@ export function SiteHeader() {
         </nav>
         <div className="header-actions">
           <ThemeToggle />
+          <Link
+            href="/contact"
+            className="header-contact-mobile"
+            aria-label="Contact Ajmir"
+          >
+            <svg
+              aria-hidden="true"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.7"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <rect x="3" y="5" width="18" height="14" rx="2" />
+              <path d="m4 7 8 6 8-6" />
+            </svg>
+          </Link>
           <Link
             href="/contact"
             className="header-contact"

@@ -7,8 +7,8 @@ export default function manifest(): MetadataRoute.Manifest {
     description: "Selected work and engineering by Ajmir Aribam.",
     start_url: "/",
     display: "browser",
-    background_color: "#F8F6F1",
-    theme_color: "#0F1F1E",
+    background_color: "#EDF1F5",
+    theme_color: "#17202E",
     icons: [
       { src: "/icon.svg", sizes: "any", type: "image/svg+xml" },
       {

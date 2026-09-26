@@ -46,6 +46,14 @@ export function ContactForm() {
       setStatus("failed");
       return;
     }
+    if (!navigator.onLine) {
+      setStatus("failed");
+      setEmailFallback(true);
+      setFeedback(
+        "You appear to be offline. You can email me directly when you reconnect.",
+      );
+      return;
+    }
     setStatus("sending");
     setFeedback("");
     setEmailFallback(false);
@@ -92,6 +100,7 @@ export function ContactForm() {
       onSubmit={submit}
       noValidate
       aria-label="Contact inquiry"
+      aria-busy={status === "sending"}
     >
       <p className="eyebrow">SEND AN INQUIRY</p>
       <p className="form-note">

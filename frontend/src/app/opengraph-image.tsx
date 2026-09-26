@@ -14,8 +14,8 @@ export default function Image() {
         flexDirection: "column",
         justifyContent: "space-between",
         padding: "58px 70px",
-        background: "#F8F6F1",
-        color: "#0F1F1E",
+        background: "#EDF1F5",
+        color: "#17202E",
         fontFamily: "Arial, sans-serif",
       }}
     >
@@ -25,31 +25,19 @@ export default function Image() {
             d="M360 76h15c24 0 39 12 52 37l74 140c10 21 24 34 38 42h-63z"
             fill="#6B8BA7"
           />
-          <path d="m160 295 107-185 15 25-89 160z" fill="#0F1F1E" />
-          <path d="m322 22-43 73 90 170c10 19 25 30 46 30h41z" fill="#0F1F1E" />
+          <path d="m160 295 107-185 15 25-89 160z" fill="#17202E" />
+          <path d="m322 22-43 73 90 170c10 19 25 30 46 30h41z" fill="#17202E" />
           <path
             d="M252 213h45c17 0 30 9 40 27l33 55h-48l-18-37c-11-23-27-42-52-42z"
-            fill="#0F1F1E"
+            fill="#17202E"
           />
         </svg>
-        <div style={{ display: "flex", flexDirection: "column" }}>
-          <span style={{ fontSize: 28, letterSpacing: 5, fontWeight: 500 }}>
-            AJMIR ARIBAM
-          </span>
-          <span
-            style={{
-              marginTop: 4,
-              color: "#526A7A",
-              fontSize: 11,
-              letterSpacing: 4,
-            }}
-          >
-            BUILDING USEFUL SYSTEMS
-          </span>
-        </div>
+        <span style={{ fontSize: 32, letterSpacing: 4, fontWeight: 600 }}>
+          AJMIR ARIBAM
+        </span>
       </div>
       <div style={{ display: "flex", flexDirection: "column", gap: 22 }}>
-        <span style={{ color: "#365D76", fontSize: 18, letterSpacing: 3 }}>
+        <span style={{ color: "#2C568F", fontSize: 18, letterSpacing: 3 }}>
           SOFTWARE ENGINEER
         </span>
         <div
@@ -63,23 +51,23 @@ export default function Image() {
             letterSpacing: -2.5,
           }}
         >
-          <span>I build software products</span>
-          <span>and the systems behind them.</span>
+          <span>Products people use.</span>
+          <span>Systems they can depend on.</span>
         </div>
       </div>
       <div
         style={{
           display: "flex",
           justifyContent: "space-between",
-          borderTop: "1px solid #C9C5BC",
+          borderTop: "1px solid #CBD3DD",
           paddingTop: 17,
-          color: "#4E5C5E",
+          color: "#3C4A5C",
           fontSize: 15,
           letterSpacing: 2,
         }}
       >
         <span>SELECTED WORK · ENGINEERING · NOTES</span>
-        <span>AJMIRARIBAM.COM</span>
+        <span>SOFTWARE ENGINEER</span>
       </div>
     </div>,
     size,

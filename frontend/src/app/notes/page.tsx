@@ -16,8 +16,8 @@ export default function Writing() {
         <p className="kicker">Notes</p>
         <h1>Decisions worth writing down.</h1>
         <p>
-          Short essays from the work. One for now; more only when there is
-          something useful to say.
+          Notes on decisions behind the work. The first looks at why status
+          changes belong on the server.
         </p>
       </header>
       <div className="notes-index">

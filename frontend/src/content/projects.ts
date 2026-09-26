@@ -63,7 +63,7 @@ export const projects: Project[] = [
     ],
     lede: "Azaeron brings invoicing, quotations, payments, inventory, and customer records into one business workspace.",
     summary:
-      "Invoice and business operations software with a React interface, Express API, and MongoDB persistence.",
+      "A workspace for invoices, payments, inventory and customer records, with guarded financial state.",
     live: "https://invoice.web-com.live/",
     visual: {
       src: "/images/projects/azaeron-login.webp",
@@ -161,11 +161,11 @@ export const projects: Project[] = [
     ],
     limitations: [
       "Production backup schedule and exact contribution boundaries require owner verification.",
+      "TODO_OWNER_VERIFY: current public URL and deployment state.",
     ],
     lede: "A public site for six centres, with a controlled publishing workflow behind it.",
     summary:
       "An institutional web platform for six centres, public resources, and content operations.",
-    live: "https://shapesindia.org/",
     visual: {
       src: "/images/projects/shapes-centres.webp",
       alt: "SHAPES India centre index showing its six-centre navigation",
@@ -382,7 +382,7 @@ export const projects: Project[] = [
     status: "In development",
     lede: "Verity lets reviewers examine document analysis alongside the exact version, recorded text, and sources behind it.",
     summary:
-      "A version-aware document review workspace with recorded findings, citations, provenance, and explicit unavailable analysis states.",
+      "A document review workspace that keeps findings tied to a version, source and uncertainty.",
     visual: {
       src: "/images/projects/verity-review.png",
       alt: "Verity local review workspace showing a version-scoped result and an explicit insufficient-evidence state",

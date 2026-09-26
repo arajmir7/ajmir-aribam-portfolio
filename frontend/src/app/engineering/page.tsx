@@ -4,242 +4,155 @@ import { pageMeta } from "@/lib/site";
 
 export const metadata: Metadata = pageMeta(
   "Engineering",
-  "How Ajmir Aribam builds, checks and delivers application systems, AI-enabled workflows and product interfaces.",
+  "How Ajmir Aribam approaches product surfaces, application rules, data, quality and delivery.",
   "/engineering",
 );
 
 const layers = [
   {
-    name: "Frontend & product engineering",
-    detail: "Navigation, forms and feedback that make the next step clear.",
-    proof: "Friends Aluminium Works",
-    href: "/work/friends-aluminium-works",
-  },
-  {
-    name: "Backend & application systems",
-    detail:
-      "Permission checks and state changes that every client must pass through.",
-    proof: "Azaeron",
-    href: "/work/azaeron",
-  },
-  {
-    name: "API & data architecture",
-    detail:
-      "Versioned content, payment state and traceable source relationships.",
-    proof: "SHAPES India",
+    name: "Product surface",
+    detail: "Make the task understandable before asking for input.",
+    proof: "SHAPES public navigation",
     href: "/work/shapes-india",
   },
   {
-    name: "Authentication & secure systems",
-    detail:
-      "Identity, tenant scope and permission checks are enforced where requests are handled.",
-    proof: "Azaeron",
-    href: "/work/azaeron#access",
+    name: "Application rules",
+    detail: "Put state changes where every caller meets the same rule.",
+    proof: "Azaeron invoice lifecycle",
+    href: "/work/azaeron#decisions",
   },
   {
-    name: "AI-enabled systems",
-    detail:
-      "Versioned evidence, abstention and human review keep analysis within what the system can support.",
-    proof: "Azaeron Verity",
-    href: "/work/azaeron-verity",
+    name: "Data boundaries",
+    detail: "Give records a clear owner, version and scope.",
+    proof: "Verity evidence model",
+    href: "/work/azaeron-verity#system",
   },
   {
-    name: "Quality engineering",
-    detail:
-      "Different checks cover rules, data, browser behavior and release wiring.",
-    proof: "AccessForge",
-    href: "/work/accessforge",
+    name: "Authorization",
+    detail: "Check identity and permission at the server boundary.",
+    proof: "SHAPES editorial permissions",
+    href: "/work/shapes-india#decisions",
   },
   {
-    name: "Cloud & delivery",
-    detail:
-      "Migrations, health checks and release validation make deployment inspectable.",
-    proof: "SHAPES India",
-    href: "/work/shapes-india#continuity",
+    name: "Quality",
+    detail: "Retest the behavior after changing it.",
+    proof: "AccessForge proof loop",
+    href: "/work/accessforge#system",
   },
   {
-    name: "Performance & accessibility",
-    detail:
-      "Responsive layouts, image delivery, keyboard paths and re-scans are part of the product.",
-    proof: "AccessForge",
-    href: "/work/accessforge",
+    name: "Delivery",
+    detail: "Make build, migration and readiness checks part of a release.",
+    proof: "Azaeron release path",
+    href: "/work/azaeron#evidence",
   },
   {
-    name: "Human workflows",
+    name: "Operations",
     detail:
-      "Product boundaries make the next action clear while leaving authority and uncertainty visible.",
-    proof: "SCMIRN",
-    href: "/work/scmirn",
+      "Leave a way to see whether the service and its dependencies are ready.",
+    proof: "SHAPES continuity",
+    href: "/work/shapes-india#evidence",
   },
-  {
-    name: "Reliability & operations",
-    detail:
-      "Health checks, migrations, and recovery paths help diagnose failures; live monitoring and recovery results still need verification.",
-    proof: "SHAPES India",
-    href: "/work/shapes-india#continuity",
-  },
-] as const;
+];
 
 export default function Engineering() {
   return (
-    <main id="main" className="engineering-page">
-      <header className="shell engineering-heading">
-        <p className="kicker">Engineering practice</p>
+    <main id="main" className="rebuild-engineering">
+      <header className="shell engineering-opening">
+        <p className="section-label">Engineering / approach</p>
         <div>
-          <h1>A useful product has more than one layer.</h1>
+          <h1>Build from the boundary inward.</h1>
           <p>
-            I work across the interface, the rules behind it, and the checks
-            that let a change ship. These examples come from the projects in
-            this portfolio.
+            A screen can look finished while the system behind it is still
+            ambiguous. I work through the rules, records and checks that let a
+            product make a reliable promise.
           </p>
         </div>
       </header>
       <section
-        className="shell engineering-map"
-        aria-labelledby="engineering-map-title"
+        className="shell engineering-system"
+        aria-labelledby="system-title"
       >
-        <div className="engineering-map-head">
-          <h2 id="engineering-map-title">
-            One change, several places to think.
-          </h2>
-          <p>
-            A screen can initiate an action. The service decides whether it is
-            allowed, the records preserve what happened, and the release path
-            checks that it still works.
-          </p>
+        <div className="section-intro">
+          <p className="section-label">01 / System model</p>
+          <div>
+            <h2 id="system-title">Seven connected concerns.</h2>
+            <p>
+              Each layer affects the next. The project links show how these
+              decisions work in practice.
+            </p>
+          </div>
         </div>
-        <ol>
-          {layers.map((layer) => (
+        <ol className="engineering-layer-list">
+          {layers.map((layer, index) => (
             <li key={layer.name}>
-              <div>
-                <h3>{layer.name}</h3>
-                <p>{layer.detail}</p>
-                <Link href={layer.href}>{layer.proof} ↗</Link>
-              </div>
+              <span>{String(index + 1).padStart(2, "0")}</span>
+              <h3>{layer.name}</h3>
+              <p>{layer.detail}</p>
+              <Link href={layer.href}>{layer.proof} ↗</Link>
             </li>
           ))}
         </ol>
       </section>
       <section
-        className="engineering-evidence"
-        aria-labelledby="engineering-evidence-title"
+        className="engineering-questions"
+        aria-labelledby="questions-title"
       >
         <div className="shell">
-          <p className="kicker">Through the work</p>
-          <h2 id="engineering-evidence-title">
-            The decisions are visible in the work.
-          </h2>
-          <div className="engineering-evidence-list">
+          <div className="section-intro">
+            <p className="section-label">02 / In practice</p>
+            <div>
+              <h2 id="questions-title">Questions that change the build.</h2>
+              <p>These are more useful than a list of tools.</p>
+            </div>
+          </div>
+          <div className="engineering-question-list">
             <article>
-              <span>Rules &amp; data</span>
+              <span>Financial state</span>
               <h3>Can this invoice become paid?</h3>
               <p>
-                Azaeron’s lifecycle service checks payment summaries before
-                changing invoice status. The API records the transition and
-                audit context so another caller cannot bypass a browser guard.
+                Azaeron checks payment summaries and allowed transitions before
+                the API changes invoice status. The change has an audit trail.
               </p>
-              <Link href="/work/azaeron#financial-state">
-                Follow the invoice state ↗
-              </Link>
+              <Link href="/work/azaeron#decisions">Read the decision ↗</Link>
             </article>
             <article>
-              <span>Publishing &amp; access</span>
-              <h3>Who can publish this revision?</h3>
+              <span>Reviewable analysis</span>
+              <h3>What supports this finding?</h3>
               <p>
-                SHAPES separates public reading from authenticated editing. A
-                publishing service handles review states and revisions, while
-                server permissions scope administrative actions.
+                Verity keeps the document version, recorded source and
+                uncertainty beside the result. An unavailable calibrated model
+                is shown as unavailable.
               </p>
-              <Link href="/work/shapes-india#editorial-workflow">
-                Follow the publishing path ↗
-              </Link>
+              <Link href="/work/azaeron-verity">See the evidence flow ↗</Link>
             </article>
             <article>
-              <span>AI systems</span>
-              <h3>What evidence supports the finding?</h3>
+              <span>Verified remediation</span>
+              <h3>Is the defect actually fixed?</h3>
               <p>
-                Verity links review findings to document versions and sources.
-                Its interface can show insufficient evidence; the project
-                remains in development without a production-ready model claim.
+                AccessForge separates detection, change, security checks, rescan
+                and recorded proof. A proposed fix is not a verified fix.
               </p>
-              <Link href="/work/azaeron-verity">
-                See Verity’s current build ↗
-              </Link>
-            </article>
-            <article>
-              <span>Quality engineering</span>
-              <h3>When is a finding actually verified?</h3>
-              <p>
-                AccessForge keeps detection, remediation, security checks,
-                re-scans and regression evidence as separate steps.
-              </p>
-              <Link href="/work/accessforge">Follow the proof pipeline ↗</Link>
-            </article>
-            <article>
-              <span>Civic product systems</span>
-              <h3>What should happen after a report?</h3>
-              <p>
-                SCMIRN connects guidance, authority discovery, complaint filing
-                and progress tracking while keeping its prototype scope visible.
-              </p>
-              <Link href="/work/scmirn">See the civic workflow ↗</Link>
+              <Link href="/work/accessforge">Follow the proof loop ↗</Link>
             </article>
           </div>
         </div>
       </section>
-      <section
-        id="quality"
-        className="shell engineering-quality"
-        aria-labelledby="engineering-quality-title"
-      >
-        <div className="engineering-quality-lead">
-          <p className="kicker">Quality engineering</p>
-          <h2 id="engineering-quality-title">
-            Check the behavior at the boundary where it can fail.
-          </h2>
-          <p>
-            One green test does not cover a product. I use different checks for
-            rules, data, interface behavior and deployment wiring.
-          </p>
+      <section className="shell engineering-quality-summary">
+        <div>
+          <p className="section-label">03 / Quality</p>
+          <h2>Check the boundary where failure matters.</h2>
         </div>
-        <div className="quality-lines">
-          <div>
-            <strong>Rules</strong>
-            <p>Unit and API tests for state, validation and authorization.</p>
-          </div>
-          <div>
-            <strong>Data</strong>
-            <p>
-              Fresh migrations, isolated PostgreSQL tests and tenant-boundary
-              checks.
-            </p>
-          </div>
-          <div>
-            <strong>Interface</strong>
-            <p>
-              Playwright journeys, keyboard paths, axe scans and responsive
-              reviews.
-            </p>
-          </div>
-          <div>
-            <strong>Release</strong>
-            <p>
-              Dependency and secret scans, container builds, readiness and
-              contact smoke tests.
-            </p>
-          </div>
-        </div>
-        <p className="engineering-quality-note">
-          The portfolio’s own local gate runs these checks; production
-          monitoring and human accessibility review remain separate work.
+        <p>
+          Unit and API tests guard rules. Database tests guard records and
+          scope. Browser checks cover navigation, accessibility and responsive
+          behavior. Release checks cover dependencies, secrets, containers and
+          readiness.
         </p>
       </section>
-      <section className="shell engineering-last">
-        <p>Need someone who can work across product and system boundaries?</p>
-        <Link href="/contact">
-          Get in touch <span aria-hidden="true">↗</span>
-        </Link>
-      </section>
+      <div className="shell engineering-final">
+        <p>Want to work through a product problem together?</p>
+        <Link href="/contact">Get in touch ↗</Link>
+      </div>
     </main>
   );
 }

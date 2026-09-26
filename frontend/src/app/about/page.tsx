@@ -35,10 +35,10 @@ export default function About() {
             people see, the rules behind it, and the checks before it ships.
           </p>
           <p>
-            Before working deeply in software, I spent years handling banking
-            and public digital-service workflows. A wrong record, unclear
-            status, or broken process affected a real person immediately. That
-            experience still shapes the questions I ask when I build.
+            Before I focused on software, I handled banking and public
+            digital-service workflows. A wrong record, unclear status, or broken
+            process affected a real person immediately. That experience still
+            shapes the questions I ask when I build.
           </p>
           <p>
             My current work spans billing, procurement, institutional

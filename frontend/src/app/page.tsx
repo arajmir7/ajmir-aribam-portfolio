@@ -1,210 +1,185 @@
 import Image from "next/image";
 import Link from "next/link";
+import { ProjectCard, ProjectMedia } from "@/components/projects/project-card";
 import { projects } from "@/content/projects";
 
-const [azaeron, shapes, friends] = projects;
+const bySlug = (slug: string) =>
+  projects.find((project) => project.slug === slug)!;
+const featured = [
+  bySlug("azaeron"),
+  bySlug("azaeron-verity"),
+  bySlug("accessforge"),
+  bySlug("shapes-india"),
+];
 
 export default function Home() {
   return (
-    <main id="main" className="home-page">
-      <section className="shell home-opening" aria-labelledby="home-title">
-        <div className="home-intro">
-          <p className="kicker">
-            Ajmir Aribam <span aria-hidden="true">/</span> Software Engineer
+    <main id="main" className="rebuild-home">
+      <section className="shell home-hero" aria-labelledby="home-title">
+        <div className="home-hero-copy">
+          <p className="section-label">Software engineering / Imphal, India</p>
+          <h1 id="home-title">Ajmir Aribam</h1>
+          <p className="home-role">Software Engineer</p>
+          <p className="home-proposition">
+            I build the product people use and the systems that make it
+            dependable.
           </p>
-          <h1 id="home-title">
-            I build software products and the systems behind them.
-          </h1>
-          <p className="home-intro-lede">
-            Interfaces, APIs, business rules, tests and releases. I work across
-            the pieces that need to agree before software is useful.
+          <p className="home-support">
+            I work across interfaces, APIs, data and delivery. Recent projects
+            include billing software, public information sites and tools for
+            reviewing evidence.
           </p>
-          <div className="home-intro-actions">
+          <div className="home-actions">
             <Link className="button button-primary" href="/work">
-              Explore the work <span aria-hidden="true">↗</span>
+              View work <span aria-hidden="true">↗</span>
             </Link>
             <Link className="text-link" href="/about">
-              Get to know me <span aria-hidden="true">↗</span>
+              About Ajmir <span aria-hidden="true">↗</span>
             </Link>
           </div>
-          <p className="home-intro-note">
-            Backend · Full-stack products · Cloud delivery · AI-enabled systems
-            · Quality engineering
-          </p>
         </div>
-        <div className="home-showcase" aria-label="Selected product surfaces">
-          <Link className="home-showcase-lead" href="/work/azaeron">
-            <Image
-              src={azaeron.visual.src}
-              alt={azaeron.visual.alt}
-              fill
-              sizes="(max-width: 800px) 100vw, 57vw"
-              priority
-            />
-            <span>
-              <strong>Azaeron</strong>
-              <small>Billing and business operations</small>
-            </span>
-          </Link>
-          <Link className="home-showcase-secondary" href="/work/shapes-india">
-            <Image
-              src={shapes.visual.src}
-              alt={shapes.visual.alt}
-              fill
-              sizes="(max-width: 800px) 50vw, 27vw"
-            />
-            <span>
-              SHAPES India <span aria-hidden="true">↗</span>
-            </span>
-          </Link>
+        <aside className="home-evidence" aria-label="Featured product evidence">
+          <div className="home-evidence-top">
+            <span>Selected system</span>
+            <span>01 / 09</span>
+          </div>
           <Link
-            className="home-showcase-secondary home-showcase-secondary--photo"
-            href="/work/friends-aluminium-works"
+            href="/work/azaeron"
+            className="home-evidence-image"
+            aria-label="Explore Azaeron billing system"
           >
-            <Image
-              src={friends.visual.src}
-              alt={friends.visual.alt}
-              fill
-              sizes="(max-width: 800px) 50vw, 27vw"
-            />
-            <span>
-              Friends Aluminium Works <span aria-hidden="true">↗</span>
-            </span>
+            <ProjectMedia project={featured[0]} priority />
           </Link>
-        </div>
-      </section>
-
-      <section
-        className="shell home-projects"
-        aria-labelledby="home-projects-title"
-      >
-        <div className="home-projects-heading">
-          <h2 id="home-projects-title">Selected work</h2>
-          <Link className="text-link" href="/work">
-            Full work archive <span aria-hidden="true">↗</span>
-          </Link>
-        </div>
-        <article className="home-project home-project--shapes">
-          <div className="home-project-media">
-            <Image
-              src="/images/projects/shapes-home.webp"
-              alt="SHAPES India public homepage showing its institutional introduction"
-              fill
-              sizes="(max-width: 800px) 100vw, 57vw"
-            />
-          </div>
-          <div className="home-project-content">
-            <span className="project-sequence">
-              Live · institutional platform
-            </span>
-            <h3>One public home for six centres.</h3>
-            <p>
-              SHAPES India gives visitors a way into learning, services and
-              research. An editorial workflow lets staff prepare and review
-              updates before publication.
-            </p>
-            <Link href="/work/shapes-india">
-              Explore SHAPES India <span aria-hidden="true">↗</span>
+          <div className="home-evidence-bottom">
+            <div>
+              <strong>Azaeron</strong>
+              <span>Billing and business operations</span>
+            </div>
+            <Link href="/work/azaeron" aria-label="Read Azaeron case study">
+              ↗
             </Link>
           </div>
-        </article>
-        <article className="home-project home-project--friends">
-          <div className="home-project-content">
-            <span className="project-sequence">Live · commercial site</span>
-            <h3>Show the work. Make it easy to ask.</h3>
-            <p>
-              For Friends Aluminium Works in Imphal, product and project pages
-              lead visitors toward a direct quote request by WhatsApp or email.
-            </p>
-            <Link href="/work/friends-aluminium-works">
-              Explore Friends Aluminium Works <span aria-hidden="true">↗</span>
-            </Link>
-          </div>
-          <div className="home-project-media">
-            <Image
-              src="/images/projects/friends-glass-railing.webp"
-              alt="Glass railing work by Friends Aluminium Works"
-              fill
-              sizes="(max-width: 800px) 100vw, 57vw"
-            />
-          </div>
-        </article>
+        </aside>
       </section>
-
-      <section className="home-practice" aria-labelledby="home-practice-title">
+      <section className="shell home-selected" aria-labelledby="selected-title">
+        <div className="section-intro">
+          <p className="section-label">01 / Selected work</p>
+          <div>
+            <h2 id="selected-title">
+              Billing, document review, accessibility and publishing.
+            </h2>
+            <p>
+              See what each product does, how it works and where it stands
+              today.
+            </p>
+          </div>
+        </div>
+        <div className="home-project-grid">
+          {featured.map((project, index) => (
+            <ProjectCard
+              key={project.slug}
+              project={project}
+              index={index + 1}
+              large={index === 0}
+              src={
+                index === 0
+                  ? "/images/projects/azaeron-documentation.webp"
+                  : undefined
+              }
+            />
+          ))}
+        </div>
+        <Link className="archive-link" href="/work">
+          View all nine projects <span aria-hidden="true">↗</span>
+        </Link>
+      </section>
+      <section className="home-method" aria-labelledby="method-title">
         <div className="shell">
-          <div className="home-practice-intro">
-            <p className="kicker">How I work</p>
-            <h2 id="home-practice-title">The screen is one part of the job.</h2>
-            <p>
-              A product also needs rules for changing data, a way to recover
-              when something fails, and checks before it ships.
-            </p>
-          </div>
-          <div className="practice-path" role="list">
-            <div role="listitem">
-              <span>01</span>
-              <h3>Model the rule</h3>
+          <div className="section-intro">
+            <p className="section-label">02 / Engineering</p>
+            <div>
+              <h2 id="method-title">The layers have to agree.</h2>
               <p>
-                Azaeron checks payment state before an invoice can become paid.
+                A useful interface depends on the rules, records and release
+                path behind it.
               </p>
-              <Link href="/work/azaeron">See the decision ↗</Link>
-            </div>
-            <div role="listitem">
-              <span>02</span>
-              <h3>Build the path</h3>
-              <p>
-                SHAPES keeps public pages and editor actions connected to one
-                publishing record.
-              </p>
-              <Link href="/work/shapes-india">See the system ↗</Link>
-            </div>
-            <div role="listitem">
-              <span>03</span>
-              <h3>Check the change</h3>
-              <p>
-                Unit, API, database and browser checks catch different kinds of
-                failure.
-              </p>
-              <Link href="/engineering">See the practice ↗</Link>
             </div>
           </div>
+          <ol className="method-list">
+            <li>
+              <span>01 / Interface</span>
+              <strong>Make the next action clear.</strong>
+              <p>
+                SHAPES gives visitors a route through six centres and their
+                public information.
+              </p>
+              <Link href="/work/shapes-india">Publishing surface ↗</Link>
+            </li>
+            <li>
+              <span>02 / Application</span>
+              <strong>Keep rules in one place.</strong>
+              <p>
+                Azaeron checks invoice transitions and permissions in its API.
+              </p>
+              <Link href="/work/azaeron#decisions">Invoice rules ↗</Link>
+            </li>
+            <li>
+              <span>03 / Data</span>
+              <strong>Preserve what happened.</strong>
+              <p>
+                Verity links findings to exact document versions and source
+                records.
+              </p>
+              <Link href="/work/azaeron-verity">Evidence model ↗</Link>
+            </li>
+            <li>
+              <span>04 / Quality</span>
+              <strong>Verify the whole path.</strong>
+              <p>
+                AccessForge turns findings into a rescan and recorded proof
+                loop.
+              </p>
+              <Link href="/work/accessforge">Verification loop ↗</Link>
+            </li>
+          </ol>
+          <Link className="method-more" href="/engineering">
+            How I approach engineering <span aria-hidden="true">↗</span>
+          </Link>
         </div>
       </section>
-
       <section
-        className="shell home-person"
-        aria-labelledby="home-person-title"
+        className="shell home-about"
+        aria-labelledby="about-preview-title"
       >
-        <div className="home-person-image">
+        <div className="home-about-photo">
           <Image
             src="/images/ajmir-portrait.jpg"
             alt="Portrait of Ajmir Aribam"
             fill
-            sizes="(max-width: 680px) 100vw, 320px"
+            sizes="(max-width: 700px) 38vw, 230px"
           />
         </div>
         <div>
-          <p className="kicker">A little context</p>
-          <h2 id="home-person-title">
-            I came to software through work where records and follow-through
-            mattered.
+          <p className="section-label">03 / About</p>
+          <h2 id="about-preview-title">
+            I care about what a system records, and what it promises.
           </h2>
           <p>
-            Banking and public digital-service roles made reliability feel
-            concrete. Now I bring that attention to the products I engineer.
+            Earlier work in banking and public digital services made reliability
+            tangible. I bring that attention to software now, from the first
+            screen to the final check.
           </p>
           <Link className="text-link" href="/about">
-            More about me <span aria-hidden="true">↗</span>
+            Get to know me <span aria-hidden="true">↗</span>
           </Link>
         </div>
       </section>
-      <div className="shell home-closing">
-        <span>Building something with moving parts?</span>
+      <section className="shell home-contact" aria-label="Contact Ajmir">
+        <p>Have something worth building?</p>
         <Link href="/contact">
-          Let’s talk <span aria-hidden="true">↗</span>
+          Start a conversation <span aria-hidden="true">↗</span>
         </Link>
-      </div>
+      </section>
     </main>
   );
 }
