@@ -54,7 +54,7 @@ The final `make verify` run passed:
 
 The final visual audit captured Home in both themes at 390×844, 430×932, 768×1024, 1024×768, 1280×800, 1440×900, 1728×1117 and 1920×1080. It found no page errors, horizontal overflow or first-viewport project images. At 1440×900, the introduction ends at y=921; engineering proof begins at y=921 and public work begins at y=1466. The artifacts and measurements are ignored local files under `.qa-refinement/`.
 
-The refined About profile was captured in light and dark themes at 320, 390, 768, 1440, and 2560 px. It had no horizontal overflow, one optimized local portrait, and no project images. The portrait keeps its 4:5 ratio and measured 144×180 px at phone widths, 228×285 px at 768 px, and 376×470 px at 1440 and 2560 px. The reduced-motion view reported no animation on the hero.
+The refined About profile was captured in light and dark themes at 320, 390, 768, 1440, and 2560 px. It had no horizontal overflow, one optimized local portrait, and no project images. The portrait keeps its 4:5 ratio and measured 144×180 px at phone widths, 228×285 px at 768 px, and about 374×467 px at 1440 and 2560 px. The reduced-motion view reported no animation on the hero.
 
 At 1440 px, the public collection uses three cards per row at 30% of the 1354 px content measure; the fourth public card begins the next row. At 390 px, cards stack in one column at 350 px wide, with 160 px screenshots. Current-work cards use a two-column desktop text-led grid and stack on mobile.
 

@@ -70,7 +70,7 @@ test("orientation, routes, metadata, and evidence links", async ({
     "I work across frontend products, backend services, APIs, data, quality and delivery.",
   );
   await expect(page.locator("main")).toContainText(
-    "Before software became my main work, I handled banking transactions and public-service requests.",
+    "Before software became my main work, I handled banking transactions and public digital-service requests.",
   );
   await expect(page.locator("main section .section-label")).toHaveText([
     "What I build",

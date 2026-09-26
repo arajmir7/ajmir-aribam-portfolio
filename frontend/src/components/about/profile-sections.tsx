@@ -112,18 +112,17 @@ export function WhatIBuild() {
 
 export function HowIWork() {
   return (
-    <section className={styles.section} aria-labelledby="approach-title">
+    <section className={styles.approach} aria-labelledby="approach-title">
       <div className={styles.frame}>
-        <SectionHeading
-          id="approach-title"
-          label="How I work"
-          title="Follow the task through the system."
-        >
+        <p className={`section-label ${styles.approachLabel}`}>How I work</p>
+        <div className={styles.approachCopy}>
+          <h2 id="approach-title">I follow the work through to release.</h2>
           <p>
-            I trace a feature from the user’s task through its rules and failure
-            paths, then test the behaviors that matter before release.
+            I start with the decision a feature needs to support. Then I map its
+            rules, permissions, and failure states, and test the paths people
+            depend on before release.
           </p>
-        </SectionHeading>
+        </div>
       </div>
     </section>
   );
@@ -136,12 +135,13 @@ export function PersonalBackground() {
         <SectionHeading
           id="background-title"
           label="Background"
-          title="Experience with real-world services."
+          title="I saw the cost of unclear processes firsthand."
         >
           <p>
             Before software became my main work, I handled banking transactions
-            and public-service requests. Seeing how unclear records and failed
-            processes affect people shaped the care I bring to systems today.
+            and public digital-service requests. A confusing status or incorrect
+            record had a direct effect on the person waiting for help. I carry
+            that perspective into the products I build today.
           </p>
         </SectionHeading>
       </div>
@@ -156,19 +156,17 @@ export function CurrentFocus() {
         <SectionHeading
           id="focus-title"
           label="Current focus"
-          title="Products and systems in progress."
+          title="What I’m working on now."
         >
           <p>
-            I’m working on business operations, public publishing, document
-            review, accessibility tooling, and early product prototypes.
-            Alongside that work, I’m completing my MCA at Sharda University.
+            My current work spans business operations, public publishing,
+            document review, and accessibility. Alongside it, I’m completing my
+            MCA at Sharda University.
           </p>
-        </SectionHeading>
-        <div className={styles.focusCopy}>
-          <Link className="text-link" href="/work">
+          <Link className={`text-link ${styles.focusLink}`} href="/work">
             Explore the work
           </Link>
-        </div>
+        </SectionHeading>
       </div>
     </section>
   );
