@@ -3,7 +3,7 @@ SHELL := /bin/bash
 -include .env
 export
 
-.PHONY: install dev test lint typecheck e2e build security verify compose-up compose-down format-check containers compose-smoke
+.PHONY: install dev test lint typecheck e2e build security verify compose-up compose-down format-check containers compose-smoke production-smoke
 
 install:
 	cd frontend && npm ci
@@ -41,8 +41,8 @@ e2e: build
 security:
 	cd frontend && npm audit --audit-level=high
 	cd backend && bash -c 'uvx pip-audit -r <(uv export --no-dev --format requirements-txt --no-hashes)'
-	docker run --rm -v "$(CURDIR):/repo:ro" -w /repo ghcr.io/gitleaks/gitleaks:latest git . --no-banner --redact
-	docker run --rm -v "$(CURDIR):/repo:ro" -w /repo ghcr.io/gitleaks/gitleaks:latest git --staged . --no-banner --redact
+	docker run --rm -v "$(CURDIR):/repo:ro" -w /repo ghcr.io/gitleaks/gitleaks@sha256:c00b6bd0aeb3071cbcb79009cb16a60dd9e0a7c60e2be9ab65d25e6bc8abbb7f git . --no-banner --redact
+	docker run --rm -v "$(CURDIR):/repo:ro" -w /repo ghcr.io/gitleaks/gitleaks@sha256:c00b6bd0aeb3071cbcb79009cb16a60dd9e0a7c60e2be9ab65d25e6bc8abbb7f git --staged . --no-banner --redact
 
 containers:
 	docker build --build-arg NEXT_PUBLIC_SITE_URL=https://example.com -t portfolio-frontend:verify frontend
@@ -50,6 +50,9 @@ containers:
 
 compose-smoke:
 	bash scripts/verify-compose.sh
+
+production-smoke:
+	bash scripts/production-smoke.sh
 
 verify:
 	$(MAKE) format-check

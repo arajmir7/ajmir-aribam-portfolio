@@ -5,7 +5,8 @@ import hmac
 from datetime import UTC, datetime, timedelta
 
 from fastapi import HTTPException
-from sqlalchemy import select
+from sqlalchemy import case, or_, select
+from sqlalchemy.dialects.postgresql import insert as postgresql_insert
 from sqlalchemy.orm import Session
 
 from app.core.config import get_settings
@@ -20,6 +21,30 @@ def rate_key(client_ip: str) -> str:
 
 
 def enforce_rate_limit(db: Session, key: str, now: datetime) -> None:
+    if db.get_bind().dialect.name == "postgresql":
+        cutoff = now - timedelta(minutes=15)
+        statement = (
+            postgresql_insert(RateWindow)
+            .values(key=key, starts_at=now, count=1)
+            .on_conflict_do_update(
+                index_elements=[RateWindow.key],
+                set_={
+                    "starts_at": case(
+                        (RateWindow.starts_at <= cutoff, now),
+                        else_=RateWindow.starts_at,
+                    ),
+                    "count": case(
+                        (RateWindow.starts_at <= cutoff, 1),
+                        else_=RateWindow.count + 1,
+                    ),
+                },
+                where=or_(RateWindow.starts_at <= cutoff, RateWindow.count < 5),
+            )
+            .returning(RateWindow.count)
+        )
+        if db.execute(statement).scalar_one_or_none() is None:
+            raise HTTPException(status_code=429, detail="Too many inquiries. Please try later.")
+        return
     window = db.execute(
         select(RateWindow).where(RateWindow.key == key).with_for_update()
     ).scalar_one_or_none()

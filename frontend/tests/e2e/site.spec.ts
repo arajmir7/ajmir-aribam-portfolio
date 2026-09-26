@@ -257,6 +257,16 @@ test("contact journey, validation, and API readiness", async ({
   request,
 }) => {
   expect((await request.get("/api/health")).status()).toBe(200);
+  const missingOrigin = await request.post("/api/contact", {
+    data: {
+      name: "Origin Check",
+      email: "origin@example.com",
+      topic: "question",
+      message: "This request must fail without a browser origin.",
+      website: "",
+    },
+  });
+  expect(missingOrigin.status()).toBe(403);
   await page.goto("/contact");
   await page.getByRole("button", { name: /Send inquiry/ }).click();
   await expect(page.locator(".form-status")).toContainText(

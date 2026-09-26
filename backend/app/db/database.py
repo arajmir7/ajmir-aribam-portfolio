@@ -13,11 +13,23 @@ def database_url() -> str:
 
 
 def make_engine(url: str | None = None):
-    value = url or database_url()
+    settings = get_settings()
+    value = url or settings.database_url
+    pool_options = (
+        {}
+        if value.startswith("sqlite")
+        else {
+            "pool_size": settings.database_pool_size,
+            "max_overflow": settings.database_max_overflow,
+            "pool_timeout": settings.database_pool_timeout,
+            "pool_recycle": settings.database_pool_recycle,
+        }
+    )
     return create_engine(
         value,
         pool_pre_ping=True,
         connect_args={"check_same_thread": False} if value.startswith("sqlite") else {},
+        **pool_options,
     )
 
 

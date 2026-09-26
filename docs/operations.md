@@ -4,12 +4,14 @@
 
 `NEXT_PUBLIC_SITE_URL` is the canonical HTTPS origin and must match the browser origin. `POSTGRES_PASSWORD` and `CONTACT_INTERNAL_TOKEN` are mandatory; token must be at least 32 random characters. Set `BUILD_REVISION` to the deployed commit. SMTP uses `EMAIL_HOST`, `EMAIL_PORT`, `EMAIL_USER`, `EMAIL_PASSWORD`, `EMAIL_FROM`, `EMAIL_TO`. If SMTP is omitted, the operator must review pending inquiries through the private CLI.
 
-The web contact route checks the browser `Origin` against `NEXT_PUBLIC_SITE_URL`. A server-only `CONTACT_ALLOWED_ORIGIN` may override that value when running a build under a different trusted origin, as the isolated browser tests do. Set it only to the exact intended origin; it does not enable a list or wildcard.
+The web contact route requires the browser `Origin` to match `NEXT_PUBLIC_SITE_URL`. A server-only `CONTACT_ALLOWED_ORIGIN` may override that value when running a build under a different trusted origin, as the isolated browser tests do. Set it only to the exact intended origin; it does not enable a list or wildcard. Leave `CONTACT_CLIENT_IP_HEADER` empty unless the deployment proxy overwrites that header. Set it to `x-real-ip` or `x-forwarded-for` only when that boundary is controlled.
+
+The API defaults to a five-connection pool with five overflow connections, a 10-second acquisition timeout and 300-second recycle interval. Tune `DATABASE_POOL_SIZE`, `DATABASE_MAX_OVERFLOW`, `DATABASE_POOL_TIMEOUT` and `DATABASE_POOL_RECYCLE` within the managed database connection limit. Use a restricted runtime role in `DATABASE_URL` and an owner role in `MIGRATION_DATABASE_URL` when the platform supports separate migration credentials.
 
 ## Release sequence
 
 1. Run CI gates and build images at one pinned revision.
-2. Back up the current PostgreSQL database and test restore periodically.
+2. Create a custom-format `pg_dump`, record its checksum, and restore it into an isolated database. The CI/local PostgreSQL gate performs this drill with a marker record.
 3. Deploy database, run Alembic migration, then start API and web. The API container runs `alembic upgrade head` at startup; keep one migration executor during rollout.
 4. Confirm API `/health/live`, `/health/ready`, web `/api/health`, representative public routes, contact submission, SMTP delivery or pending record review, headers, canonical domain, sitemap and social preview.
 5. Inspect structured logs and web-vitals distribution after traffic arrives. Keep the previous image digest ready for rollback.

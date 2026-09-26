@@ -18,6 +18,10 @@ services:
     environment:
       DATABASE_URL: postgresql+psycopg://portfolio:${POSTGRES_PASSWORD}@postgres:5432/portfolio
       CONTACT_INTERNAL_TOKEN: ${CONTACT_INTERNAL_TOKEN:?set CONTACT_INTERNAL_TOKEN}
+      DATABASE_POOL_SIZE: ${DATABASE_POOL_SIZE:-5}
+      DATABASE_MAX_OVERFLOW: ${DATABASE_MAX_OVERFLOW:-5}
+      DATABASE_POOL_TIMEOUT: ${DATABASE_POOL_TIMEOUT:-10}
+      DATABASE_POOL_RECYCLE: ${DATABASE_POOL_RECYCLE:-300}
       EMAIL_HOST: ${EMAIL_HOST:-}
       EMAIL_PORT: ${EMAIL_PORT:-587}
       EMAIL_USER: ${EMAIL_USER:-}
@@ -45,10 +49,12 @@ services:
       context: ./frontend
       args:
         NEXT_PUBLIC_SITE_URL: ${NEXT_PUBLIC_SITE_URL:?set NEXT_PUBLIC_SITE_URL}
+        ALLOW_INSECURE_SITE_URL: ${ALLOW_INSECURE_SITE_URL:-false}
     environment:
       NEXT_PUBLIC_SITE_URL: ${NEXT_PUBLIC_SITE_URL}
       CONTACT_API_URL: http://backend:8000
       CONTACT_INTERNAL_TOKEN: ${CONTACT_INTERNAL_TOKEN}
+      CONTACT_CLIENT_IP_HEADER: ${CONTACT_CLIENT_IP_HEADER:-}
       BUILD_REVISION: ${BUILD_REVISION:-unknown}
     depends_on:
       backend: { condition: service_healthy }

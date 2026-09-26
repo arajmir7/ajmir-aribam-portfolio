@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { randomUUID } from "node:crypto";
-import { isAllowedOrigin } from "@/lib/contact-security";
+import {
+  clientIpFromTrustedHeader,
+  isAllowedOrigin,
+} from "@/lib/contact-security";
 
 export const runtime = "nodejs";
 export async function POST(request: NextRequest) {
@@ -31,6 +34,10 @@ export async function POST(request: NextRequest) {
       { status: 503 },
     );
   let payload: unknown;
+  const clientIp = clientIpFromTrustedHeader(
+    request.headers,
+    process.env.CONTACT_CLIENT_IP_HEADER,
+  );
   try {
     const body = await request.text();
     if (body.length > 6000)
@@ -52,10 +59,7 @@ export async function POST(request: NextRequest) {
         "Content-Type": "application/json",
         "X-Internal-Token": token,
         "X-Request-ID": id,
-        "X-Client-IP":
-          request.headers.get("x-real-ip") ||
-          request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
-          "unknown",
+        "X-Client-IP": clientIp || "untrusted-proxy",
       },
       body: JSON.stringify(payload),
       signal: AbortSignal.timeout(8000),

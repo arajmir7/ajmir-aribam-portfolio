@@ -7,6 +7,7 @@ export COMPOSE_PROJECT_NAME="$project"
 export POSTGRES_PASSWORD=portfolio_compose_verify
 export CONTACT_INTERNAL_TOKEN=local-compose-token-at-least-32-characters
 export NEXT_PUBLIC_SITE_URL="http://127.0.0.1:${port}"
+export ALLOW_INSECURE_SITE_URL=true
 export PORTFOLIO_WEB_PORT="$port"
 export BUILD_REVISION=local-refactor-verification
 

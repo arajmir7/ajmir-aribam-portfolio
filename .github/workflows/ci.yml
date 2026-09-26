@@ -2,22 +2,29 @@ name: quality-gate
 on:
   push:
   pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: quality-gate-${{ github.ref }}
+  cancel-in-progress: true
 jobs:
   web:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     defaults:
       run:
         working-directory: frontend
     steps:
-      - uses: actions/checkout@v6
-      - uses: actions/setup-node@v6
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.0.2
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.1.0
         with:
           {
             node-version: "24",
             cache: npm,
             cache-dependency-path: frontend/package-lock.json,
           }
-      - uses: astral-sh/setup-uv@v9
+      - uses: astral-sh/setup-uv@c18668ad3cf93ea998bef934396af7bb5c839dc7 # v10.2.0
         with: { version: "0.12.16" }
       - run: npm ci
       - run: uv sync --frozen --group dev
@@ -34,38 +41,39 @@ jobs:
       - run: docker build --build-arg NEXT_PUBLIC_SITE_URL=https://example.com -t portfolio-web:ci .
   api:
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     defaults:
       run:
         working-directory: backend
-    services:
-      postgres:
-        image: postgres:17-alpine
-        env:
-          {
-            POSTGRES_DB: portfolio_test,
-            POSTGRES_USER: portfolio,
-            POSTGRES_PASSWORD: portfolio_test,
-          }
-        ports: ["5432:5432"]
-        options: >-
-          --health-cmd "pg_isready -U portfolio -d portfolio_test"
-          --health-interval 5s --health-timeout 5s --health-retries 10
     steps:
-      - uses: actions/checkout@v6
-      - uses: astral-sh/setup-uv@v9
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.0.2
+      - uses: astral-sh/setup-uv@c18668ad3cf93ea998bef934396af7bb5c839dc7 # v10.2.0
         with: { version: "0.12.16" }
       - run: uv sync --frozen --group dev
       - run: uv run ruff check . ../scripts/dev.py && uv run ruff format --check . ../scripts/dev.py
       - run: uv run pytest -q
-      - run: DATABASE_URL=postgresql+psycopg://portfolio:portfolio_test@localhost:5432/portfolio_test uv run alembic upgrade head
-      - run: TEST_DATABASE_URL=postgresql+psycopg://portfolio:portfolio_test@localhost:5432/portfolio_test uv run pytest -q tests/test_postgres_integration.py
+      - name: Verify PostgreSQL migrations, rate limiting, and restore
+        run: bash scripts/verify-postgres.sh
+        working-directory: ${{ github.workspace }}
       - run: uvx pip-audit -r <(uv export --no-dev --format requirements-txt --no-hashes)
         shell: bash
       - run: docker build -t portfolio-api:ci .
   secrets:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.0.2
         with: { fetch-depth: 0 }
-      - uses: gitleaks/gitleaks-action@v3
-        env: { GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}" }
+      - name: Scan complete repository history
+        run: >-
+          docker run --rm -v "$PWD:/repo:ro" -w /repo
+          ghcr.io/gitleaks/gitleaks@sha256:c00b6bd0aeb3071cbcb79009cb16a60dd9e0a7c60e2be9ab65d25e6bc8abbb7f
+          git . --no-banner --redact
+  integration:
+    needs: [web, api, secrets]
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.0.2
+      - name: Verify production topology and persisted contact flow
+        run: bash scripts/verify-compose.sh
