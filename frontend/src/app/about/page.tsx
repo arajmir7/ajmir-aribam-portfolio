@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
 import {
   CurrentFocus,
-  EngineeringCapability,
+  HowIWork,
   PersonalBackground,
-  ProfileClosing,
   ProfileContact,
   ProfileHero,
+  WhatIBuild,
 } from "@/components/about/profile-sections";
 import { pageMeta } from "@/lib/site";
 
@@ -19,10 +19,10 @@ export default function About() {
   return (
     <main id="main">
       <ProfileHero />
-      <EngineeringCapability />
+      <WhatIBuild />
+      <HowIWork />
       <PersonalBackground />
       <CurrentFocus />
-      <ProfileClosing />
       <ProfileContact />
     </main>
   );

@@ -9,14 +9,19 @@
 
 .heroGrid {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 224px;
-  gap: clamp(2.5rem, 8vw, 8rem);
-  align-items: end;
-  margin-top: 1.5rem;
+  grid-template-columns: minmax(0, 0.5fr) minmax(0, 1fr);
+  gap: clamp(2rem, 5vw, 4.5rem);
+  align-items: center;
+}
+
+.introduction {
+  grid-column: 2;
+  grid-row: 1;
+  align-self: center;
 }
 
 .role {
-  margin: 0 0 1rem;
+  margin: 0.7rem 0 1rem;
   color: var(--accent);
   font-family: var(--font-meta);
   font-size: 0.78rem;
@@ -26,31 +31,31 @@
 }
 
 .hero h1 {
-  max-width: 20ch;
+  max-width: 18ch;
   margin: 0;
   font-size: clamp(2.55rem, 4.25vw, 4.35rem);
   line-height: 1;
 }
 
 .heroLede {
-  max-width: 61ch;
-  margin: 1.35rem 0 0;
+  max-width: 58ch;
+  margin: 1.25rem 0 0;
   color: var(--text-secondary);
   font-size: clamp(1.05rem, 1.4vw, 1.2rem);
 }
 
 .portrait {
-  width: 224px;
+  grid-column: 1;
+  grid-row: 1;
+  width: 100%;
+  max-width: 384px;
   margin: 0;
 }
 
 .portrait img {
   display: block;
   width: 100%;
-  height: 280px;
-  border: 1px solid var(--border);
-  object-fit: cover;
-  object-position: center 24%;
+  height: auto;
 }
 
 .portrait figcaption {
@@ -86,79 +91,44 @@
   font-size: 1.05rem;
 }
 
-.copyBlock,
 .focusCopy {
   display: grid;
   grid-template-columns: minmax(150px, 1fr) minmax(0, 3fr);
   gap: clamp(1.5rem, 5vw, 5rem);
-  margin-top: 1.35rem;
+  margin-top: 1rem;
 }
 
-.copyBlock p,
-.focusCopy p {
-  grid-column: 2;
-  max-width: 60ch;
-  margin: 0;
-  color: var(--text-secondary);
-}
-
-.principles {
+.capabilities {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 1.5rem;
-  margin: 1.9rem 0 0;
+  gap: 0 2rem;
+  margin: 1.75rem 0 0;
   padding: 0;
   list-style: none;
 }
 
-.principles li {
+.capabilities li {
+  min-height: 6rem;
+  padding-block: 0.9rem;
   padding-top: 1rem;
-  border-top: 1px solid var(--border-strong);
+  border-top: 1px solid var(--border);
 }
 
-.principles strong,
-.principles span {
-  display: block;
+.capabilities h3 {
+  margin: 0;
+  font-size: 1rem;
 }
 
-.principles strong {
-  margin-bottom: 0.55rem;
-  font-size: 1.05rem;
-}
-
-.principles span {
+.capabilities p {
+  margin: 0.35rem 0 0;
   color: var(--text-secondary);
-  font-size: 0.93rem;
+  font-size: 0.88rem;
   line-height: 1.55;
 }
 
 .focusCopy .text-link {
   grid-column: 2;
   justify-self: start;
-  margin-top: 0.25rem;
-}
-
-.closing {
-  padding-block: clamp(2.4rem, 4.75vw, 4.25rem);
-  background: var(--surface);
-  border-top: 1px solid var(--border);
-}
-
-.closing .frame {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(260px, 0.8fr);
-  gap: clamp(2rem, 7vw, 7rem);
-}
-
-.closingCopy p {
-  max-width: 45ch;
-  margin: 0;
-  color: var(--text-secondary);
-  font-size: 1.05rem;
-}
-
-.closingCopy :global(.social-links) {
-  margin-top: 1.5rem;
 }
 
 .contact {
@@ -181,6 +151,10 @@
   gap: 1.25rem;
 }
 
+.contactSocials {
+  margin-top: 1.5rem;
+}
+
 @media (max-width: 760px) {
   .hero {
     padding-block: 2.75rem 3rem;
@@ -188,47 +162,39 @@
 
   .heroGrid,
   .sectionHeading,
-  .copyBlock,
-  .focusCopy,
-  .closing .frame {
+  .focusCopy {
     grid-template-columns: 1fr;
   }
 
   .heroGrid {
-    gap: 2rem;
+    gap: 1.5rem;
   }
 
   .portrait {
     width: 144px;
+    grid-column: 1;
     grid-row: 1;
   }
 
-  .portrait img {
-    height: 180px;
+  .introduction {
+    grid-column: 1;
+    grid-row: 2;
   }
 
   .sectionHeading {
     gap: 1rem;
   }
 
-  .copyBlock,
-  .focusCopy {
-    margin-top: 1.25rem;
-  }
-
-  .copyBlock p,
-  .focusCopy p,
   .focusCopy .text-link {
     grid-column: 1;
   }
 
-  .principles {
+  .capabilities {
     grid-template-columns: 1fr;
   }
 
-  .principles {
-    gap: 1.25rem;
-    margin-top: 1.6rem;
+  .capabilities li {
+    min-height: 0;
   }
 
   .contactRow {

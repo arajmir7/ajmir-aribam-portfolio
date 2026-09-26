@@ -17,7 +17,7 @@ The Home remains personal-first and its first viewport contains no project image
 
 The generic positioning was replaced with: “I build software that has to work beyond the screen.” The supporting copy is specific about product interfaces, backend services, APIs, data, delivery and pre-release checks without claiming seniority or outcomes that have not been verified.
 
-The Engineering page now connects product surface, application rules, data, authorization, AI-assisted workflows, quality, delivery and operations to a real case. The rebuilt About page is a separate editorial profile with a compact portrait and six clear sections: personal background, engineering philosophy, areas of practice, current focus, personal closing, and contact. It contains no project imagery or card treatment. Labs, Contact, Notes, metadata and the social description received the same editorial pass.
+The Engineering page now connects product surface, application rules, data, authorization, AI-assisted workflows, quality, delivery and operations to a real case. The About page is an editorial profile with a left portrait and right introduction, followed by What I build, How I work, Background, Current focus, and Contact. Its capability notes describe responsibilities in product/frontend, backend/APIs, data/state, AI-assisted systems, quality, and delivery. It contains no project imagery or card treatment. Labs, Contact, Notes, metadata and the social description received the same editorial pass.
 
 ## Work architecture
 

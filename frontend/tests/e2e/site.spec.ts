@@ -63,21 +63,32 @@ test("orientation, routes, metadata, and evidence links", async ({
   );
   await page.goto("/about");
   await expect(page.getByRole("heading", { level: 1 })).toHaveText(
-    "I build software across the product, from the interface people use to the systems that keep it working.",
+    "I build software end to end—from the interface people use to the systems that keep it reliable.",
   );
   await expect(page.locator("main img[src*='projects']")).toHaveCount(0);
   await expect(page.locator("main")).toContainText(
-    "Before software became my main work, I spent years handling banking transactions and public digital-service requests.",
+    "I work across frontend products, backend services, APIs, data, quality and delivery.",
   );
   await expect(page.locator("main")).toContainText(
-    "Today I work across frontend products, backend services, APIs, data, AI-assisted workflows, quality engineering, and delivery.",
+    "Before software became my main work, I handled banking transactions and public-service requests.",
   );
+  await expect(page.locator("main section .section-label")).toHaveText([
+    "What I build",
+    "How I work",
+    "Background",
+    "Current focus",
+    "Contact",
+  ]);
   await expect(
     page.getByRole("img", { name: "Portrait of Ajmir Aribam" }),
   ).toBeVisible();
   await expect(
     page.getByRole("link", { name: "Start a conversation" }),
   ).toHaveAttribute("href", "/contact");
+  await expect(page.getByRole("link", { name: "View résumé" })).toHaveAttribute(
+    "href",
+    "/resume",
+  );
   await page.goto("/work");
   await expect(page.locator("#public-work .project-card")).toHaveCount(4);
   await expect(page.locator("#current-work .project-card")).toHaveCount(4);
