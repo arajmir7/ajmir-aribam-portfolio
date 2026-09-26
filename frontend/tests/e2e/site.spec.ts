@@ -67,16 +67,17 @@ test("orientation, routes, metadata, and evidence links", async ({
   );
   await expect(page.locator("main img[src*='projects']")).toHaveCount(0);
   await expect(page.locator("main")).toContainText(
-    "I work across full-stack product engineering, backend services, APIs, data, quality and delivery.",
+    "I work across full-stack product engineering, backend services, APIs and data.",
   );
   await expect(page.locator("main")).toContainText(
-    "Before focusing on software engineering, I worked with banking transactions and public digital-service workflows.",
+    "Before focusing on software engineering, I worked with banking transactions and public digital-service workflows. Records needed to be correct, transactions traceable and status clear to the person waiting.",
   );
   await expect(page.locator("main section .section-label")).toHaveText([
     "01 — Engineering profile",
     "02 — Background",
     "03 — Current focus",
     "04 — How I work",
+    "What I care about",
     "Contact",
   ]);
   await expect(page.locator("#engineering-title")).toHaveText(
@@ -89,7 +90,10 @@ test("orientation, routes, metadata, and evidence links", async ({
     page.locator('section[aria-labelledby="approach-title"] li'),
   ).toHaveCount(3);
   await expect(page.locator("#closing-title")).toHaveText(
-    "I like building software where the details matter.",
+    "Software that is clear to use and straightforward to trust.",
+  );
+  await expect(page.locator("main")).toContainText(
+    "I care about the details that make that possible: understandable interfaces, explicit rules, reliable records, useful failure states and changes that can be verified before they reach people.",
   );
   await expect(
     page
@@ -103,6 +107,9 @@ test("orientation, routes, metadata, and evidence links", async ({
   await expect(
     page.getByRole("link", { name: "Start a conversation" }),
   ).toHaveAttribute("href", "/contact");
+  await expect(page.locator("main")).toContainText(
+    "I’m always interested in thoughtful product and engineering conversations.",
+  );
   await expect(page.getByRole("link", { name: "View résumé" })).toHaveAttribute(
     "href",
     "/resume",

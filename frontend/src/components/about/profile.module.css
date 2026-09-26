@@ -85,13 +85,13 @@
 }
 
 .section {
-  padding-block: clamp(3.5rem, 5.6vw, 5rem);
+  padding-block: clamp(3rem, 4.75vw, 4.25rem);
   border-top: 1px solid var(--border);
 }
 
 .sectionHeading {
   display: grid;
-  grid-template-columns: minmax(190px, 0.38fr) minmax(0, 0.62fr);
+  grid-template-columns: minmax(150px, 0.25fr) minmax(0, 0.75fr);
   gap: clamp(2rem, 4vw, 3.5rem);
 }
 
@@ -123,7 +123,7 @@
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: clamp(1.5rem, 3vw, 2.5rem);
-  margin: 2rem 0 0 calc(38% + clamp(2rem, 4vw, 3.5rem));
+  margin: 1.75rem 0 0 calc(25% + clamp(2rem, 4vw, 3.5rem));
 }
 
 .profileColumns article {
@@ -142,8 +142,8 @@
 .workingPrinciples p {
   margin: 0.45rem 0 0;
   color: var(--text-secondary);
-  font-size: 0.94rem;
-  line-height: 1.6;
+  font-size: 0.92rem;
+  line-height: 1.55;
 }
 
 .currentLine {
@@ -154,7 +154,7 @@
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: clamp(1.5rem, 3vw, 2.5rem);
-  margin: 2rem 0 0 calc(38% + clamp(2rem, 4vw, 3.5rem));
+  margin: 1.75rem 0 0 calc(25% + clamp(2rem, 4vw, 3.5rem));
   padding: 0;
   list-style: none;
   counter-reset: principle;
@@ -176,57 +176,76 @@
 }
 
 .closing {
-  padding-block: clamp(3.5rem, 5.6vw, 5rem);
+  padding-block: clamp(3rem, 4.75vw, 4.25rem);
   background: var(--surface);
   border-top: 1px solid var(--border);
 }
 
 .closing .frame {
   display: grid;
-  grid-template-columns: minmax(190px, 0.38fr) minmax(0, 0.62fr);
+  grid-template-columns: minmax(150px, 0.25fr) minmax(0, 0.75fr);
   gap: clamp(2rem, 4vw, 3.5rem);
 }
 
-.closing h2 {
-  grid-column: 2;
-  max-width: 20ch;
+.closing .frame > .section-label {
+  margin: 0.45rem 0 0;
 }
 
-.closing p {
+.closingCopy {
   grid-column: 2;
+  max-width: 720px;
+}
+
+.closingCopy h2 {
+  max-width: 20ch;
+  margin: 0;
+  font-size: clamp(1.8rem, 2.9vw, 2.8rem);
+  line-height: 1.08;
+}
+
+.closingCopy p {
   max-width: 65ch;
-  margin: -1rem 0 0;
+  margin: 1rem 0 0;
   color: var(--text-secondary);
   font-size: clamp(1rem, 1.18vw, 1.1rem);
 }
 
 .contact {
-  padding-block: clamp(2.5rem, 4vw, 3.75rem);
+  padding-block: clamp(2rem, 3.4vw, 3.2rem);
   border-top: 1px solid var(--border);
-}
-
-.contact > .frame > .section-label {
-  margin: 0;
 }
 
 .contactRow {
   display: grid;
-  grid-template-columns: minmax(190px, 0.38fr) minmax(0, 0.62fr);
+  grid-template-columns: minmax(150px, 0.25fr) minmax(0, 0.75fr);
   gap: clamp(2rem, 4vw, 3.5rem);
-  align-items: end;
-  margin-top: 0.75rem;
+}
+
+.contactRow > .section-label {
+  margin: 0.45rem 0 0;
+}
+
+.contactCopy {
+  grid-column: 2;
+  max-width: 720px;
 }
 
 .contact h2 {
-  grid-column: 2;
+  max-width: 24ch;
+  font-size: clamp(1.7rem, 2.5vw, 2.45rem);
+}
+
+.contactCopy > p {
+  margin: 0.55rem 0 0;
+  color: var(--text-secondary);
+  font-size: 0.98rem;
 }
 
 .contactActions {
   display: flex;
   flex-wrap: wrap;
   gap: 1.5rem;
-  grid-column: 2;
-  margin-top: 0.35rem;
+  margin-top: 1rem;
 }
 
 @media (max-width: 760px) {
@@ -297,22 +316,18 @@
 
   .closing h2,
   .closing p,
-  .contact h2,
-  .contactActions {
+  .closingCopy,
+  .contactCopy {
     grid-column: 1;
   }
 
-  .closing p {
-    margin: 0;
-  }
-
-  .contactRow {
-    margin-top: 0.75rem;
+  .closing .frame > .section-label,
+  .contactRow > .section-label {
+    margin-top: 0;
   }
 
   .contactActions {
     gap: 1.25rem;
-    margin-top: 0.25rem;
   }
 }
 
@@ -320,7 +335,7 @@
   .profileColumns,
   .workingPrinciples {
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    margin-left: calc(38% + 2rem);
+    margin-left: calc(25% + 2rem);
   }
 }
 
