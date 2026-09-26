@@ -14,10 +14,12 @@ export function ProjectMedia({
   project,
   src,
   priority = false,
+  sizes = "(max-width: 700px) calc(100vw - 2.25rem), (max-width: 1279px) 50vw, 400px",
 }: {
   project: Project;
   src?: string;
   priority?: boolean;
+  sizes?: string;
 }) {
   const visual = [project.visual, ...project.gallery].find(
     (item) => item.src === (src ?? project.visual.src),
@@ -29,7 +31,7 @@ export function ProjectMedia({
         alt={visual?.alt ?? project.visual.alt}
         fill
         priority={priority}
-        sizes="(max-width: 700px) 100vw, (max-width: 1100px) 50vw, 40vw"
+        sizes={sizes}
       />
     </div>
   );

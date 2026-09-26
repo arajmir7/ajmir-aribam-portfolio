@@ -16,9 +16,11 @@ export const metadata: Metadata = pageMeta(
 
 const featuredSlugs = [
   "azaeron",
-  "shapes-india",
   "azaeron-verity",
   "accessforge",
+  "shapes-india",
+  "the-scent-bar-retail-os",
+  "azaeron-construction-procurement",
 ];
 const featured = featuredSlugs.map((slug) =>
   projects.find((project) => project.slug === slug)!,
@@ -48,7 +50,10 @@ export default function Work() {
           <p className="section-label">01 / Featured</p>
           <div>
             <h2 id="work-featured-title">Featured projects.</h2>
-            <p>Billing, publishing, document review and accessibility work.</p>
+            <p>
+              Six systems spanning billing, publishing, document review,
+              accessibility, retail operations and procurement.
+            </p>
           </div>
         </div>
         <div className="work-featured-grid">
@@ -68,8 +73,8 @@ export default function Work() {
             <div>
               <h2 id="work-archive-title">More work</h2>
               <p>
-                Five more projects, from commercial delivery to early
-                prototypes.
+                Three additional projects spanning commercial delivery and
+                working prototypes.
               </p>
             </div>
           </div>
@@ -81,11 +86,14 @@ export default function Work() {
                   className="archive-media"
                   aria-label={`View ${project.name} case study`}
                 >
-                  <ProjectMedia project={project} />
+                  <ProjectMedia
+                    project={project}
+                    sizes="(max-width: 700px) 98px, 220px"
+                  />
                 </Link>
                 <div className="archive-main">
                   <span>
-                    {String(index + 5).padStart(2, "0")} /{" "}
+                    {String(index + 7).padStart(2, "0")} /{" "}
                     {project.type.split(" · ")[0]}
                   </span>
                   <h3>
@@ -109,7 +117,7 @@ export default function Work() {
             ))}
           </div>
           <p className="archive-note">
-            SCMIRN and Zam Zam Academy are also collected in{" "}
+            The two prototypes are also collected in{" "}
             <Link href="/labs">Labs and experiments ↗</Link>.
           </p>
         </div>

@@ -27,7 +27,7 @@
   --deep: #0d1b1a;
   --deep-ink: #f2f2eb;
   --steel-inverse: #b9d3df;
-  --container: 1240px;
+  --container: 1200px;
   --measure: 68ch;
   --s1: 0.5rem;
   --s2: 1rem;
@@ -235,10 +235,10 @@ p {
 /* Home: person first, then compact proof and selected work. */
 .home-hero {
   display: flex;
-  min-height: min(72vh, 720px);
+  min-height: min(76svh, 760px);
   flex-direction: column;
   justify-content: center;
-  padding-block: clamp(3rem, 7vh, 5.5rem) 2rem;
+  padding-block: clamp(3rem, 7vh, 5.5rem);
 }
 .home-hero-copy {
   max-width: 1040px;
@@ -284,8 +284,7 @@ p {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 0;
-  width: 100%;
-  margin: auto 0 0;
+  margin-block: 0;
   padding: 0;
   border-top: 1px solid var(--border-strong);
   border-bottom: 1px solid var(--border);
@@ -335,8 +334,8 @@ p {
 .home-project-grid,
 .work-featured-grid {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 1rem;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1.5rem;
 }
 .home-project-grid .project-card {
   grid-column: auto;
@@ -355,7 +354,7 @@ p {
 }
 .project-media {
   position: relative;
-  height: clamp(170px, 15vw, 210px);
+  height: clamp(160px, 13vw, 190px);
   overflow: hidden;
   background: var(--surface-subtle);
 }
@@ -620,6 +619,7 @@ p {
   background: var(--surface);
 }
 .archive-media .project-media {
+  height: auto;
   aspect-ratio: 1.7;
 }
 .archive-main > span,
@@ -788,8 +788,8 @@ p {
 }
 .story-section {
   max-width: 780px;
-  padding: 0 0 2.3rem;
-  margin-bottom: 2.2rem;
+  padding: 0 0 1.8rem;
+  margin-bottom: 1.6rem;
   border-bottom: 1px solid var(--border);
   scroll-margin-top: 2rem;
 }
@@ -920,6 +920,13 @@ p {
   min-height: 44px;
 }
 
+@media (max-width: 1279px) {
+  .home-project-grid,
+  .work-featured-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
 @media (max-width: 1000px) {
   .home-proposition {
     font-size: clamp(1.55rem, 3vw, 2rem);
@@ -958,7 +965,6 @@ p {
   }
   .home-proof {
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    margin-top: 2.5rem;
   }
   .home-proof div:nth-child(3) {
     padding-left: 0;
@@ -1105,8 +1111,8 @@ p {
     font-size: 0.78rem;
   }
   .story-section {
-    margin-bottom: 2.3rem;
-    padding-bottom: 2.3rem;
+    margin-bottom: 1.9rem;
+    padding-bottom: 1.9rem;
   }
   .case-boundaries {
     grid-template-columns: 1fr;

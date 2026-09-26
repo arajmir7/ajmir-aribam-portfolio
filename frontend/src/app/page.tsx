@@ -10,7 +10,6 @@ const featured = [
   bySlug("azaeron"),
   bySlug("azaeron-verity"),
   bySlug("accessforge"),
-  bySlug("shapes-india"),
 ];
 
 export default function Home() {
@@ -25,9 +24,8 @@ export default function Home() {
             I build useful products and the systems that keep them dependable.
           </p>
           <p className="home-support">
-            My work moves between interfaces, APIs, data and delivery. Recent
-            projects include billing software, public information platforms and
-            tools for reviewing evidence.
+            I work across product interfaces, backend services, data, delivery,
+            AI-enabled workflows and quality.
           </p>
           <div className="home-actions">
             <Link className="button button-primary" href="/work">
@@ -41,31 +39,31 @@ export default function Home() {
             </Link>
           </div>
         </div>
-        <dl className="home-proof" aria-label="Engineering focus">
-          <div>
-            <dt>Products</dt>
-            <dd>Interfaces shaped around real work</dd>
-          </div>
-          <div>
-            <dt>Systems</dt>
-            <dd>Rules, APIs and data that agree</dd>
-          </div>
-          <div>
-            <dt>Quality</dt>
-            <dd>Checks that follow the whole path</dd>
-          </div>
-          <div>
-            <dt>Delivery</dt>
-            <dd>Clear states and honest limits</dd>
-          </div>
-        </dl>
       </section>
+      <dl className="shell home-proof" aria-label="Engineering focus">
+        <div>
+          <dt>Products</dt>
+          <dd>Interfaces shaped around real work</dd>
+        </div>
+        <div>
+          <dt>Systems</dt>
+          <dd>Rules, APIs and data that agree</dd>
+        </div>
+        <div>
+          <dt>Quality</dt>
+          <dd>Tests for the failures that matter</dd>
+        </div>
+        <div>
+          <dt>Delivery</dt>
+          <dd>Release paths that can be repeated</dd>
+        </div>
+      </dl>
       <section className="shell home-selected" aria-labelledby="selected-title">
         <div className="section-intro">
           <p className="section-label">01 / Selected work</p>
           <div>
             <h2 id="selected-title">
-              Billing, document review, accessibility and publishing.
+              Billing, document review and accessibility.
             </h2>
             <p>
               See what each product does, how it works and where it stands
@@ -83,7 +81,7 @@ export default function Home() {
           ))}
         </div>
         <Link className="archive-link" href="/work">
-          View all nine projects <span aria-hidden="true">↗</span>
+          View the full project archive <span aria-hidden="true">↗</span>
         </Link>
       </section>
       <section className="home-method" aria-labelledby="method-title">

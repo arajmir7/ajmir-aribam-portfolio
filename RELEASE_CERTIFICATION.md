@@ -55,6 +55,8 @@ The final candidate generated and received manual review of 152 full-page route 
 
 The review covered first-viewport identity, logo and name legibility, type wrapping, project hierarchy, screenshot scale and crop, case-study rhythm, whitespace, footer consistency, mobile navigation, and form-state clarity. No visible clipping, missing image, uncontrolled project visual, broken hierarchy, or inconsistent footer was found.
 
+At the tested 1440 × 900 desktop viewport, Home presents Ajmir Aribam and the four-part proof strip before any project card. Home contains three selected projects. Project grids use three columns from 1280 px, two from 701 through 1279 px, and one through 700 px. Desktop card imagery is constrained to 160–190 px high; the mobile rule remains capped at 210 px. Work contains six featured projects and three archive rows. Case lead visuals remain bounded to 960 × 360 px on desktop.
+
 The résumé export is one A4 page with extractable text and no visible clipping or overlap. It is not a tagged PDF.
 
 ## Outbound destination evidence
@@ -63,12 +65,12 @@ On 2026-09-26, fresh HTTP checks returned 200 for the three public project desti
 
 ## Performance evidence
 
-A three-run loopback Chromium observation against the production build recorded:
+A five-run loopback Chromium observation against the production build recorded:
 
 | Viewport   | Median LCP | CLS | Approximate first-load transfer |
 | ---------- | ---------: | --: | ------------------------------: |
-| 390 × 900  |     352 ms |   0 |                          282 KB |
-| 1440 × 900 |     356 ms |   0 |                          296 KB |
+| 390 × 900  |     352 ms |   0 |                          242 KB |
+| 1440 × 900 |     356 ms |   0 |                          284 KB |
 
 These are local lab observations. No production Lighthouse result, field Core Web Vitals, traffic metric, user metric, uptime history, or availability claim exists.
 

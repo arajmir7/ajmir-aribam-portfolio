@@ -30,6 +30,7 @@ test("orientation, routes, metadata, and evidence links", async ({
   expect(
     projects.filter((project) => project.maturity === "prototype"),
   ).toHaveLength(2);
+  await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto("/");
   await expect(page.getByRole("heading", { level: 1 })).toHaveText(
     "Ajmir Aribam",
@@ -41,14 +42,23 @@ test("orientation, routes, metadata, and evidence links", async ({
   ).toBeVisible();
   await expect(page.locator(".home-hero img")).toHaveCount(0);
   await expect(page.locator(".home-proof > div")).toHaveCount(4);
-  await expect(page.locator(".home-project-grid .project-card")).toHaveCount(4);
+  const homeCards = page.locator(".home-project-grid .project-card");
+  await expect(homeCards).toHaveCount(3);
+  const firstHomeCard = await homeCards.first().boundingBox();
+  expect(firstHomeCard?.y).toBeGreaterThanOrEqual(900);
+  expect(firstHomeCard?.width).toBeGreaterThanOrEqual(340);
+  expect(firstHomeCard?.width).toBeLessThanOrEqual(410);
+  expect(
+    (await homeCards.first().locator(".project-media").boundingBox())?.height,
+  ).toBeLessThanOrEqual(200);
   await expect(page.locator(".home-writing")).toContainText(
     "Why status changes belong on the server",
   );
   await page.goto("/work");
   await expect(page.locator(".work-featured-grid .project-card")).toHaveCount(
-    4,
+    6,
   );
+  await expect(page.locator(".archive-list .archive-row")).toHaveCount(3);
   for (const card of await page
     .locator(".work-featured-grid .project-card")
     .all()) {
@@ -166,7 +176,7 @@ test("orientation, routes, metadata, and evidence links", async ({
     await expect(page.locator("#main h1")).toBeVisible();
     const visibleText = await page.locator("body").innerText();
     expect(visibleText, `${path} public copy`).not.toMatch(
-      /TODO_OWNER_VERIFY|source inspection|inspected source|verification boundary|per supplied resume|local Git history|backend\/src|Users\/ajmiraribam/i,
+      /TODO_OWNER_VERIFY|source inspection|inspected source|verification boundary|per supplied resume|local Git history|backend\/src|Users\/ajmiraribam|CivicPulse|Three products, three different jobs/i,
     );
   }
   await page.goto("/work/azaeron");
