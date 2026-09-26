@@ -7,14 +7,16 @@ from app.db import models  # noqa: F401
 from app.db.database import Base, database_url
 
 config = context.config
-config.set_main_option("sqlalchemy.url", database_url())
+config.set_main_option("sqlalchemy.url", database_url(migration=True))
 if config.config_file_name:
     fileConfig(config.config_file_name)
 target_metadata = Base.metadata
 
 
 def run_migrations_offline():
-    context.configure(url=database_url(), target_metadata=target_metadata, literal_binds=True)
+    context.configure(
+        url=database_url(migration=True), target_metadata=target_metadata, literal_binds=True
+    )
     with context.begin_transaction():
         context.run_migrations()
 

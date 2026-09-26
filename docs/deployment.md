@@ -1,47 +1,53 @@
-# Deployment
+# Render deployment
 
-## Current status
+## Status and topology
 
-The repository has a verified local deployment topology. No production service, domain, DNS, TLS endpoint, database, mail account, or monitoring target is configured or certified here.
+`render.yaml` describes the Singapore deployment: a public Next.js web service, a private FastAPI service, private Render Postgres, and a daily S3 backup job. The API and database have no public HTTP endpoint. The frontend talks to the API over Render's same-region private network. Render's paid pre-deploy command provisions the restricted runtime database role and applies Alembic migrations before the API is replaced.
 
-## Topology
+This repository has not been connected to a Render workspace, DNS account, AWS account, or live domain. The Blueprint has not been remotely validated or deployed. Render CLI validation requires account authentication; the local PostgreSQL checks do not prove the managed database account has the permissions required by the bootstrap command. Do not route public traffic until the first deployment and release checks pass.
 
-Expose only the standalone Next.js frontend through a TLS reverse proxy. Keep FastAPI and PostgreSQL on a private network with no public routes. Compose binds the frontend to loopback for a separate proxy. The proxy must overwrite the client address header selected for rate limiting, cap request sizes, and prevent direct access to private services.
+Render documentation: [Blueprint reference](https://render.com/docs/blueprint-spec), [private services](https://render.com/docs/private-services), [private networking](https://render.com/docs/private-network), [Postgres credentials](https://render.com/docs/postgresql-credentials), and [custom domains](https://render.com/docs/custom-domains).
 
-The frontend forwards same-origin contact submissions to FastAPI using a server-only token. PostgreSQL stores inquiries. SMTP is optional; if it is not configured, assign an operator to review pending submissions.
+## Blueprint setup
 
-## Configuration
+1. Connect the GitHub repository to Render and select the approved `main` branch. Create resources from the repository's `render.yaml`. Review the proposed Singapore region and paid plans before accepting any billable resource.
+2. Render prompts for the `sync: false` values on the backup job. Add the bucket, KMS key ID, AWS access key ID and secret after creating the bucket and least-privilege IAM identity described in [operations](operations.md). Keep the bucket private and in `ap-south-1`.
+3. Check the Postgres instance is private (`ipAllowList: []`) and that the generated application roles are distinct. The migration connection is provided to the API as `MIGRATION_DATABASE_URL`; `DATABASE_RUNTIME_USER` and `DATABASE_RUNTIME_PASSWORD` configure a separate API role. Before public DNS is attached, verify the Render Postgres migration credential can create or alter that role. Render does not provide database superuser access. If Render denies role creation, create a managed `portfolio_app` credential through the database Credentials UI/API, set its URL/password in the API service, and use a migration connection with permission to grant the schema/table/sequence privileges. The API deliberately fails health checks until its runtime and migration users are distinct and valid.
+4. Confirm the API pre-deploy task can connect, grant least-privilege DML to the runtime user, and apply migrations. Confirm the API is private and `/health/ready` returns its current revision.
+5. Confirm the web build used `NEXT_PUBLIC_SITE_URL=https://ajmiraribam.me`. Its readiness endpoint checks the private API and exact production contact configuration.
+6. Configure GitHub repository variables `PRODUCTION_URL=https://ajmiraribam.me` and `PRODUCTION_REVISION=<deployed full commit SHA>` to enable the scheduled workflow in `.github/workflows/production-monitor.yml`. Configure GitHub Actions failure notifications or an owner-approved alert destination; the workflow does not send email or configure an external alert provider by itself.
+7. Add the apex custom domain to `portfolio-web`. Render's domain flow includes `www` and redirects the alias to the root/apex host. Do not add DNS records until the web service is ready for domain verification.
 
-Set production values in the deployment platform's secret/configuration store:
+## Production environment
 
-- `NEXT_PUBLIC_SITE_URL`: the canonical HTTPS origin; provide it at frontend build and runtime.
-- `DATABASE_URL`: PostgreSQL connection for the API. Use a restricted runtime role.
-- `MIGRATION_DATABASE_URL`: optional separate migration connection when the platform supports it.
-- `CONTACT_INTERNAL_TOKEN`: random value of at least 32 characters, shared only by the frontend and API.
-- `BUILD_REVISION`: full Git commit for both services.
-- `APP_ENV=production`: enables API checks that reject SQLite, weak tokens, and unknown revisions.
-- `POSTGRES_PASSWORD`: database bootstrap value when using the included Compose database.
-- `CONTACT_CLIENT_IP_HEADER`: set only when the trusted proxy overwrites the selected header.
-- `CONTACT_ALLOWED_ORIGIN`: optional exact origin override; do not use wildcard or multiple origins.
-- `EMAIL_HOST`, `EMAIL_PORT`, `EMAIL_USER`, `EMAIL_PASSWORD`, `EMAIL_FROM`, `EMAIL_TO`: optional notification delivery.
+Render injects service variables at runtime. `NEXT_PUBLIC_SITE_URL` must also be present during the frontend image build because Next.js embeds public environment values into the build.
 
-Frontend image builds reject a missing or non-HTTPS canonical URL unless the explicit insecure build option is enabled for local checks. The API fails startup in production when its database, token, or revision requirements are not met. Keep secrets out of build arguments, source control, and public browser variables.
+| Service     | Required variables                                                                                                                                         | Source / purpose                                                                                                                                                                                                                                           |
+| ----------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Web         | `NEXT_PUBLIC_SITE_URL`, `CONTACT_ALLOWED_ORIGIN`, `CONTACT_API_HOSTPORT`, `CONTACT_INTERNAL_TOKEN`, `CONTACT_CLIENT_IP_HEADER`, `BUILD_REVISION`           | Canonical HTTPS origin; exact allowed origin; private API host:port; shared server-only token; trusted Render proxy header (`x-forwarded-for`); full source commit SHA.                                                                                    |
+| API         | `APP_ENV=production`, `MIGRATION_DATABASE_URL`, `DATABASE_RUNTIME_USER`, `DATABASE_RUNTIME_PASSWORD`, `CONTACT_INTERNAL_TOKEN`, `BUILD_REVISION`           | Migration connection and separate limited runtime account; same token as web; deployed source SHA. Pool defaults are conservative and can be set with `DATABASE_POOL_SIZE`, `DATABASE_MAX_OVERFLOW`, `DATABASE_POOL_TIMEOUT`, and `DATABASE_POOL_RECYCLE`. |
+| Backup Cron | `APP_ENV=production`, `DATABASE_URL`, `AWS_REGION`, `BACKUP_S3_BUCKET`, `BACKUP_S3_PREFIX`, `AWS_KMS_KEY_ID`, `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY` | PostgreSQL connection; encrypted S3 destination and credentials with only required bucket/KMS access.                                                                                                                                                      |
+
+Production configuration rejects localhost, SQLite, weak or placeholder credentials, an invalid revision, non-HTTPS canonical origin, mismatched allowed origin, and an unsupported trusted-header name. Do not set production values in `.env`, Docker build arguments (except the public canonical origin), source control, or `NEXT_PUBLIC_*` secret variables. SMTP is optional (`EMAIL_HOST`, `EMAIL_PORT`, `EMAIL_USER`, `EMAIL_PASSWORD`, `EMAIL_FROM`, `EMAIL_TO`); delivery has not been configured or verified.
+
+## DNS and TLS for `ajmiraribam.me`
+
+In the domain provider's DNS zone, use Render's current domain instructions and the target shown on the `portfolio-web` service:
+
+| Type  | Host  | Value                        | Notes                                                                                                             |
+| ----- | ----- | ---------------------------- | ----------------------------------------------------------------------------------------------------------------- |
+| A     | `@`   | `216.24.57.1`                | Render's documented apex A record; verify against the service's current custom-domain instructions before saving. |
+| CNAME | `www` | `portfolio-web.onrender.com` | Replace with the exact generated `onrender.com` hostname displayed by Render if it differs.                       |
+
+Remove conflicting `AAAA` records for the apex and `www`. Preserve unrelated MX/TXT records used for email or domain verification. Add both names to Render, wait for domain verification and managed TLS issuance, then check HTTP-to-HTTPS and `www`-to-apex permanent redirects with the smoke script. Render custom-domain guide: [Configure a custom domain](https://render.com/docs/custom-domains); Namecheap-specific steps: [Configure Namecheap DNS](https://render.com/docs/configure-namecheap-dns).
 
 ## Release procedure
 
-1. Require the quality workflow to pass for the exact release commit.
-2. Create a database backup, record its checksum, and restore it into an isolated database before migration.
-3. Build immutable frontend and backend images from the same commit; configure the canonical URL at frontend build time.
-4. Start exactly one migration executor with the migration role. The backend image runs `alembic upgrade head` before Uvicorn; use `MIGRATION_DATABASE_URL` for a separate migration credential. Then start the private API and public frontend.
-5. Confirm `/health/ready` and `/api/health`, public routes, response security headers, canonical metadata, sitemap, and social preview.
-6. Submit one clearly labeled contact test. Confirm persistence and either notification delivery or the pending-review path.
-7. Run `PRODUCTION_URL=https://example.com EXPECTED_REVISION=<commit> bash scripts/production-smoke.sh` with the real origin and revision.
-8. Verify the restored database and the production monitor before closing the release.
+1. Require `.github/workflows/ci.yml` to pass for the exact commit to deploy. Render auto-deploys after CI checks pass; disable/hold automatic deployment if the candidate has not completed owner review.
+2. Confirm the target Postgres plan's automated recovery window and storage capacity. Run the backup job manually, check its completed dump, checksum and KMS encryption in S3, then restore that object to a new isolated database and verify its Alembic revision and a known inquiry before migration or traffic cutover.
+3. The Render pre-deploy command performs runtime-role grants and `alembic upgrade head`. Migrations must remain backward compatible with both the new and previous application revision. Never edit migration history to make a drift check pass.
+4. Verify `/health/live`, `/health/ready`, and `/api/health`, the current revision, public routes, security headers, canonical metadata, sitemap, TLS, and both redirects.
+5. Verify contact success persists exactly one inquiry. Verify invalid input returns `422`, a foreign Origin returns `403` without persistence, and rate-limited traffic returns `429`. If SMTP is enabled, separately verify notification delivery; a successful contact response alone only means the inquiry was saved.
+6. Run `PRODUCTION_URL=https://ajmiraribam.me EXPECTED_REVISION=<full SHA> bash scripts/production-smoke.sh` from a trusted runner. Keep its output with the release record and confirm the scheduled monitor is active.
 
-## Recovery and operations
-
-Keep the previous image digests and a tested pre-release backup available. The PostgreSQL verification script exercises a dump-and-restore path locally; production recovery still requires a successful restore of the deployed database. Record backup time, checksum, restored revision, read check, and operator.
-
-Review readiness, inquiry backlog, mail failures, error rates, storage, and backups regularly. Run `cd backend && uv run python -m app.maintenance pending` in a private shell because output contains email addresses. Schedule `cd backend && uv run python -m app.maintenance purge --days 90` and align the privacy notice and backup expiry with the chosen retention period.
-
-No hosting provider or production change is implied by the repository's local checks. Confirm the origin, proxy policy, database credentials, secret store, contact operations, backup schedule, alerts, and rollback owner before deployment.
+Local deployment commands are `make compose-up`, `make production-smoke` (after setting `PRODUCTION_URL` and `EXPECTED_REVISION`), and `make verify`. Do not run a local Compose deployment command against production credentials.

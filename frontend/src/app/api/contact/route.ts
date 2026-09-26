@@ -2,7 +2,9 @@ import { NextRequest, NextResponse } from "next/server";
 import { randomUUID } from "node:crypto";
 import {
   clientIpFromTrustedHeader,
+  contactApiBaseUrl,
   isAllowedOrigin,
+  isContactRuntimeReady,
 } from "@/lib/contact-security";
 
 export const runtime = "nodejs";
@@ -24,9 +26,24 @@ export async function POST(request: NextRequest) {
       { message: "Inquiry is too large." },
       { status: 413 },
     );
-  const api = process.env.CONTACT_API_URL;
+  const production = process.env.NODE_ENV === "production";
+  const api = contactApiBaseUrl({
+    apiUrl: process.env.CONTACT_API_URL,
+    apiHostport: process.env.CONTACT_API_HOSTPORT,
+    production,
+  });
   const token = process.env.CONTACT_INTERNAL_TOKEN;
-  if (!api || !token)
+  const ready = isContactRuntimeReady({
+    siteUrl: process.env.NEXT_PUBLIC_SITE_URL,
+    allowedOrigin: process.env.CONTACT_ALLOWED_ORIGIN,
+    apiUrl: process.env.CONTACT_API_URL,
+    apiHostport: process.env.CONTACT_API_HOSTPORT,
+    internalToken: token,
+    trustedClientIpHeader: process.env.CONTACT_CLIENT_IP_HEADER,
+    buildRevision: process.env.BUILD_REVISION,
+    production,
+  });
+  if (!api || !token || !ready)
     return NextResponse.json(
       {
         message: "The inquiry service is unavailable. Please use direct email.",
@@ -40,7 +57,7 @@ export async function POST(request: NextRequest) {
   );
   try {
     const body = await request.text();
-    if (body.length > 6000)
+    if (new TextEncoder().encode(body).byteLength > 6000)
       return NextResponse.json(
         { message: "Inquiry is too large." },
         { status: 413 },
@@ -53,7 +70,7 @@ export async function POST(request: NextRequest) {
     );
   }
   try {
-    const response = await fetch(`${api.replace(/\/$/, "")}/inquiries`, {
+    const response = await fetch(`${api}/inquiries`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

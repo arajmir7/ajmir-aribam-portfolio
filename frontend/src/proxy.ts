@@ -30,6 +30,7 @@ export function proxy(request: NextRequest) {
   let response: NextResponse;
   if (missingProject) {
     const notFoundUrl = request.nextUrl.clone();
+    notFoundUrl.protocol = "http:";
     notFoundUrl.pathname = "/404";
     notFoundUrl.search = "";
     response = NextResponse.rewrite(notFoundUrl, {

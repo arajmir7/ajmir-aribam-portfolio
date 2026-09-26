@@ -5,6 +5,8 @@ from concurrent.futures import ThreadPoolExecutor
 from uuid import uuid4
 
 import pytest
+from sqlalchemy import text
+from sqlalchemy.exc import DBAPIError
 
 if not os.environ.get("TEST_DATABASE_URL"):
     pytest.skip("PostgreSQL integration URL not configured", allow_module_level=True)
@@ -79,3 +81,12 @@ def test_postgres_rate_limit_is_atomic_under_concurrency():
         for window in db.scalars(select(RateWindow)):
             db.delete(window)
         db.commit()
+
+
+def test_runtime_database_role_cannot_change_schema():
+    with SessionLocal() as db:
+        with pytest.raises(DBAPIError):
+            db.execute(
+                text("CREATE TABLE runtime_role_must_not_create_schema (id integer PRIMARY KEY)")
+            )
+        db.rollback()

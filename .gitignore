@@ -25,6 +25,10 @@
 *.sqlite
 *.sqlite3
 *.log
+*.dump
+*.dump.sha256
+*.dump.complete
+backups/
 
 # Developer machines
 .DS_Store

@@ -8,6 +8,10 @@ on:
         description: HTTPS origin to inspect (defaults to the PRODUCTION_URL repository variable)
         required: false
         type: string
+      expected_revision:
+        description: Full deployed Git commit SHA (defaults to the PRODUCTION_REVISION repository variable)
+        required: false
+        type: string
 permissions:
   contents: read
 concurrency:
@@ -15,12 +19,12 @@ concurrency:
   cancel-in-progress: true
 jobs:
   smoke:
-    if: ${{ inputs.production_url != '' || vars.PRODUCTION_URL != '' }}
+    if: ${{ (inputs.production_url != '' && (inputs.expected_revision != '' || vars.PRODUCTION_REVISION != '')) || (vars.PRODUCTION_URL != '' && vars.PRODUCTION_REVISION != '') }}
     runs-on: ubuntu-latest
     timeout-minutes: 5
     env:
       PRODUCTION_URL: ${{ inputs.production_url || vars.PRODUCTION_URL }}
-      EXPECTED_REVISION: ${{ vars.PRODUCTION_REVISION }}
+      EXPECTED_REVISION: ${{ inputs.expected_revision || vars.PRODUCTION_REVISION }}
     steps:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.0.2
       - name: Check TLS, routes, metadata, headers, and dependency readiness

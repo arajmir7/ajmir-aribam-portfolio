@@ -10,4 +10,4 @@ RUN useradd --system --uid 10001 portfolio && chown -R portfolio:portfolio /app
 USER portfolio
 ENV PATH="/app/.venv/bin:$PATH" PYTHONUNBUFFERED=1 APP_ENV=production
 EXPOSE 8000
-CMD ["sh", "-c", "DATABASE_URL=${MIGRATION_DATABASE_URL:-$DATABASE_URL} alembic upgrade head && exec uvicorn app.main:app --host 0.0.0.0 --port 8000"]
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]

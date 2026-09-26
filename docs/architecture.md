@@ -2,30 +2,30 @@
 
 ## Application boundaries
 
-`frontend/` owns the Next.js App Router, public content, visual components, assets, contact form, résumé behavior, and browser tests. `backend/` owns the private FastAPI inquiry API, configuration, persistence, migrations, maintenance commands, and API tests. The applications integrate over HTTP; neither imports the other's implementation.
+`frontend/` owns Next.js routes, public content, shared presentation, assets, contact forwarding, résumé behavior and browser tests. `backend/` owns the private FastAPI inquiry API, configuration, database models, persistence, maintenance commands, migrations and API tests. The applications integrate over HTTP; neither imports the other's implementation.
 
 ```text
 Browser → Next.js pages and same-origin route handlers
-                   ├─ /api/contact → private FastAPI /inquiries
-                   └─ /api/health  → private FastAPI /health/ready
-                                            ↓
-                                       PostgreSQL
+                    ├─ /api/contact → private FastAPI /inquiries
+                    └─ /api/health  → private FastAPI /health/ready
+                                             ↓
+                                        PostgreSQL
 ```
 
-The frontend handles page rendering, metadata, security headers, and the browser form. FastAPI validates and stores inquiries. PostgreSQL is the source of truth; optional SMTP sends a notification after commit. A failed notification leaves a pending record for operator review.
+The public `/api/contact` route and private `/inquiries`, `/health/live`, and `/health/ready` contracts are stable. Next.js validates the exact origin and forwards a server-only token and a proxy-derived address. FastAPI performs authoritative validation and a PostgreSQL-backed rate check, then persists before returning success. SMTP notification is optional and happens after persistence; failure leaves a pending inquiry for operator review.
 
-## Source layout
+## Database roles and migrations
 
-In `frontend/src`, `app/` defines routes, `components/` contains reusable presentation, `content/` holds project and writing records, `features/` groups interactive functions, and `lib/` contains shared utilities. In `backend/app`, `api/` handles HTTP, `core/` owns configuration and logging, `db/` contains SQLAlchemy setup and models, `schemas/` validates input, and `services/` handles inquiries and notifications. Alembic migrations live under `backend/migrations/`.
+`MIGRATION_DATABASE_URL` is reserved for Alembic and pre-deploy maintenance. `DATABASE_URL` (or the derived runtime URL for local Compose) is used by API requests under a distinct runtime role. The maintenance task grants only database connection, schema usage, table DML and sequence access to that role, including defaults for future migration-created objects. Production checks reject identical usernames and incomplete/weak PostgreSQL credentials. Compose creates the local role from disposable development secrets; Render role creation depends on the managed database credential's actual permissions and must be proven before launch.
 
-Root `compose.yaml` describes the deployable service topology. `infra/compose.dev.yaml` exposes PostgreSQL to host processes for development. `scripts/` contains repeatable PostgreSQL and Compose checks and the production smoke command.
+Migrations are run explicitly before application start: by Render's paid pre-deploy command or `make compose-up`. The API container starts only Uvicorn, so multiple app replicas cannot race on startup migrations. Production schema changes must support the current and previous application version during a rolling deploy.
 
-## Request and data lifecycle
+## Runtime and repository layout
 
-The browser posts JSON to `/api/contact`. The Next.js handler checks the request origin, bounds the body, adds a request ID, and forwards the submission with a server-only token. FastAPI validates fields, discards honeypot submissions, applies a database-backed rate limit, and commits the inquiry. The response indicates success only after persistence. SMTP is best effort; a scheduled operator process must review pending notifications and enforce retention.
+In `frontend/src`, `app/` defines routes, `components/` contains reusable UI, `content/` holds evidence-backed project/editorial data, `features/` groups interactive functions, and `lib/` contains shared utilities. `backend/app` separates HTTP routes, core settings, SQLAlchemy setup/models, schemas and services; `backend/migrations/` contains Alembic history.
 
-Health endpoints distinguish process liveness, database readiness, and public web readiness. Structured logs use request IDs and omit message bodies and email addresses. Telemetry is first party and does not include contact content.
+`compose.yaml` describes the production-like local topology. `infra/compose.dev.yaml` supports host-based development. `infra/backup/` builds the backup job container. `render.yaml` describes the Render services. `scripts/` contains disposable PostgreSQL/Compose verification, production smoke checks, and backup/restore commands. `.github/workflows/ci.yml` is the release quality gate; `production-monitor.yml` is an optional scheduled public smoke workflow after owner configuration.
 
 ## Content evidence
 
-Project records are maintained in `frontend/src/content/projects.ts`; case narratives are in `frontend/src/content/case-stories.ts`. Public claims are limited to inspectable evidence. Ownership, deployment, and outcome details that are not confirmed remain qualified in the source and are not presented as verified facts. Project diagrams describe application boundaries, not production topology.
+Project records are maintained in `frontend/src/content/projects.ts`; case narratives are in `frontend/src/content/case-stories.ts`. Public claims are limited to inspectable evidence. Unknown ownership, deployment and outcome facts remain qualified in source and are not presented as verified. Project diagrams describe application boundaries, not an asserted production topology.

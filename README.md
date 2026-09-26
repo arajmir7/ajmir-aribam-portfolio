@@ -1,51 +1,20 @@
 # Ajmir Aribam — Software Engineering Portfolio
 
-This repository contains Ajmir Aribam’s portfolio: a Next.js frontend for public pages and a small FastAPI service for contact persistence and operational health checks.
+Next.js portfolio frontend and private FastAPI inquiry service, backed by PostgreSQL. The two applications communicate over HTTP; the API and database are never exposed as public web services.
 
-## Architecture
+## Repository layout
 
 ```text
-frontend/
-├── src/
-│   ├── app/          # Routes, metadata, and route handlers
-│   ├── components/   # Shared layout and page components
-│   ├── content/      # Project records and editorial content
-│   ├── features/     # Contact, résumé, and telemetry behavior
-│   └── lib/          # Shared frontend utilities
-├── public/           # Brand, portrait, and project assets
-├── tests/
-│   ├── e2e/
-│   └── unit/
-├── package.json
-├── playwright.config.ts
-├── tsconfig.json
-├── next.config.ts
-└── Dockerfile
-
-backend/
-├── app/
-│   ├── api/          # Private inquiry and health routes
-│   ├── core/         # Configuration and logging
-│   ├── db/           # SQLAlchemy database and models
-│   ├── schemas/      # Request validation
-│   └── services/     # Inquiry and notification logic
-├── migrations/
-├── tests/
-├── pyproject.toml
-├── uv.lock
-├── alembic.ini
-└── Dockerfile
+frontend/          Next.js routes, content, assets, unit and browser tests
+backend/           FastAPI API, persistence, Alembic migrations and API tests
+docs/              Architecture, security, deployment and release runbooks
+infra/              Development Compose and backup container
+.github/workflows/  CI quality gate and optional scheduled production smoke
+scripts/            Development, production smoke, PostgreSQL and Compose checks
+compose.yaml        Local production-like service topology
+render.yaml         Render web/API/backup service blueprint
+Makefile            Local development and release verification commands
 ```
-
-The applications communicate over HTTP. Root Compose, Make, CI, and scripts coordinate local development and verification.
-
-## Technology
-
-- **Frontend:** Next.js 16, React 19, TypeScript, CSS Modules and global CSS.
-- **Frontend quality:** Vitest, Playwright, axe-core, ESLint and Prettier.
-- **Backend:** FastAPI, Pydantic, SQLAlchemy, Alembic, PostgreSQL and psycopg.
-- **Backend quality:** pytest and Ruff.
-- **Infrastructure:** Docker, Compose, GitHub Actions and uv.
 
 ## Local development
 
@@ -57,24 +26,18 @@ make install
 make dev
 ```
 
-The example file contains local-only placeholders. `make dev` starts PostgreSQL, applies migrations and runs both applications. Open `http://localhost:3000`. Stop the database with `make compose-down` when finished.
+The example values are for local use only. `make dev` starts the local PostgreSQL service, applies migrations, and starts the frontend and API. Open `http://localhost:3000`. Stop the services with `make compose-down`.
 
-## Verification
+## Release verification
 
-Run `make verify` for formatting, lint, TypeScript, frontend and backend tests, PostgreSQL migration and restore checks, Playwright and accessibility checks, dependency and secret scans, production image builds, and the Compose contact/origin smoke test.
+Run `make verify` from the repository root. It checks formatting, lint, strict TypeScript, unit/API/PostgreSQL tests, migrations and drift, browser and accessibility flows, dependency and secret scans, Docker builds, production-like Compose behavior, contact persistence/origin/rate limits, and a backup restored into an isolated database. This is local evidence; it does not establish a live deployment.
 
-## Production configuration
+## Production
 
-Production requires a canonical HTTPS `NEXT_PUBLIC_SITE_URL`, PostgreSQL `DATABASE_URL`, a random `CONTACT_INTERNAL_TOKEN` of at least 32 characters, `BUILD_REVISION`, and `APP_ENV=production` for the API. Optional notification delivery uses the `EMAIL_*` variables. Configure secrets in the deployment environment; do not put production credentials in `.env.example` or Git.
+Render is the prepared target and `https://ajmiraribam.me` is the intended canonical origin. Production configuration is fail-closed. The API needs `APP_ENV=production`, PostgreSQL `MIGRATION_DATABASE_URL` and a separate runtime database account, `CONTACT_INTERNAL_TOKEN`, and a Git commit `BUILD_REVISION`. The web service needs `NEXT_PUBLIC_SITE_URL=https://ajmiraribam.me`, the exact `CONTACT_ALLOWED_ORIGIN`, private API host/port, trusted proxy header, token and commit revision. The scheduled backup needs a private S3 bucket, KMS key and narrowly scoped AWS credentials. SMTP variables are optional; inquiry success means database persistence, not email delivery.
 
-## Deployment
+See [deployment](docs/deployment.md) and [operations](docs/operations.md) for Render setup, DNS, secrets, migrations, backup recovery, monitoring and rollback. Do not treat repository configuration or passing local checks as proof that DNS, TLS, backups, alerts or production are active.
 
-See [deployment](docs/deployment.md). Local verification does not establish a production deployment.
+## Project documentation
 
-## Security & privacy
-
-The browser submits inquiries to the same-origin frontend route; the API and database remain private in Compose. The backend validates and persists messages before reporting success. Logs omit message bodies and email addresses. See [security](docs/security.md).
-
-## Documentation
-
-[Architecture](docs/architecture.md) · [Development](docs/development.md) · [Testing](docs/testing.md) · [Deployment](docs/deployment.md) · [Security](docs/security.md) · [Release certification](docs/release-certification.md)
+[Architecture](docs/architecture.md) · [Development](docs/development.md) · [Testing](docs/testing.md) · [Deployment](docs/deployment.md) · [Operations](docs/operations.md) · [Security](docs/security.md) · [Release certification](RELEASE_CERTIFICATION.md)

@@ -8,8 +8,9 @@ class Base(DeclarativeBase):
     pass
 
 
-def database_url() -> str:
-    return get_settings().database_url
+def database_url(*, migration: bool = False) -> str:
+    settings = get_settings()
+    return settings.migration_database_url if migration else settings.database_url
 
 
 def make_engine(url: str | None = None):

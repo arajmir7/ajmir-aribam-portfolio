@@ -2,14 +2,27 @@
 set -euo pipefail
 
 container="portfolio-pg-verify-$$"
-cleanup() { docker rm -f "$container" >/dev/null 2>&1 || true; }
+backup_dir="$(mktemp -d)"
+chmod 0700 "$backup_dir"
+migration_password="portfolio_verify_migration_password_at_least_32_chars"
+runtime_password="portfolio_verify_runtime_password_at_least_32_chars"
+runtime_user="portfolio_app"
+revision="$(git rev-parse --short HEAD)"
+host_port="$(python3 -c 'import socket; s=socket.socket(); s.bind(("127.0.0.1", 0)); print(s.getsockname()[1]); s.close()')"
+admin_url="postgresql://portfolio:${migration_password}@127.0.0.1:${host_port}/portfolio_verify"
+container_admin_url="postgresql://portfolio:${migration_password}@127.0.0.1:5432/portfolio_verify"
+
+cleanup() {
+  docker rm -f "$container" >/dev/null 2>&1 || true
+  rm -rf "$backup_dir"
+}
 trap cleanup EXIT
 
 docker run -d --name "$container" --rm \
   -e POSTGRES_DB=portfolio_verify \
   -e POSTGRES_USER=portfolio \
-  -e POSTGRES_PASSWORD=portfolio_verify \
-  -p 127.0.0.1::5432 postgres:17-alpine >/dev/null
+  -e "POSTGRES_PASSWORD=$migration_password" \
+  -p "127.0.0.1:${host_port}:5432" postgres:17-alpine >/dev/null
 
 for attempt in {1..30}; do
   if docker exec "$container" pg_isready -U portfolio -d portfolio_verify >/dev/null 2>&1; then break; fi
@@ -17,23 +30,53 @@ for attempt in {1..30}; do
   sleep 1
 done
 
-port="$(docker port "$container" 5432/tcp | sed -E 's/.*:([0-9]+)$/\1/')"
-database_url="postgresql+psycopg://portfolio:portfolio_verify@127.0.0.1:${port}/portfolio_verify"
+export APP_ENV=production
+export MIGRATION_DATABASE_URL="$admin_url"
+export DATABASE_RUNTIME_USER="$runtime_user"
+export DATABASE_RUNTIME_PASSWORD="$runtime_password"
+export CONTACT_INTERNAL_TOKEN=postgres-release-verification-token-at-least-32-chars
+export BUILD_REVISION="$revision"
+unset DATABASE_URL
+
 (
   cd backend
-  DATABASE_URL="$database_url" uv run alembic upgrade head
-  DATABASE_URL="$database_url" uv run alembic check
-  TEST_DATABASE_URL="$database_url" uv run pytest -q tests/test_postgres_integration.py
+  uv run python -m app.maintenance prepare-runtime-role
+  uv run alembic upgrade head
+  uv run alembic check
+  runtime_url="$(uv run python -c 'from app.core.config import get_settings; print(get_settings().database_url)')"
+  TEST_DATABASE_URL="$runtime_url" uv run pytest -q tests/test_postgres_integration.py
 )
 
 docker exec "$container" psql -U portfolio -d portfolio_verify -v ON_ERROR_STOP=1 -c \
   "INSERT INTO inquiries (id, name, email, topic, message, request_id, created_at, notification_status)
    VALUES ('00000000-0000-0000-0000-000000000001', 'Restore Drill', 'restore@example.com',
    'question', 'Restore verification record.', 'restore-drill', now(), 'pending');" >/dev/null
-docker exec "$container" pg_dump -U portfolio -d portfolio_verify -Fc -f /tmp/portfolio.dump
+
+docker build -f infra/backup/Dockerfile -t portfolio-backup:verify .
+docker run --rm --user "$(id -u):$(id -g)" --network "container:$container" \
+  -e "DATABASE_URL=$container_admin_url" -e BACKUP_DIR=/backups \
+  -v "$backup_dir:/backups" portfolio-backup:verify
+backup_file="$(find "$backup_dir" -maxdepth 1 -type f -name 'portfolio-*.dump' -print -quit)"
+[[ -n "$backup_file" ]] || { echo "Backup job did not produce a dump" >&2; exit 1; }
+backup_name="$(basename "$backup_file")"
 docker exec "$container" createdb -U portfolio portfolio_restore
-docker exec "$container" pg_restore -U portfolio -d portfolio_restore /tmp/portfolio.dump
+
+export MIGRATION_DATABASE_URL="postgresql://portfolio:${migration_password}@127.0.0.1:${host_port}/portfolio_restore"
+(
+  cd backend
+  uv run python -m app.maintenance prepare-runtime-role
+)
+docker run --rm --network "container:$container" \
+  -e "DATABASE_URL=postgresql://portfolio:${migration_password}@127.0.0.1:5432/portfolio_restore" \
+  -e RESTORE_CONFIRM=restore-into-empty-database \
+  -v "$backup_dir:/backups" \
+  --entrypoint python3 portfolio-backup:verify \
+  /app/restore_postgres.py "/backups/$backup_name"
+
 restored="$(docker exec "$container" psql -U portfolio -d portfolio_restore -Atc \
   "SELECT count(*) FROM inquiries WHERE request_id = 'restore-drill';")"
 [[ "$restored" == "1" ]] || { echo "Restore drill did not recover the marker inquiry" >&2; exit 1; }
-echo "PostgreSQL migration, concurrency, and restore drill passed."
+docker exec -e "PGPASSWORD=$runtime_password" "$container" psql -h 127.0.0.1 \
+  -U "$runtime_user" -d portfolio_restore -Atc \
+  "SELECT count(*) FROM inquiries WHERE request_id = 'restore-drill';" | grep -qx '1'
+echo "PostgreSQL role separation, migrations, drift, API concurrency, portable backup, and isolated restore passed."
