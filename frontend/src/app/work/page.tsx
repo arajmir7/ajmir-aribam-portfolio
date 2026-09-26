@@ -57,7 +57,6 @@ export default function Work() {
               key={project.slug}
               project={project}
               index={index + 1}
-              large={index === 0}
             />
           ))}
         </div>

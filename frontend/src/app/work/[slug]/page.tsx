@@ -8,6 +8,11 @@ import { projects, projectBySlug } from "@/content/projects";
 import { caseStories } from "@/content/case-stories";
 import { pageMeta, siteUrl } from "@/lib/site";
 
+function publicLimitation(value: string) {
+  const text = value.replace(/^TODO_OWNER_VERIFY:\s*/i, "");
+  return `${text.charAt(0).toUpperCase()}${text.slice(1)}`;
+}
+
 export function generateStaticParams() {
   return projects.map(({ slug }) => ({ slug }));
 }
@@ -107,25 +112,32 @@ export default async function CaseStudy({
         <nav className="case-local-nav" aria-label="In this case study">
           <span>In this case</span>
           <a href="#product">Product</a>
+          <a href="#problem">Problem</a>
           <a href="#contribution">Contribution</a>
           <a href="#decisions">Decisions</a>
           <a href="#system">System</a>
-          <a href="#evidence">Checks &amp; status</a>
+          <a href="#evidence">Quality &amp; evidence</a>
+          <a href="#current">Current state</a>
+          <a href="#limits">Limits</a>
         </nav>
         <div className="case-story">
           <section id="product" className="story-section">
             <span className="story-index">01 / Product</span>
             <h2>What the product does</h2>
             <p className="story-lede">{story.product}</p>
+          </section>
+          <section id="problem" className="story-section">
+            <span className="story-index">02 / Problem</span>
+            <h2>The problem it addresses</h2>
             <p>{project.problem}</p>
           </section>
           <section id="contribution" className="story-section">
-            <span className="story-index">02 / Contribution</span>
+            <span className="story-index">03 / Contribution</span>
             <h2>What was built</h2>
             <p className="story-lede">{story.contribution}</p>
           </section>
           <section id="decisions" className="story-section">
-            <span className="story-index">03 / Decisions</span>
+            <span className="story-index">04 / Decisions</span>
             <h2>Decisions that shape the work</h2>
             <div className="case-decisions">
               {project.decisions.slice(0, 3).map((decision, index) => (
@@ -140,7 +152,7 @@ export default async function CaseStudy({
             </div>
           </section>
           <section id="system" className="story-section">
-            <span className="story-index">04 / System</span>
+            <span className="story-index">05 / System</span>
             <h2>How the pieces connect</h2>
             <p className="story-lede">{story.system}</p>
             <ol className="case-boundaries">
@@ -154,7 +166,7 @@ export default async function CaseStudy({
             </ol>
           </section>
           <section id="evidence" className="story-section">
-            <span className="story-index">05 / Checks &amp; status</span>
+            <span className="story-index">06 / Quality &amp; evidence</span>
             <h2>How it was checked</h2>
             <p className="story-lede">{story.validation}</p>
             {secondVisual && (
@@ -170,8 +182,11 @@ export default async function CaseStudy({
                 <figcaption>{secondVisual.caption}</figcaption>
               </figure>
             )}
+          </section>
+          <section id="current" className="story-section">
+            <span className="story-index">07 / Current state</span>
+            <h2>Where the work stands</h2>
             <div className="case-current">
-              <h3>Current state</h3>
               <p>{story.current}</p>
             </div>
             {project.live && (
@@ -187,6 +202,15 @@ export default async function CaseStudy({
                 <span aria-hidden="true">↗</span>
               </a>
             )}
+          </section>
+          <section id="limits" className="story-section">
+            <span className="story-index">08 / Limits</span>
+            <h2>What remains unconfirmed</h2>
+            <ul className="case-limits">
+              {project.limitations.map((limitation) => (
+                <li key={limitation}>{publicLimitation(limitation)}</li>
+              ))}
+            </ul>
           </section>
           <nav className="case-end" aria-label="Case study next steps">
             <Link href="/work">← All work</Link>

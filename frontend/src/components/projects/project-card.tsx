@@ -38,16 +38,14 @@ export function ProjectMedia({
 export function ProjectCard({
   project,
   index,
-  large = false,
   src,
 }: {
   project: Project;
   index: number;
-  large?: boolean;
   src?: string;
 }) {
   return (
-    <article className={`project-card${large ? " project-card--large" : ""}`}>
+    <article className="project-card">
       <Link
         href={`/work/${project.slug}`}
         className="project-card-image"

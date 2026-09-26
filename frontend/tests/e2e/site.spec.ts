@@ -36,9 +36,19 @@ test("orientation, routes, metadata, and evidence links", async ({
   );
   await expect(page.locator(".home-role")).toHaveText("Software Engineer");
   await expect(page.locator(".home-proposition")).toContainText("systems");
-  await expect(page.getByRole("link", { name: /View work/ })).toBeVisible();
+  await expect(
+    page.getByRole("link", { name: /View selected work/ }),
+  ).toBeVisible();
+  await expect(page.locator(".home-hero img")).toHaveCount(0);
+  await expect(page.locator(".home-proof > div")).toHaveCount(4);
   await expect(page.locator(".home-project-grid .project-card")).toHaveCount(4);
+  await expect(page.locator(".home-writing")).toContainText(
+    "Why status changes belong on the server",
+  );
   await page.goto("/work");
+  await expect(page.locator(".work-featured-grid .project-card")).toHaveCount(
+    4,
+  );
   for (const card of await page
     .locator(".work-featured-grid .project-card")
     .all()) {
@@ -192,14 +202,18 @@ test("orientation, routes, metadata, and evidence links", async ({
       );
     expect(sectionIds).toEqual([
       "product",
+      "problem",
       "contribution",
       "decisions",
       "system",
       "evidence",
+      "current",
+      "limits",
     ]);
-    expect(
-      (await page.locator(".case-visual > div").boundingBox())?.height,
-    ).toBeLessThanOrEqual(420);
+    const caseVisual = await page.locator(".case-visual > div").boundingBox();
+    expect(caseVisual?.height).toBeLessThanOrEqual(370);
+    expect(caseVisual?.width).toBeLessThanOrEqual(970);
+    await expect(page.locator("#limits li")).not.toHaveCount(0);
   }
   await page.goto("/contact");
   await expect(

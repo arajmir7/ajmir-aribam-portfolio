@@ -1,7 +1,8 @@
 import Image from "next/image";
 import Link from "next/link";
-import { ProjectCard, ProjectMedia } from "@/components/projects/project-card";
+import { ProjectCard } from "@/components/projects/project-card";
 import { projects } from "@/content/projects";
+import { writing } from "@/content/writing";
 
 const bySlug = (slug: string) =>
   projects.find((project) => project.slug === slug)!;
@@ -17,49 +18,47 @@ export default function Home() {
     <main id="main" className="rebuild-home">
       <section className="shell home-hero" aria-labelledby="home-title">
         <div className="home-hero-copy">
-          <p className="section-label">Software engineering / Imphal, India</p>
+          <p className="section-label">Ajmir Aribam / Imphal, India</p>
           <h1 id="home-title">Ajmir Aribam</h1>
           <p className="home-role">Software Engineer</p>
           <p className="home-proposition">
-            I build the product people use and the systems that make it
-            dependable.
+            I build useful products and the systems that keep them dependable.
           </p>
           <p className="home-support">
-            I work across interfaces, APIs, data and delivery. Recent projects
-            include billing software, public information sites and tools for
-            reviewing evidence.
+            My work moves between interfaces, APIs, data and delivery. Recent
+            projects include billing software, public information platforms and
+            tools for reviewing evidence.
           </p>
           <div className="home-actions">
             <Link className="button button-primary" href="/work">
-              View work <span aria-hidden="true">↗</span>
+              View selected work <span aria-hidden="true">↗</span>
             </Link>
             <Link className="text-link" href="/about">
               About Ajmir <span aria-hidden="true">↗</span>
             </Link>
-          </div>
-        </div>
-        <aside className="home-evidence" aria-label="Featured product evidence">
-          <div className="home-evidence-top">
-            <span>Selected system</span>
-            <span>01 / 09</span>
-          </div>
-          <Link
-            href="/work/azaeron"
-            className="home-evidence-image"
-            aria-label="Explore Azaeron billing system"
-          >
-            <ProjectMedia project={featured[0]} priority />
-          </Link>
-          <div className="home-evidence-bottom">
-            <div>
-              <strong>Azaeron</strong>
-              <span>Billing and business operations</span>
-            </div>
-            <Link href="/work/azaeron" aria-label="Read Azaeron case study">
-              ↗
+            <Link className="text-link home-resume-link" href="/resume">
+              Résumé <span aria-hidden="true">↗</span>
             </Link>
           </div>
-        </aside>
+        </div>
+        <dl className="home-proof" aria-label="Engineering focus">
+          <div>
+            <dt>Products</dt>
+            <dd>Interfaces shaped around real work</dd>
+          </div>
+          <div>
+            <dt>Systems</dt>
+            <dd>Rules, APIs and data that agree</dd>
+          </div>
+          <div>
+            <dt>Quality</dt>
+            <dd>Checks that follow the whole path</dd>
+          </div>
+          <div>
+            <dt>Delivery</dt>
+            <dd>Clear states and honest limits</dd>
+          </div>
+        </dl>
       </section>
       <section className="shell home-selected" aria-labelledby="selected-title">
         <div className="section-intro">
@@ -80,12 +79,6 @@ export default function Home() {
               key={project.slug}
               project={project}
               index={index + 1}
-              large={index === 0}
-              src={
-                index === 0
-                  ? "/images/projects/azaeron-documentation.webp"
-                  : undefined
-              }
             />
           ))}
         </div>
@@ -172,6 +165,21 @@ export default function Home() {
           <Link className="text-link" href="/about">
             Get to know me <span aria-hidden="true">↗</span>
           </Link>
+        </div>
+      </section>
+      <section className="home-writing" aria-labelledby="writing-title">
+        <div className="shell home-writing-inner">
+          <p className="section-label">04 / Notes</p>
+          <div>
+            <p className="home-writing-meta">
+              {writing[0].topic} · {writing[0].reading}
+            </p>
+            <h2 id="writing-title">{writing[0].title}</h2>
+            <p>{writing[0].description}</p>
+            <Link className="text-link" href={`/notes/${writing[0].slug}`}>
+              Read the note <span aria-hidden="true">↗</span>
+            </Link>
+          </div>
         </div>
       </section>
       <section className="shell home-contact" aria-label="Contact Ajmir">
