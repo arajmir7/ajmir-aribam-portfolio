@@ -33,7 +33,7 @@ export function SiteFooter() {
             </div>
           </Link>
           <a className="footer-email" href={`mailto:${email}`}>
-            {email} <span aria-hidden="true">↗</span>
+            {email}
           </a>
         </div>
         <nav aria-label="Footer navigation" className="footer-nav">

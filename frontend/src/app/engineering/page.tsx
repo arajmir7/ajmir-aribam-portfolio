@@ -93,7 +93,7 @@ export default function Engineering() {
               <span>{String(index + 1).padStart(2, "0")}</span>
               <h3>{layer.name}</h3>
               <p>{layer.detail}</p>
-              <Link href={layer.href}>{layer.proof} ↗</Link>
+              <Link href={layer.href}>{layer.proof}</Link>
             </li>
           ))}
         </ol>
@@ -118,7 +118,7 @@ export default function Engineering() {
                 Azaeron checks payment summaries and allowed transitions before
                 the API changes invoice status. The change has an audit trail.
               </p>
-              <Link href="/work/azaeron#decisions">Read the decision ↗</Link>
+              <Link href="/work/azaeron#decisions">Read the decision</Link>
             </article>
             <article>
               <span>Reviewable analysis</span>
@@ -128,7 +128,7 @@ export default function Engineering() {
                 uncertainty beside the result. An unavailable calibrated model
                 is shown as unavailable.
               </p>
-              <Link href="/work/azaeron-verity">See the evidence flow ↗</Link>
+              <Link href="/work/azaeron-verity">See the evidence flow</Link>
             </article>
             <article>
               <span>Verified remediation</span>
@@ -137,7 +137,7 @@ export default function Engineering() {
                 AccessForge separates detection, change, security checks, rescan
                 and recorded proof. A proposed fix is not a verified fix.
               </p>
-              <Link href="/work/accessforge">Follow the proof loop ↗</Link>
+              <Link href="/work/accessforge">Follow the proof loop</Link>
             </article>
           </div>
         </div>
@@ -156,7 +156,7 @@ export default function Engineering() {
       </section>
       <div className="shell engineering-final">
         <p>Want to work through a product problem together?</p>
-        <Link href="/contact">Get in touch ↗</Link>
+        <Link href="/contact">Get in touch</Link>
       </div>
     </main>
   );

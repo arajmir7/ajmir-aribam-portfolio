@@ -12,15 +12,16 @@ The first Home viewport presents Ajmir Aribam, Software Engineer, a personal sta
 
 The Home sequence is personal introduction, engineering judgment, public work, current work, engineering note, personal bridge and contact. Work uses the same order: public work, current work, then Labs.
 
-The public collection contains only the three verified live products:
+The public collection contains four verified public destinations. The card status distinguishes the three live products from the hosted prototype:
 
-| Project                 | Verified destination                 | Status |
-| :---------------------- | :----------------------------------- | :----- |
-| Azaeron                 | `https://invoice.web-com.live/`      | Live   |
-| SHAPES India            | `https://shapesindia.org/`           | Live   |
-| Friends Aluminium Works | `https://friendsaluminiumworks.com/` | Live   |
+| Project                 | Verified destination                            | Status           |
+| :---------------------- | :---------------------------------------------- | :--------------- |
+| Azaeron                 | `https://invoice.web-com.live/`                 | Live             |
+| SHAPES India            | `https://shapesindia.org/`                      | Live             |
+| Friends Aluminium Works | `https://friendsaluminiumworks.com/`            | Live             |
+| Zam Zam Academy         | `https://storied-bombolone-5d4a8f.netlify.app/` | Hosted prototype |
 
-Zam Zam Academy’s Netlify preview at `https://storied-bombolone-5d4a8f.netlify.app/` also responded and was captured. It remains in Labs as a **Hosted prototype** because hosting does not verify client ownership or production use. No public destination remains unverified.
+Zam Zam Academy’s Netlify preview appears beside the live products because visitors can open it and inspect its deployed experience. It remains labelled **Hosted prototype** because hosting does not verify client ownership or production use. No public destination remains unverified.
 
 ## Fresh public-work captures
 
@@ -31,7 +32,7 @@ The current desktop captures are used by the corresponding portfolio cards:
 - `frontend/public/images/projects/azaeron-public-desktop.webp`
 - `frontend/public/images/projects/shapes-india-public-desktop.webp`
 - `frontend/public/images/projects/friends-aluminium-works-public-desktop.webp`
-- `frontend/public/images/projects/zam-zam-academy-public-desktop.webp` for the hosted-prototype card only
+- `frontend/public/images/projects/zam-zam-academy-public-desktop.webp` for the clearly labelled hosted-prototype card
 
 Mobile companions were captured for all four destinations. The manifest records source URL, final URL, capture date, viewport, asset path and capture authority; none of that metadata is displayed to visitors.
 
@@ -51,7 +52,7 @@ The final `make verify` run passed:
 
 The final visual audit captured Home in both themes at 390×844, 430×932, 768×1024, 1024×768, 1280×800, 1440×900, 1728×1117 and 1920×1080. It found no page errors, horizontal overflow or first-viewport project images. At 1440×900, the introduction ends at y=921; engineering proof begins at y=921 and public work begins at y=1466. The artifacts and measurements are ignored local files under `.qa-refinement/`.
 
-At 1440 px, the three verified public cards are 320 px wide, about 23.7% of the 1354 px content measure, with 170 px screenshots. At 390 px, cards stack in one column at 350 px wide, with 160 px screenshots. Current-work cards use a two-column desktop text-led grid and stack on mobile.
+At 1440 px, the public collection uses three cards per row at 30% of the 1354 px content measure; the fourth public card begins the next row. At 390 px, cards stack in one column at 350 px wide, with 160 px screenshots. Current-work cards use a two-column desktop text-led grid and stack on mobile.
 
 ## Deployment boundary and remaining blockers
 

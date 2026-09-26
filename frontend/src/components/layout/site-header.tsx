@@ -104,7 +104,7 @@ export function SiteHeader() {
             className="header-contact"
             aria-current={active("/contact") ? "page" : undefined}
           >
-            Contact <span aria-hidden="true">↗</span>
+            Contact
           </Link>
           <button
             className="menu-toggle"
@@ -178,7 +178,6 @@ export function SiteHeader() {
                 aria-current={active(href) ? "page" : undefined}
               >
                 {label}
-                <span aria-hidden="true">↗</span>
               </Link>
             ))}
           </nav>

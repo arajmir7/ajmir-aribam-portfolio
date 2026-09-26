@@ -9,15 +9,15 @@ export function ContactClose() {
           <p className="section-label">Have something in mind?</p>
           <h2 id="contact-close-title">Let’s work through it.</h2>
           <a className="contact-close-email" href={`mailto:${email}`}>
-            {email} <span aria-hidden="true">↗</span>
+            {email}
           </a>
         </div>
         <div className="contact-close-actions">
           <Link className="button button-primary" href="/contact">
-            Start a conversation <span aria-hidden="true">↗</span>
+            Start a conversation
           </Link>
           <Link className="text-link" href="/resume">
-            Read my résumé <span aria-hidden="true">↗</span>
+            Read my résumé
           </Link>
         </div>
       </div>

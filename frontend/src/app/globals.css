@@ -696,9 +696,6 @@ p {
   border: 1px solid var(--border-strong);
   font-size: 0.8rem;
 }
-.lab-flow span + span::before {
-  content: "→ ";
-}
 .lab-project--academy .lab-project-sign {
   background: var(--accent-soft);
   color: var(--ink);

@@ -102,8 +102,7 @@ export function ProjectCard({
             >
               {project.maturity === "prototype"
                 ? "Open hosted preview"
-                : "View live"}{" "}
-              <span aria-hidden="true">↗</span>
+                : "View live"}
             </a>
           )}
           <Link
@@ -111,7 +110,7 @@ export function ProjectCard({
             href={`/work/${project.slug}`}
             aria-label={`Read ${project.name} case study`}
           >
-            Read case study <span aria-hidden="true">↗</span>
+            Read case study
           </Link>
         </div>
       </div>

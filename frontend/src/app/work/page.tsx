@@ -15,8 +15,9 @@ const groups = [
   {
     id: "public-work",
     label: "01 / Public work",
-    title: "Live on the web",
-    description: "A selection of work you can open and inspect today.",
+    title: "Open on the web",
+    description:
+      "Four public experiences you can visit today. Zam Zam Academy is a hosted prototype; the other projects are live products.",
     projects: publicWork,
     compact: false,
   },
@@ -32,9 +33,9 @@ const groups = [
   {
     id: "labs",
     label: "03 / Labs",
-    title: "Prototypes & experiments",
+    title: "Prototype exploration",
     description:
-      "Earlier explorations and research-driven builds, kept visible with their boundaries intact.",
+      "An early exploration shown with its current boundaries intact.",
     projects: prototypes,
     compact: false,
   },
@@ -54,7 +55,7 @@ export default function Work() {
         <nav className="work-key" aria-label="Work collections">
           {groups.map((group) => (
             <a key={group.id} href={`#${group.id}`}>
-              {group.title} ↓
+              {group.title}
             </a>
           ))}
         </nav>
@@ -78,7 +79,7 @@ export default function Work() {
           />
           {group.id === "labs" && (
             <Link className="text-link work-labs-link" href="/labs">
-              Explore Labs <span aria-hidden="true">↗</span>
+              Explore Labs
             </Link>
           )}
         </section>

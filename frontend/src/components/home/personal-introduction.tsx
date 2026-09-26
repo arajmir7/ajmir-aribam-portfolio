@@ -40,32 +40,27 @@ export function PersonalIntroduction() {
           </ul>
           <div className={styles.actions} aria-label="Connect with Ajmir">
             <Link className="button button-primary" href="/work">
-              View my work <span aria-hidden="true">↗</span>
+              View my work
             </Link>
             <Link className="button button-outline" href="/about">
-              About me <span aria-hidden="true">↗</span>
+              About me
             </Link>
           </div>
           <div className={styles.secondaryActions}>
-            <Link href="/resume">
-              Résumé <span aria-hidden="true">↗</span>
-            </Link>
-            <Link href="/contact">
-              Get in touch <span aria-hidden="true">↗</span>
-            </Link>
+            <Link href="/resume">Résumé</Link>
+            <Link href="/contact">Get in touch</Link>
           </div>
           <div className={styles.professionalLinks}>
             <a href={githubUrl} target="_blank" rel="noopener noreferrer">
-              GitHub <span aria-hidden="true">↗</span>
+              GitHub
             </a>
             <a href={linkedinUrl} target="_blank" rel="noopener noreferrer">
-              LinkedIn <span aria-hidden="true">↗</span>
+              LinkedIn
             </a>
           </div>
         </div>
         <a className={styles.scrollCue} href="#engineering-proof">
           <span>A little more about how I think</span>
-          <span aria-hidden="true">↓</span>
         </a>
       </div>
     </section>

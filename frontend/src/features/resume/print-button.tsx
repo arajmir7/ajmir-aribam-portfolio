@@ -6,7 +6,7 @@ export function PrintButton() {
       className="button button-outline print-button"
       onClick={() => window.print()}
     >
-      Print / save as PDF ↗
+      Print / save as PDF
     </button>
   );
 }

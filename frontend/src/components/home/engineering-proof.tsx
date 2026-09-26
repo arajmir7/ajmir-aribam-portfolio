@@ -31,10 +31,10 @@ export function EngineeringProof() {
       </ol>
       <div className={styles.proofLinks}>
         <Link className="text-link" href="/engineering">
-          My engineering approach <span aria-hidden="true">↗</span>
+          My engineering approach
         </Link>
         <Link className="text-link" href="/about">
-          The background behind it <span aria-hidden="true">↗</span>
+          The background behind it
         </Link>
       </div>
     </section>

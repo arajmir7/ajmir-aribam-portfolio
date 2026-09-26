@@ -54,7 +54,7 @@ test("orientation, routes, metadata, and evidence links", async ({
   ).toHaveCount(3);
   await expect(
     page.locator('[data-section="public-work"] .project-card'),
-  ).toHaveCount(3);
+  ).toHaveCount(4);
   await expect(
     page.locator('[data-section="current-work"] .project-card'),
   ).toHaveCount(4);
@@ -62,14 +62,14 @@ test("orientation, routes, metadata, and evidence links", async ({
     "Why status changes belong on the server",
   );
   await page.goto("/work");
-  await expect(page.locator("#public-work .project-card")).toHaveCount(3);
+  await expect(page.locator("#public-work .project-card")).toHaveCount(4);
   await expect(page.locator("#current-work .project-card")).toHaveCount(4);
-  await expect(page.locator("#labs .project-card")).toHaveCount(2);
+  await expect(page.locator("#labs .project-card")).toHaveCount(1);
   await expect(
     page.locator('#public-work [data-project="azaeron"]'),
   ).toContainText("Live");
   await expect(
-    page.locator('#labs [data-project="zam-zam-academy"]'),
+    page.locator('#public-work [data-project="zam-zam-academy"]'),
   ).toContainText("Hosted prototype");
   await page.goto("/");
   await page.screenshot({
@@ -238,7 +238,7 @@ test("orientation, routes, metadata, and evidence links", async ({
   ).toHaveAttribute("href", "/work");
   await page.goto("/labs");
   await expect(page.getByText("SCMIRN", { exact: true })).toBeVisible();
-  await expect(page.locator(".lab-project")).toHaveCount(2);
+  await expect(page.locator(".lab-project")).toHaveCount(1);
   await page.goto("/work/azaeron-verity");
   await expect(page.locator(".case-opening .section-label")).toContainText(
     "In development",

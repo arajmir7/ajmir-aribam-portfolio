@@ -76,7 +76,7 @@ test("personal introduction precedes proof, public work and current work at ever
       expect(visibleProjectImages).toBe(0);
 
       const cards = await work.locator(".project-card").all();
-      expect(cards).toHaveLength(3);
+      expect(cards).toHaveLength(4);
       for (const card of cards) {
         await expect(card.getByRole("link")).toHaveCount(2);
         await expect(card.locator(".project-status")).toBeVisible();
@@ -91,14 +91,15 @@ test("personal introduction precedes proof, public work and current work at ever
           cards.map((card) => card.boundingBox()),
         );
         const contentBounds = (await work.locator(".shell").boundingBox())!;
-        expect(new Set(bounds.map((bound) => Math.round(bound!.y))).size).toBe(
-          1,
-        );
+        expect(
+          new Set(bounds.slice(0, 3).map((bound) => Math.round(bound!.y))).size,
+        ).toBe(1);
+        expect(bounds[3]!.y).toBeGreaterThan(bounds[0]!.y);
         for (const bound of bounds) {
           expect(bound!.width / contentBounds.width).toBeGreaterThanOrEqual(
-            0.22,
+            0.29,
           );
-          expect(bound!.width / contentBounds.width).toBeLessThanOrEqual(0.25);
+          expect(bound!.width / contentBounds.width).toBeLessThanOrEqual(0.31);
         }
       }
       await page.screenshot({

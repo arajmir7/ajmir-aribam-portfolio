@@ -51,7 +51,7 @@ export default async function Article({
     <main id="main" className="shell article-page">
       <StructuredData value={structured} />
       <Link className="back-link" href="/notes">
-        ← All notes
+        All notes
       </Link>
       <div className="article-head">
         <p className="kicker">
@@ -101,8 +101,8 @@ export default async function Article({
         </p>
         <div className="article-sources">
           <strong>See the projects behind this note</strong>
-          <Link href="/work/azaeron">Azaeron case study ↗</Link>
-          <Link href="/work/shapes-india">SHAPES case study ↗</Link>
+          <Link href="/work/azaeron">Azaeron case study</Link>
+          <Link href="/work/shapes-india">SHAPES case study</Link>
         </div>
       </div>
     </main>

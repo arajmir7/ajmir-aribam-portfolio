@@ -209,7 +209,7 @@ export function ContactForm() {
       )}
       {emailFallback && (
         <p className="form-fallback">
-          <a href={`mailto:${email}`}>Email {email} instead ↗</a>
+          <a href={`mailto:${email}`}>Email {email} instead</a>
         </p>
       )}
       <button
@@ -217,8 +217,7 @@ export function ContactForm() {
         type="submit"
         disabled={status === "sending"}
       >
-        {status === "sending" ? "Sending…" : "Send inquiry"}{" "}
-        <span aria-hidden="true">↗</span>
+        {status === "sending" ? "Sending…" : "Send inquiry"}
       </button>
       <p className="form-note" style={{ marginTop: 18 }}>
         By sending, you agree to the handling described in the{" "}

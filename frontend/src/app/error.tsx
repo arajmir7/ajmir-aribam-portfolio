@@ -10,10 +10,10 @@ export default function Error({ reset }: { error: Error; reset: () => void }) {
       <p>Try again, or get in touch if the problem continues.</p>
       <div className="state-actions">
         <button className="button button-primary" type="button" onClick={reset}>
-          Try again ↗
+          Try again
         </button>
         <Link className="button button-outline" href="/contact">
-          Contact ↗
+          Contact
         </Link>
       </div>
     </main>

@@ -10,7 +10,7 @@ export default function NotFound() {
         The page may have moved. The work index is a reliable place to resume.
       </p>
       <Link className="button button-primary" href="/work">
-        Explore work ↗
+        Explore work
       </Link>
     </main>
   );

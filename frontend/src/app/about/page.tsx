@@ -56,10 +56,10 @@ export default function About() {
           </p>
           <div className="about-next">
             <Link className="button button-primary" href="/work">
-              Explore the work <span aria-hidden="true">↗</span>
+              Explore the work
             </Link>
             <Link className="text-link" href="/resume">
-              Read my résumé <span aria-hidden="true">↗</span>
+              Read my résumé
             </Link>
           </div>
         </div>

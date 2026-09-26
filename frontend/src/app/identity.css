@@ -1033,7 +1033,8 @@ p {
   gap: 1.25rem 2.5rem;
 }
 .project-grid--public {
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 30%));
+  justify-content: space-between;
 }
 .project-card--compact .project-card-copy {
   padding-top: 0.45rem;

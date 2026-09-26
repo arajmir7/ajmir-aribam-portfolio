@@ -16,7 +16,7 @@ export default function Labs() {
         <p className="kicker">Labs &amp; experiments</p>
         <h1>Prototypes with their boundaries intact.</h1>
         <p>
-          These early builds show the ideas and their current limits. Neither is
+          This early build shows the idea and its current limits. It is not
           presented as a finished service.
         </p>
       </header>
@@ -40,37 +40,7 @@ export default function Labs() {
               AI and rights surfaces are informational guidance, not legal
               advice or an official government service.
             </p>
-            <Link href="/work/scmirn">Read the SCMIRN case ↗</Link>
-          </div>
-        </article>
-        <article className="lab-project lab-project--academy">
-          <div className="lab-project-sign">
-            <span>Hosted prototype</span>
-            <strong>
-              Zam Zam
-              <br />
-              Academy
-            </strong>
-            <span className="lab-sign-foot">Template exploration</span>
-          </div>
-          <div className="lab-project-copy">
-            <span>Education site study</span>
-            <h2>A hosted education website study.</h2>
-            <p>
-              A multi-page study for academics, admissions, faculty, student
-              life, notices and contact. It remains a hosted prototype, not a
-              verified client production site.
-            </p>
-            <div className="lab-links">
-              <Link href="/work/zam-zam-academy">Read the case ↗</Link>
-              <a
-                href="https://storied-bombolone-5d4a8f.netlify.app/"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                Open hosted preview ↗
-              </a>
-            </div>
+            <Link href="/work/scmirn">Read the SCMIRN case</Link>
           </div>
         </article>
       </div>

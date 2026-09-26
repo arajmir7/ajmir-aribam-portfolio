@@ -64,7 +64,7 @@ export default async function CaseStudy({
       <StructuredData value={breadcrumbs} />
       <header className="shell case-opening">
         <Link className="back-link" href="/work">
-          ← All work
+          All work
         </Link>
         <div className="case-opening-grid">
           <div>
@@ -198,8 +198,7 @@ export default async function CaseStudy({
               >
                 {project.maturity === "prototype"
                   ? "Open hosted preview"
-                  : "Visit live product"}{" "}
-                <span aria-hidden="true">↗</span>
+                  : "Visit live product"}
               </a>
             )}
           </section>
@@ -213,8 +212,8 @@ export default async function CaseStudy({
             </ul>
           </section>
           <nav className="case-end" aria-label="Case study next steps">
-            <Link href="/work">← All work</Link>
-            <Link href="/contact">Discuss a project ↗</Link>
+            <Link href="/work">All work</Link>
+            <Link href="/contact">Discuss a project</Link>
           </nav>
         </div>
       </div>

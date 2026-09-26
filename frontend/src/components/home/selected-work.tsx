@@ -14,11 +14,14 @@ export function SelectedWork() {
         <header className={styles.workHeading}>
           <div>
             <p className="section-label">01 / Public work</p>
-            <h2 id="public-work-title">Live on the web</h2>
-            <p>A selection of work you can open and inspect today.</p>
+            <h2 id="public-work-title">Open on the web</h2>
+            <p>
+              Four public experiences you can visit today. Zam Zam Academy is a
+              hosted prototype; the other projects are live products.
+            </p>
           </div>
           <Link className="text-link" href="/work">
-            All work <span aria-hidden="true">↗</span>
+            View all work
           </Link>
         </header>
         <ProjectCollection projects={publicWork} />

@@ -23,9 +23,7 @@ export default function Contact() {
       <div className="contact-layout">
         <aside className="contact-direct">
           <span>Direct email</span>
-          <a href={`mailto:${email}`}>
-            {email} <span aria-hidden="true">↗</span>
-          </a>
+          <a href={`mailto:${email}`}>{email}</a>
           <p>If the form is inconvenient, write to me directly.</p>
           <div>
             <span>Elsewhere</span>

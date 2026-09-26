@@ -15,7 +15,7 @@ export function FieldNote() {
         <p>{note.description}</p>
       </div>
       <Link className="text-link" href={`/notes/${note.slug}`}>
-        Read the note <span aria-hidden="true">↗</span>
+        Read the note
       </Link>
     </section>
   );

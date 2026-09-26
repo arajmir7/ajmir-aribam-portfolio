@@ -36,9 +36,7 @@ export default function Writing() {
             <p>{note.description}</p>
             <div className="note-feature-bottom">
               <span>Related: {note.relatedSystems.join(" · ")}</span>
-              <Link href={`/notes/${note.slug}`}>
-                Read note <span aria-hidden="true">↗</span>
-              </Link>
+              <Link href={`/notes/${note.slug}`}>Read note</Link>
             </div>
           </article>
         ))}

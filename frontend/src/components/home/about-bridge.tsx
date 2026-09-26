@@ -19,7 +19,7 @@ export function AboutBridge() {
           questions I ask when I write software.
         </p>
         <Link className="text-link" href="/about">
-          More about my background <span aria-hidden="true">↗</span>
+          More about my background
         </Link>
       </div>
     </section>
