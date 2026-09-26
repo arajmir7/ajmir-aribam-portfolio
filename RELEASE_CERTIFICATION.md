@@ -55,7 +55,7 @@ The final candidate generated and received manual review of 152 full-page route 
 
 The review covered first-viewport identity, logo and name legibility, type wrapping, project hierarchy, screenshot scale and crop, case-study rhythm, whitespace, footer consistency, mobile navigation, and form-state clarity. No visible clipping, missing image, uncontrolled project visual, broken hierarchy, or inconsistent footer was found.
 
-At the tested 1440 × 900 desktop viewport, Home presents Ajmir Aribam and the four-part proof strip before any project card. Home contains three selected projects. Project grids use three columns from 1280 px, two from 701 through 1279 px, and one through 700 px. Desktop card imagery is constrained to 160–190 px high; the mobile rule remains capped at 210 px. Work contains six featured projects and three archive rows. Case lead visuals remain bounded to 960 × 360 px on desktop.
+Home was rebuilt around Ajmir Aribam, the Software Engineer role, professional portrait, personal positioning, four direct actions, and a four-part engineering-strengths summary. No project screenshot, application interface, product mockup, dashboard preview, or project card appears anywhere on Home. Its three selected projects are presented later as compact text-only rows after a separate personal profile. The primary navigation is limited to Work, Engineering, About, and Résumé, followed by theme and Contact controls; Notes remains linked from Home and the footer. Work retains six compact featured cards and three archive rows. Case lead visuals remain bounded to 960 × 360 px on desktop.
 
 The résumé export is one A4 page with extractable text and no visible clipping or overlap. It is not a tagged PDF.
 
@@ -69,8 +69,8 @@ A five-run loopback Chromium observation against the production build recorded:
 
 | Viewport   | Median LCP | CLS | Approximate first-load transfer |
 | ---------- | ---------: | --: | ------------------------------: |
-| 390 × 900  |     352 ms |   0 |                          242 KB |
-| 1440 × 900 |     356 ms |   0 |                          284 KB |
+| 390 × 900  |     356 ms |   0 |                          221 KB |
+| 1440 × 900 |     352 ms |   0 |                          239 KB |
 
 These are local lab observations. No production Lighthouse result, field Core Web Vitals, traffic metric, user metric, uptime history, or availability claim exists.
 

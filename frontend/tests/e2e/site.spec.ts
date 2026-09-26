@@ -36,21 +36,19 @@ test("orientation, routes, metadata, and evidence links", async ({
     "Ajmir Aribam",
   );
   await expect(page.locator(".home-role")).toHaveText("Software Engineer");
-  await expect(page.locator(".home-proposition")).toContainText("systems");
+  await expect(page.locator(".home-proposition")).toContainText(
+    "interface to infrastructure",
+  );
+  await expect(page.getByRole("link", { name: /Explore work/ })).toBeVisible();
   await expect(
-    page.getByRole("link", { name: /View selected work/ }),
+    page.getByRole("img", { name: "Portrait of Ajmir Aribam" }),
   ).toBeVisible();
-  await expect(page.locator(".home-hero img")).toHaveCount(0);
+  await expect(page.locator(".home-hero .project-media")).toHaveCount(0);
   await expect(page.locator(".home-proof > div")).toHaveCount(4);
-  const homeCards = page.locator(".home-project-grid .project-card");
-  await expect(homeCards).toHaveCount(3);
-  const firstHomeCard = await homeCards.first().boundingBox();
-  expect(firstHomeCard?.y).toBeGreaterThanOrEqual(900);
-  expect(firstHomeCard?.width).toBeGreaterThanOrEqual(340);
-  expect(firstHomeCard?.width).toBeLessThanOrEqual(410);
-  expect(
-    (await homeCards.first().locator(".project-media").boundingBox())?.height,
-  ).toBeLessThanOrEqual(200);
+  const homeWork = page.locator(".home-work-item");
+  await expect(homeWork).toHaveCount(3);
+  expect((await homeWork.first().boundingBox())?.y).toBeGreaterThanOrEqual(900);
+  await expect(page.locator(".home-work img")).toHaveCount(0);
   await expect(page.locator(".home-writing")).toContainText(
     "Why status changes belong on the server",
   );
