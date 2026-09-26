@@ -1,54 +1,22 @@
 .frame {
-  width: min(calc(100% - clamp(2.5rem, 6vw, 7rem)), 1200px);
+  width: min(calc(100% - clamp(2rem, 5vw, 5rem)), 1272px);
   margin-inline: auto;
 }
 
 .hero {
-  padding-block: clamp(2.75rem, 5vw, 4.25rem) clamp(2.35rem, 4vw, 3.25rem);
+  padding-block: clamp(3rem, 6vw, 5.5rem) clamp(3rem, 5vw, 4.5rem);
 }
 
 .heroGrid {
   display: grid;
-  grid-template-columns: minmax(0, 0.49fr) minmax(0, 1fr);
-  gap: clamp(2rem, 4.5vw, 4rem);
+  grid-template-columns: minmax(0, 0.38fr) minmax(0, 0.62fr);
+  gap: clamp(2rem, 4vw, 3.5rem);
   align-items: center;
 }
 
-.introduction {
-  grid-column: 2;
-  grid-row: 1;
-  align-self: center;
-}
-
-.role {
-  margin: 0.7rem 0 1rem;
-  color: var(--accent);
-  font-family: var(--font-meta);
-  font-size: 0.78rem;
-  font-weight: 650;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-}
-
-.hero h1 {
-  max-width: 19ch;
-  margin: 0;
-  font-size: clamp(2.6rem, 3.65vw, 3.8rem);
-  line-height: 1.04;
-}
-
-.heroLede {
-  max-width: 54ch;
-  margin: 1.1rem 0 0;
-  color: var(--text-secondary);
-  font-size: clamp(1rem, 1.15vw, 1.1rem);
-}
-
 .portrait {
-  grid-column: 1;
-  grid-row: 1;
   width: 100%;
-  max-width: 384px;
+  max-width: 430px;
   margin: 0;
 }
 
@@ -59,189 +27,305 @@
 }
 
 .portrait figcaption {
-  margin-top: 0.7rem;
+  margin-top: 0.65rem;
   color: var(--text-tertiary);
   font-size: 0.78rem;
 }
 
+.introduction {
+  min-width: 0;
+}
+
+.introduction > .section-label {
+  margin: 0;
+}
+
+.role {
+  margin: 0.65rem 0 1.1rem;
+  color: var(--accent);
+  font-family: var(--font-meta);
+  font-size: 0.78rem;
+  font-weight: 650;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.hero h1 {
+  max-width: 18ch;
+  margin: 0;
+  font-size: clamp(2.6rem, 3.55vw, 3.75rem);
+  line-height: 1.04;
+}
+
+.heroLede {
+  max-width: 65ch;
+  margin: 1.1rem 0 0;
+  color: var(--text-secondary);
+  font-size: clamp(1rem, 1.18vw, 1.1rem);
+}
+
+.heroActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem 1.5rem;
+  margin-top: 1.55rem;
+}
+
+.heroActions a,
+.contactActions a {
+  color: var(--text-primary);
+  font-weight: 600;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.35em;
+}
+
+.heroActions a:hover,
+.contactActions a:hover {
+  color: var(--interactive);
+}
+
 .section {
-  padding-block: clamp(2rem, 3.4vw, 2.8rem);
+  padding-block: clamp(3.5rem, 5.6vw, 5rem);
   border-top: 1px solid var(--border);
 }
 
 .sectionHeading {
   display: grid;
-  grid-template-columns: minmax(150px, 1fr) minmax(0, 3fr);
-  gap: clamp(1.5rem, 5vw, 5rem);
+  grid-template-columns: minmax(190px, 0.38fr) minmax(0, 0.62fr);
+  gap: clamp(2rem, 4vw, 3.5rem);
+}
+
+.sectionHeading > .section-label {
+  margin: 0.45rem 0 0;
+}
+
+.sectionHeading > div {
+  max-width: 720px;
 }
 
 .sectionHeading h2,
+.closing h2,
 .contact h2 {
-  max-width: 20ch;
+  max-width: 22ch;
   margin: 0;
-  font-size: clamp(1.7rem, 2.75vw, 2.75rem);
-  line-height: 1.05;
-}
-
-.sectionHeading p:last-child {
-  max-width: 56ch;
-  margin: 1rem 0 0;
-  color: var(--text-secondary);
-  font-size: clamp(0.98rem, 1.15vw, 1.08rem);
-}
-
-.focusLink {
-  display: inline-block;
-  margin-top: 1.15rem;
-}
-
-.capabilities {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 0 2rem;
-  margin: 1.5rem 0 0;
-  padding: 0;
-  list-style: none;
-}
-
-.capabilities li {
-  padding-block: 0.95rem;
-  border-top: 1px solid var(--border);
-}
-
-.capabilities h3 {
-  margin: 0;
-  font-size: 1rem;
-}
-
-.capabilities p {
-  margin: 0.35rem 0 0;
-  color: var(--text-secondary);
-  font-size: 0.9rem;
-  line-height: 1.55;
-}
-
-.approach {
-  padding-block: clamp(2.5rem, 4vw, 3.5rem);
-  color: var(--deep-ink);
-  background: var(--deep);
-}
-
-.approach .frame {
-  display: grid;
-  grid-template-columns: minmax(150px, 1fr) minmax(0, 3fr);
-  gap: clamp(1.5rem, 5vw, 5rem);
-}
-
-.approachLabel {
-  color: var(--text-inverse-muted);
-}
-
-.approachCopy {
-  max-width: 58ch;
-}
-
-.approachCopy h2 {
-  max-width: 17ch;
-  margin: 0;
-  font-size: clamp(1.7rem, 2.75vw, 2.75rem);
+  font-size: clamp(1.8rem, 2.9vw, 2.8rem);
   line-height: 1.08;
 }
 
-.approachCopy p {
-  margin: 0.9rem 0 0;
-  color: var(--text-inverse-muted);
-  font-size: clamp(0.98rem, 1.15vw, 1.08rem);
+.sectionHeading > div > p {
+  max-width: 68ch;
+  margin: 1rem 0 0;
+  color: var(--text-secondary);
+  font-size: clamp(1rem, 1.18vw, 1.1rem);
 }
 
-.focusCopy .text-link {
-  grid-column: 2;
-  justify-self: start;
+.profileColumns {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: clamp(1.5rem, 3vw, 2.5rem);
+  margin: 2rem 0 0 calc(38% + clamp(2rem, 4vw, 3.5rem));
 }
 
-.contact {
-  padding-block: clamp(2.25rem, 4vw, 3.5rem);
+.profileColumns article {
+  padding-top: 0.85rem;
+  border-top: 1px solid var(--border-strong);
+}
+
+.profileColumns h3,
+.workingPrinciples h3 {
+  margin: 0;
+  font-size: 1rem;
+  line-height: 1.4;
+}
+
+.profileColumns p,
+.workingPrinciples p {
+  margin: 0.45rem 0 0;
+  color: var(--text-secondary);
+  font-size: 0.94rem;
+  line-height: 1.6;
+}
+
+.currentLine {
+  font-size: 0.95rem !important;
+}
+
+.workingPrinciples {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: clamp(1.5rem, 3vw, 2.5rem);
+  margin: 2rem 0 0 calc(38% + clamp(2rem, 4vw, 3.5rem));
+  padding: 0;
+  list-style: none;
+  counter-reset: principle;
+}
+
+.workingPrinciples li {
+  counter-increment: principle;
+  padding-top: 0.85rem;
+  border-top: 1px solid var(--border-strong);
+}
+
+.workingPrinciples li::before {
+  display: block;
+  margin-bottom: 0.8rem;
+  color: var(--accent);
+  font-family: var(--font-meta);
+  font-size: 0.72rem;
+  content: "0" counter(principle);
+}
+
+.closing {
+  padding-block: clamp(3.5rem, 5.6vw, 5rem);
+  background: var(--surface);
   border-top: 1px solid var(--border);
 }
 
+.closing .frame {
+  display: grid;
+  grid-template-columns: minmax(190px, 0.38fr) minmax(0, 0.62fr);
+  gap: clamp(2rem, 4vw, 3.5rem);
+}
+
+.closing h2 {
+  grid-column: 2;
+  max-width: 20ch;
+}
+
+.closing p {
+  grid-column: 2;
+  max-width: 65ch;
+  margin: -1rem 0 0;
+  color: var(--text-secondary);
+  font-size: clamp(1rem, 1.18vw, 1.1rem);
+}
+
+.contact {
+  padding-block: clamp(2.5rem, 4vw, 3.75rem);
+  border-top: 1px solid var(--border);
+}
+
+.contact > .frame > .section-label {
+  margin: 0;
+}
+
 .contactRow {
-  display: flex;
-  justify-content: space-between;
+  display: grid;
+  grid-template-columns: minmax(190px, 0.38fr) minmax(0, 0.62fr);
+  gap: clamp(2rem, 4vw, 3.5rem);
   align-items: end;
-  gap: 2rem;
-  margin-top: 1rem;
+  margin-top: 0.75rem;
+}
+
+.contact h2 {
+  grid-column: 2;
 }
 
 .contactActions {
   display: flex;
   flex-wrap: wrap;
-  align-items: center;
-  gap: 1.25rem;
-}
-
-.contactSocials {
-  margin-top: 1.5rem;
+  gap: 1.5rem;
+  grid-column: 2;
+  margin-top: 0.35rem;
 }
 
 @media (max-width: 760px) {
-  .hero {
-    padding-block: 2.75rem 3rem;
+  .frame {
+    width: min(calc(100% - 2rem), 560px);
   }
 
-  .heroGrid,
-  .sectionHeading {
-    grid-template-columns: 1fr;
+  .hero {
+    padding-block: 2.25rem 2.75rem;
   }
 
   .heroGrid {
-    gap: 1.5rem;
+    grid-template-columns: 1fr;
+    gap: 1.35rem;
   }
 
   .portrait {
-    width: 144px;
-    grid-column: 1;
-    grid-row: 1;
+    width: 82%;
+    max-width: 360px;
   }
 
-  .introduction {
-    grid-column: 1;
-    grid-row: 2;
+  .portrait figcaption {
+    display: none;
   }
 
-  .sectionHeading {
+  .role {
+    margin-bottom: 0.8rem;
+  }
+
+  .hero h1 {
+    max-width: 19ch;
+    font-size: clamp(2.35rem, 7.6vw, 3.2rem);
+  }
+
+  .heroLede {
+    margin-top: 0.9rem;
+  }
+
+  .heroActions {
+    margin-top: 1.15rem;
+  }
+
+  .section {
+    padding-block: 3rem;
+  }
+
+  .sectionHeading,
+  .closing .frame,
+  .contactRow {
+    grid-template-columns: 1fr;
     gap: 1rem;
   }
 
-  .capabilities {
-    grid-template-columns: 1fr;
+  .sectionHeading > .section-label {
+    margin-top: 0;
   }
 
-  .approach .frame {
+  .profileColumns,
+  .workingPrinciples {
     grid-template-columns: 1fr;
-    gap: 1rem;
+    gap: 1.2rem;
+    margin: 1.5rem 0 0;
+  }
+
+  .closing {
+    padding-block: 3rem;
+  }
+
+  .closing h2,
+  .closing p,
+  .contact h2,
+  .contactActions {
+    grid-column: 1;
+  }
+
+  .closing p {
+    margin: 0;
   }
 
   .contactRow {
-    display: block;
+    margin-top: 0.75rem;
   }
 
   .contactActions {
-    margin-top: 1.5rem;
+    gap: 1.25rem;
+    margin-top: 0.25rem;
+  }
+}
+
+@media (min-width: 761px) and (max-width: 900px) {
+  .profileColumns,
+  .workingPrinciples {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    margin-left: calc(38% + 2rem);
   }
 }
 
 @media (max-width: 380px) {
-  .frame {
-    width: calc(100% - 2rem);
-  }
-
   .hero h1 {
-    font-size: 2.4rem;
-  }
-
-  .contactActions {
-    align-items: start;
-    flex-direction: column;
-    gap: 0.5rem;
+    font-size: 2.25rem;
   }
 }

@@ -1,22 +1,26 @@
 import Image from "next/image";
 import Link from "next/link";
-import { SocialLinks } from "@/components/layout/social-links";
 import styles from "./profile.module.css";
 
 function SectionHeading({
   id,
+  number,
   label,
   title,
   children,
 }: {
   id: string;
+  number: string;
   label: string;
   title: string;
   children?: React.ReactNode;
 }) {
   return (
     <header className={styles.sectionHeading}>
-      <p className="section-label">{label}</p>
+      <p className="section-label">
+        <span aria-hidden="true">{number} — </span>
+        {label}
+      </p>
       <div>
         <h2 id={id}>{title}</h2>
         {children}
@@ -37,23 +41,28 @@ export function ProfileHero() {
               width={448}
               height={560}
               preload
-              sizes="(max-width: 700px) 144px, (max-width: 1200px) 32vw, 384px"
+              sizes="(max-width: 760px) 80vw, (max-width: 1200px) 38vw, 430px"
             />
-            <figcaption>Ajmir Aribam · Imphal, India</figcaption>
+            <figcaption>Imphal, India</figcaption>
           </figure>
           <div className={styles.introduction}>
             <p className="section-label">Ajmir Aribam</p>
             <p className={styles.role}>Software Engineer</p>
             <h1>
-              I build software end to end—from the interface people use to the
-              systems that keep it reliable.
+              I build dependable software from the product interface to the
+              systems behind it.
             </h1>
             <p className={styles.heroLede}>
-              I work across frontend products, backend services, APIs, data,
-              quality and delivery. I care about making the visible experience
-              clear while keeping the rules, records and release path dependable
-              behind it.
+              I work across full-stack product engineering, backend services,
+              APIs, data, quality and delivery. I care about making software
+              clear for the people using it and dependable in the places they
+              cannot see.
             </p>
+            <nav className={styles.heroActions} aria-label="About page actions">
+              <Link href="/work">View my work</Link>
+              <Link href="/resume">Résumé</Link>
+              <Link href="/contact">Get in touch</Link>
+            </nav>
           </div>
         </div>
       </div>
@@ -61,87 +70,72 @@ export function ProfileHero() {
   );
 }
 
-const capabilities = [
-  {
-    title: "Product & frontend",
-    detail: "I shape task flows, interface states, and useful feedback.",
-  },
-  {
-    title: "Backend & APIs",
-    detail: "I define service behavior and enforce rules at the API.",
-  },
-  {
-    title: "Data & state",
-    detail: "I model records and state changes so updates stay traceable.",
-  },
-  {
-    title: "AI-assisted systems",
-    detail: "I keep source material and human review visible in AI workflows.",
-  },
-  {
-    title: "Quality",
-    detail: "I test the behavior people and connected systems rely on.",
-  },
-  {
-    title: "Delivery",
-    detail: "I check builds and release paths before changes ship.",
-  },
-];
-
-export function WhatIBuild() {
+export function EngineeringProfile() {
   return (
-    <section className={styles.section} aria-labelledby="build-title">
+    <section className={styles.section} aria-labelledby="engineering-title">
       <div className={styles.frame}>
         <SectionHeading
-          id="build-title"
-          label="What I build"
-          title="Product work, from interface to release."
-        />
-        <ul className={styles.capabilities}>
-          {capabilities.map((capability) => (
-            <li key={capability.title}>
-              <h3>{capability.title}</h3>
-              <p>{capability.detail}</p>
-            </li>
-          ))}
-        </ul>
-      </div>
-    </section>
-  );
-}
-
-export function HowIWork() {
-  return (
-    <section className={styles.approach} aria-labelledby="approach-title">
-      <div className={styles.frame}>
-        <p className={`section-label ${styles.approachLabel}`}>How I work</p>
-        <div className={styles.approachCopy}>
-          <h2 id="approach-title">I follow the work through to release.</h2>
+          id="engineering-title"
+          number="01"
+          label="Engineering profile"
+          title="Product thinking with systems depth."
+        >
           <p>
-            I start with the decision a feature needs to support. Then I map its
-            rules, permissions, and failure states, and test the paths people
-            depend on before release.
+            My work sits between the visible product and the engineering
+            underneath it. I move between interface decisions, application
+            rules, data models, APIs, testing and release paths rather than
+            treating them as separate problems.
           </p>
+        </SectionHeading>
+        <div className={styles.profileColumns}>
+          <article>
+            <h3>Product engineering</h3>
+            <p>
+              Interfaces, workflows and interaction states that make the next
+              action clear.
+            </p>
+          </article>
+          <article>
+            <h3>Systems engineering</h3>
+            <p>
+              APIs, business rules, permissions, state and data designed around
+              explicit boundaries.
+            </p>
+          </article>
+          <article>
+            <h3>Quality &amp; delivery</h3>
+            <p>
+              Tests, accessibility, release checks and operational safeguards
+              that verify the product beyond the happy path.
+            </p>
+          </article>
         </div>
       </div>
     </section>
   );
 }
 
-export function PersonalBackground() {
+export function ProfessionalBackground() {
   return (
     <section className={styles.section} aria-labelledby="background-title">
       <div className={styles.frame}>
         <SectionHeading
           id="background-title"
+          number="02"
           label="Background"
-          title="I saw the cost of unclear processes firsthand."
+          title="Reliability became practical before software became my main work."
         >
           <p>
-            Before software became my main work, I handled banking transactions
-            and public digital-service requests. A confusing status or incorrect
-            record had a direct effect on the person waiting for help. I carry
-            that perspective into the products I build today.
+            Before focusing on software engineering, I worked with banking
+            transactions and public digital-service workflows. That experience
+            made reliability concrete. Records had to be correct, transactions
+            had to be traceable, and an unclear status could create a real
+            problem for the person waiting on the other side.
+          </p>
+          <p>
+            It still influences how I engineer software today: make state
+            explicit, keep important rules enforceable, communicate failure
+            clearly and verify a change before calling it finished.
           </p>
         </SectionHeading>
       </div>
@@ -155,18 +149,77 @@ export function CurrentFocus() {
       <div className={styles.frame}>
         <SectionHeading
           id="focus-title"
+          number="03"
           label="Current focus"
-          title="What I’m working on now."
+          title="Building across product, systems and delivery."
         >
           <p>
-            My current work spans business operations, public publishing,
-            document review, and accessibility. Alongside it, I’m completing my
-            MCA at Sharda University.
+            Today my work spans business software, institutional publishing,
+            document intelligence, accessibility engineering, procurement
+            workflows and production-oriented web applications. I am
+            particularly interested in systems where product experience,
+            business rules, data integrity and release quality need to work
+            together.
           </p>
-          <Link className={`text-link ${styles.focusLink}`} href="/work">
-            Explore the work
-          </Link>
+          <p className={styles.currentLine}>
+            <strong>Currently:</strong> Software engineering · MCA, Sharda
+            University
+          </p>
         </SectionHeading>
+      </div>
+    </section>
+  );
+}
+
+export function HowIWork() {
+  return (
+    <section className={styles.section} aria-labelledby="approach-title">
+      <div className={styles.frame}>
+        <SectionHeading
+          id="approach-title"
+          number="04"
+          label="How I work"
+          title="Clear decisions. Explicit boundaries. Verified changes."
+        />
+        <ol className={styles.workingPrinciples}>
+          <li>
+            <h3>Understand the real task.</h3>
+            <p>
+              Start with what the person or business needs to accomplish before
+              choosing the technical shape.
+            </p>
+          </li>
+          <li>
+            <h3>Put responsibility in the right layer.</h3>
+            <p>
+              Keep important decisions where every caller has to respect them.
+            </p>
+          </li>
+          <li>
+            <h3>Verify the behavior.</h3>
+            <p>
+              Test what changed, the paths around it and the conditions under
+              which it can fail.
+            </p>
+          </li>
+        </ol>
+      </div>
+    </section>
+  );
+}
+
+export function ProfileClosing() {
+  return (
+    <section className={styles.closing} aria-labelledby="closing-title">
+      <div className={styles.frame}>
+        <h2 id="closing-title">
+          I like building software where the details matter.
+        </h2>
+        <p>
+          Good products are easier to use, easier to reason about and easier for
+          the next engineer to change safely. That is the standard I try to
+          bring to the work.
+        </p>
       </div>
     </section>
   );
@@ -178,20 +231,15 @@ export function ProfileContact() {
       <div className={styles.frame}>
         <p className="section-label">Contact</p>
         <div className={styles.contactRow}>
-          <h2 id="profile-contact-title">
-            Have something worth building? Let’s talk.
-          </h2>
+          <h2 id="profile-contact-title">Have something worth building?</h2>
           <div className={styles.contactActions}>
-            <Link className="button button-primary" href="/contact">
-              Start a conversation
+            <Link href="/contact">
+              Start a conversation <span aria-hidden="true">→</span>
             </Link>
-            <Link className="text-link" href="/resume">
-              View résumé
+            <Link href="/resume">
+              View résumé <span aria-hidden="true">→</span>
             </Link>
           </div>
-        </div>
-        <div className={styles.contactSocials}>
-          <SocialLinks />
         </div>
       </div>
     </section>

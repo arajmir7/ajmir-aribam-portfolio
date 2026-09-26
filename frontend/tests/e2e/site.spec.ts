@@ -63,22 +63,40 @@ test("orientation, routes, metadata, and evidence links", async ({
   );
   await page.goto("/about");
   await expect(page.getByRole("heading", { level: 1 })).toHaveText(
-    "I build software end to end—from the interface people use to the systems that keep it reliable.",
+    "I build dependable software from the product interface to the systems behind it.",
   );
   await expect(page.locator("main img[src*='projects']")).toHaveCount(0);
   await expect(page.locator("main")).toContainText(
-    "I work across frontend products, backend services, APIs, data, quality and delivery.",
+    "I work across full-stack product engineering, backend services, APIs, data, quality and delivery.",
   );
   await expect(page.locator("main")).toContainText(
-    "Before software became my main work, I handled banking transactions and public digital-service requests.",
+    "Before focusing on software engineering, I worked with banking transactions and public digital-service workflows.",
   );
   await expect(page.locator("main section .section-label")).toHaveText([
-    "What I build",
-    "How I work",
-    "Background",
-    "Current focus",
+    "01 — Engineering profile",
+    "02 — Background",
+    "03 — Current focus",
+    "04 — How I work",
     "Contact",
   ]);
+  await expect(page.locator("#engineering-title")).toHaveText(
+    "Product thinking with systems depth.",
+  );
+  await expect(
+    page.locator('section[aria-labelledby="engineering-title"] article'),
+  ).toHaveCount(3);
+  await expect(
+    page.locator('section[aria-labelledby="approach-title"] li'),
+  ).toHaveCount(3);
+  await expect(page.locator("#closing-title")).toHaveText(
+    "I like building software where the details matter.",
+  );
+  await expect(
+    page
+      .getByRole("navigation", { name: "About page actions" })
+      .getByRole("link"),
+  ).toHaveText(["View my work", "Résumé", "Get in touch"]);
+  await expect(page.locator("main .social-links")).toHaveCount(0);
   await expect(
     page.getByRole("img", { name: "Portrait of Ajmir Aribam" }),
   ).toBeVisible();
