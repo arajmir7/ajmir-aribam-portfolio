@@ -550,87 +550,7 @@ p {
   background: var(--accent);
 }
 
-/* About, Labs, Notes, Contact. */
-.about-heading {
-  padding-block: var(--s6) var(--s5);
-}
-.about-heading h1 {
-  max-width: 19ch;
-  margin: 0.7rem 0 0;
-  font-size: clamp(2.7rem, 4.15vw, 4.25rem);
-}
-.about-story {
-  display: grid;
-  grid-template-columns: 0.82fr 1.18fr;
-  gap: clamp(var(--s4), 7vw, 7rem);
-  align-items: start;
-}
-.about-portrait {
-  margin: 0;
-}
-.about-portrait img {
-  width: 100%;
-  height: auto;
-}
-.about-portrait figcaption {
-  margin-top: 0.65rem;
-  color: var(--muted);
-  font-size: 0.8rem;
-}
-.about-narrative {
-  padding-top: var(--s3);
-  border-top: 1px solid var(--ink);
-}
-.about-narrative > p {
-  max-width: 62ch;
-  margin-bottom: var(--s3);
-  color: var(--muted);
-  font-size: 1.05rem;
-}
-.about-narrative .about-lede {
-  color: var(--ink);
-  font-size: clamp(1.4rem, 2.3vw, 2rem);
-  line-height: 1.32;
-  letter-spacing: -0.025em;
-}
-.about-next {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: var(--s3);
-  margin-top: var(--s4);
-}
-.about-details {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: var(--s4);
-  margin-top: var(--s6);
-  border-top: 1px solid var(--line);
-}
-.about-details div {
-  padding-block: var(--s3);
-}
-.about-details span,
-.about-connect .kicker {
-  color: var(--accent);
-  font-size: 0.8rem;
-}
-.about-details p {
-  max-width: 31ch;
-  margin: 0.65rem 0 0;
-  font-weight: 570;
-}
-.about-connect {
-  display: flex;
-  justify-content: space-between;
-  align-items: end;
-  gap: var(--s3);
-  padding-top: var(--s6);
-}
-.about-connect h2 {
-  max-width: 17ch;
-  margin: 0.7rem 0 0;
-}
+/* Labs, Notes, Contact. */
 .labs-heading,
 .notes-heading,
 .contact-heading {
@@ -1137,9 +1057,6 @@ p {
     display: flex;
     flex-wrap: wrap;
   }
-  .about-story {
-    gap: var(--s4);
-  }
 }
 @media (max-width: 680px) {
   :root {
@@ -1180,23 +1097,9 @@ p {
   .footer-bottom > span:last-child {
     flex-basis: 100%;
   }
-  .about-story,
-  .about-details,
   .lab-project,
   .contact-layout {
     grid-template-columns: 1fr;
-  }
-  .about-portrait {
-    max-width: 460px;
-  }
-  .about-narrative {
-    padding-top: var(--s2);
-  }
-  .about-connect {
-    display: block;
-  }
-  .about-connect .social-links {
-    margin-top: var(--s3);
   }
   .lab-project {
     gap: var(--s3);

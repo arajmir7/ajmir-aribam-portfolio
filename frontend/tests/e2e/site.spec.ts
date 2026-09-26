@@ -61,6 +61,17 @@ test("orientation, routes, metadata, and evidence links", async ({
   await expect(page.locator("#note-title")).toHaveText(
     "Why status changes belong on the server",
   );
+  await page.goto("/about");
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText(
+    "I build software across the product, from the interface people use to the systems that keep it working.",
+  );
+  await expect(page.locator("main img[src*='projects']")).toHaveCount(0);
+  await expect(
+    page.getByRole("img", { name: "Portrait of Ajmir Aribam" }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("link", { name: "Start a conversation" }),
+  ).toHaveAttribute("href", "/contact");
   await page.goto("/work");
   await expect(page.locator("#public-work .project-card")).toHaveCount(4);
   await expect(page.locator("#current-work .project-card")).toHaveCount(4);

@@ -12,6 +12,8 @@ The first Home viewport presents Ajmir Aribam, Software Engineer, a personal sta
 
 The Home sequence is personal introduction, engineering judgment, public work, current work, engineering note, personal bridge and contact. Work uses the same order: public work, current work, then Labs.
 
+The `/about` route is a rebuilt editorial engineering profile. It introduces Ajmir as a Software Engineer, then moves through personal background, engineering philosophy, areas of practice, current focus, a personal closing, and a direct contact action. It uses only the optimized local portrait and contains no project media, dashboards, cards, or decorative visual effects.
+
 The public collection contains four verified public destinations. The card status distinguishes the three live products from the hosted prototype:
 
 | Project                 | Verified destination                            | Status           |
@@ -51,6 +53,8 @@ The final `make verify` run passed:
 - `git diff --check`.
 
 The final visual audit captured Home in both themes at 390×844, 430×932, 768×1024, 1024×768, 1280×800, 1440×900, 1728×1117 and 1920×1080. It found no page errors, horizontal overflow or first-viewport project images. At 1440×900, the introduction ends at y=921; engineering proof begins at y=921 and public work begins at y=1466. The artifacts and measurements are ignored local files under `.qa-refinement/`.
+
+The rebuilt About profile was captured in light and dark themes at 320, 390, 768, 1440, and 2560 px. It had no horizontal overflow; its portrait measured 144×180 px at phone widths and 224×280 px from tablet upward. The reduced-motion view reported no animation on the hero.
 
 At 1440 px, the public collection uses three cards per row at 30% of the 1354 px content measure; the fourth public card begins the next row. At 390 px, cards stack in one column at 350 px wide, with 160 px screenshots. Current-work cards use a two-column desktop text-led grid and stack on mobile.
 
