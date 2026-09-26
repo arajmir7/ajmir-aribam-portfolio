@@ -9,7 +9,7 @@ import { caseStories } from "@/content/case-stories";
 import { pageMeta, siteUrl } from "@/lib/site";
 
 function publicLimitation(value: string) {
-  const text = value.replace(/^TODO_OWNER_VERIFY:\s*/i, "");
+  const text = value.replace(/^unverified:\s*/i, "");
   return `${text.charAt(0).toUpperCase()}${text.slice(1)}`;
 }
 

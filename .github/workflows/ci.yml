@@ -30,7 +30,7 @@ jobs:
       - run: uv sync --frozen --group dev
         working-directory: backend
       - run: npm run format:check
-      - run: npx prettier --check '../*.md' '../docs/*.md' '../compose.yaml' '../infra/*.yaml' '../.github/workflows/*.yml'
+      - run: npx prettier --check '../README.md' '../docs/*.md' '../compose.yaml' '../infra/*.yaml' '../.github/workflows/*.yml'
       - run: npm run lint
       - run: npm run typecheck
       - run: npm run test

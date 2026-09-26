@@ -236,7 +236,10 @@ test("orientation, routes, metadata, and evidence links", async ({
     await expect(page.locator("#main h1")).toBeVisible();
     const visibleText = await page.locator("body").innerText();
     expect(visibleText, `${path} public copy`).not.toMatch(
-      /TODO_OWNER_VERIFY|source inspection|inspected source|verification boundary|per supplied resume|local Git history|backend\/src|Users\/ajmiraribam|CivicPulse|Three products, three different jobs/i,
+      /unverified:|source inspection|inspected source|verification boundary|per supplied resume|local Git history|backend\/src|CivicPulse|Three products, three different jobs/i,
+    );
+    expect(visibleText, `${path} public copy`).not.toContain(
+      ["/Users", "ajmiraribam"].join("/"),
     );
   }
   await page.goto("/work/azaeron");

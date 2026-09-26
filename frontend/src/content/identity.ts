@@ -1,5 +1,5 @@
 // Professional facts are limited to the supplied résumé and existing case evidence.
-// TODO_OWNER_VERIFY: software employment title, tenure and exact team boundaries.
+// Keep unverified employment title, tenure, and team boundaries out of public claims.
 // Do not publish an inferred senior/staff title or quantified business outcomes.
 export const identity = {
   name: "Ajmir Aribam",

@@ -14,11 +14,9 @@ export type Project = {
   visual: { src: string; alt: string; caption: string }; // Hero media.
   gallery: { src: string; alt: string; caption: string }[];
   repositoryPublic?: string; // Only set after the repository is publicly inspectable.
-  contribution?: string; // TODO_OWNER_VERIFY when individual boundaries are unknown.
+  contribution?: string; // State when individual boundaries are unverified.
   limitations: string[];
   caseStudy: boolean;
-  source: string; // TODO_OWNER_VERIFY: remotes are not publicly accessible; never render as visitor links.
-  revision: string;
   year: string;
   stack: string[];
   context: string;
@@ -70,8 +68,6 @@ export const projects: Project[] = [
       alt: "Current Azaeron sign-in page captured from the public deployment",
       caption: "Current public deployment capture · Azaeron",
     },
-    source: "https://github.com/arajmir7/azaeron-invoice-system",
-    revision: "66b0f7c4c023685303ff495f58a6a776b7d67809",
     stack: ["React", "TypeScript", "Express", "MongoDB", "GitHub Actions"],
     context:
       "Azaeron brings invoices, quotations, POS, inventory, payments, and customer records into one merchant workflow. The supplied public URL responded during inspection; authenticated behavior and active integrations still require owner verification.",
@@ -124,16 +120,16 @@ export const projects: Project[] = [
       },
     ],
     delivery:
-      "The repository includes a GitHub Actions release gate and separate Vercel/Render configuration. Source describes queue and object-storage options; which are active in production is TODO_OWNER_VERIFY.",
+      "The repository includes a GitHub Actions release gate and separate Vercel/Render configuration. Source describes queue and object-storage options; which are active in production is unverified.",
     operations:
-      "Structured request context, readiness, and optional OpenTelemetry instrumentation are present in source. Production alerting, recovery results, and field reliability are TODO_OWNER_VERIFY.",
+      "Structured request context, readiness, and optional OpenTelemetry instrumentation are present in source. Production alerting, recovery results, and field reliability are unverified.",
     outcome:
       "A substantial locally inspected billing codebase and a responsive public deployment URL. No transaction, uptime, or customer claim is made here.",
     lessons:
       "Financial state belongs to a guarded domain transition, with a server-side audit trail and a separate operational readiness signal.",
     verify: [
-      "Current production health and enabled integrations — TODO_OWNER_VERIFY",
-      "Actual usage and operational results — TODO_OWNER_VERIFY",
+      "Current production health and enabled integrations — unverified",
+      "Actual usage and operational results — unverified",
     ],
   },
   {
@@ -171,15 +167,13 @@ export const projects: Project[] = [
       alt: "Current SHAPES India homepage captured from the public deployment",
       caption: "Current public deployment capture · SHAPES India",
     },
-    source: "https://github.com/arajmir7/Shapes-India",
-    revision: "0dbdf15b3dabce0a7d3bb37582a50426f793d7db",
     stack: ["Flask", "SQLAlchemy", "PostgreSQL", "Vite", "GitHub Actions"],
     context:
       "SHAPES brings six centres, programmes and shared resources into one public publishing system. The configured public destination responded during the capture pass.",
     problem:
       "Institutional information needs clear public navigation while editors need guarded paths to revise and publish content without blurring permissions or losing history.",
     ownership:
-      "Ajmir Aribam appears in the local Git history. The public footer credits Azaeron for design and development; exact contractual ownership is TODO_OWNER_VERIFY.",
+      "Ajmir Aribam appears in the local Git history. The public footer credits Azaeron for design and development; exact contractual ownership is unverified.",
     constraints: [
       "Distinct public and administrative surfaces",
       "Content revision and publishing states",
@@ -227,14 +221,14 @@ export const projects: Project[] = [
     delivery:
       "The repository includes a GitHub Actions workflow, container configuration, deployment input validation, and a migration path. External production hooks described in the runbook are not independently verified.",
     operations:
-      "Source includes structured request IDs, health/readiness, backup and production verification scripts. Actual schedules and recovery evidence are TODO_OWNER_VERIFY.",
+      "Source includes structured request IDs, health/readiness, backup and production verification scripts. Actual schedules and recovery evidence are unverified.",
     outcome:
       "A public institutional site with six visible centres and locally inspected implementation. No audience or performance metrics are asserted.",
     lessons:
       "An editorial workflow is a backend system: state, authorization, revision history, and release safety matter as much as presentation.",
     verify: [
-      "Production topology and active backup schedule — TODO_OWNER_VERIFY",
-      "Editorial ownership boundaries — TODO_OWNER_VERIFY",
+      "Production topology and active backup schedule — unverified",
+      "Editorial ownership boundaries — unverified",
     ],
   },
   {
@@ -287,15 +281,13 @@ export const projects: Project[] = [
       alt: "Current Friends Aluminium Works homepage captured from the public deployment",
       caption: "Current public deployment capture · Friends Aluminium Works",
     },
-    source: "https://github.com/arajmir7/friends-aluminium-works",
-    revision: "13aa4bfbefb116b5839c18d02907caa5097ecee8",
     stack: ["React", "TypeScript", "Vite", "SEO", "Responsive UI"],
     context:
       "The public site presents aluminium, steel, and glass work in Imphal, with product, service, project, blog, and contact routes.",
     problem:
       "Visitors need to understand the business's range quickly, see relevant work, and start a quote through a familiar channel.",
     ownership:
-      "Ajmir Aribam appears in the local Git history and resumes describe end-to-end delivery. Commercial agreement and measured outcomes are TODO_OWNER_VERIFY.",
+      "Ajmir Aribam appears in the local Git history and resumes describe end-to-end delivery. Commercial agreement and measured outcomes are unverified.",
     constraints: [
       "Local search clarity",
       "Image-heavy catalogue",
@@ -348,9 +340,7 @@ export const projects: Project[] = [
       "A live commercial website with navigable products, services, projects, and inquiry paths. No lead or search-ranking numbers are asserted.",
     lessons:
       "A good delivery story includes honest system boundaries: the browser can prepare an inquiry, while a communication channel handles sending.",
-    verify: [
-      "Commercial arrangement and business outcomes — TODO_OWNER_VERIFY",
-    ],
+    verify: ["Commercial arrangement and business outcomes — unverified"],
   },
   {
     slug: "azaeron-verity",
@@ -374,8 +364,7 @@ export const projects: Project[] = [
         caption: "Local evidence graph",
       },
     ],
-    contribution:
-      "TODO_OWNER_VERIFY: individual and team contribution boundaries.",
+    contribution: "unverified: individual and team contribution boundaries.",
     limitations: [
       "Not production ready; no approved production generative model or calibrated detector.",
     ],
@@ -388,15 +377,12 @@ export const projects: Project[] = [
       alt: "Verity local review workspace showing a version-scoped result and an explicit insufficient-evidence state",
       caption: "Local development capture · Verity review workspace",
     },
-    source: "TODO_OWNER_VERIFY: Verity repository publication status",
-    revision: "TODO_OWNER_VERIFY: local source snapshot has no Git metadata",
     stack: ["Next.js", "FastAPI", "PostgreSQL", "Redis"],
     context:
       "The current build includes versioned documents, an evidence graph, citations, provenance, report services, and a browser review surface. The project remains in development.",
     problem:
       "A document-analysis result is hard to assess when the source text, document version, and uncertainty are separated from it.",
-    ownership:
-      "TODO_OWNER_VERIFY: exact individual and team contribution boundaries.",
+    ownership: "unverified: exact individual and team contribution boundaries.",
     constraints: [
       "Every finding must belong to an immutable document version",
       "Uncalibrated analysis must abstain rather than imply certainty",
@@ -447,7 +433,7 @@ export const projects: Project[] = [
       "A substantive local review prototype with explicit uncertainty and traceable analysis. No public deployment or model accuracy claim.",
     lessons:
       "Analysis is more useful when it can point back to a version and admit what it cannot conclude.",
-    verify: ["Production model, deployment, and ownership — TODO_OWNER_VERIFY"],
+    verify: ["Production model, deployment, and ownership — unverified"],
   },
   {
     slug: "the-scent-bar-retail-os",
@@ -466,8 +452,7 @@ export const projects: Project[] = [
         caption: "Implementation map",
       },
     ],
-    contribution:
-      "TODO_OWNER_VERIFY: individual and team contribution boundaries.",
+    contribution: "unverified: individual and team contribution boundaries.",
     limitations: [
       "Inventory ledger, purchasing and POS are not built in this milestone.",
     ],
@@ -480,15 +465,12 @@ export const projects: Project[] = [
       alt: "Diagram of the implemented Scent Bar identity and catalogue modules, with later retail modules marked as planned",
       caption: "Implementation map · current milestone scope",
     },
-    source: "TODO_OWNER_VERIFY: retail OS repository publication status",
-    revision: "TODO_OWNER_VERIFY: local worktree revision",
     stack: ["Next.js", "NestJS", "PostgreSQL", "Redis"],
     context:
       "The current build covers identity, organization and branch access, product catalogue, SKU and barcode records, tax, and effective-dated pricing. Database and API runtime checks remain open.",
     problem:
       "A branch-specific catalogue needs dependable product identity, price rules, and access control before transactional retail flows can be built on it.",
-    ownership:
-      "TODO_OWNER_VERIFY: exact individual and team contribution boundaries.",
+    ownership: "unverified: exact individual and team contribution boundaries.",
     constraints: [
       "Tenant and branch scope derived on the server",
       "SKU, barcode, and effective-dated price rules",
@@ -539,7 +521,7 @@ export const projects: Project[] = [
       "Identity and catalogue foundations are implemented; stock ledger, purchasing, and POS have not been built in this milestone.",
     lessons:
       "Retail operations need reliable product identity and branch permissions before stock or sales can be trusted.",
-    verify: ["Runtime integration and final feature scope — TODO_OWNER_VERIFY"],
+    verify: ["Runtime integration and final feature scope — unverified"],
   },
   {
     slug: "azaeron-construction-procurement",
@@ -565,15 +547,12 @@ export const projects: Project[] = [
       alt: "Azaeron construction procurement flow from project catalogue to RFQ and approval",
       caption: "Procurement flow · local implementation map",
     },
-    source: "TODO_OWNER_VERIFY: construction repository publication status",
-    revision: "TODO_OWNER_VERIFY: local source snapshot has no Git metadata",
     stack: ["Next.js", "Prisma", "PostgreSQL", "Auth.js"],
     context:
       "This is separate from the merchant billing product. The current build models construction materials, project scope, server-resolved totals, checkout, RFQs, supplier quotes, approvals, and procurement records.",
     problem:
       "Project buying needs material context, reliable totals and a request path that can survive review instead of treating a browser cart as the source of truth.",
-    ownership:
-      "TODO_OWNER_VERIFY: exact individual and team contribution boundaries.",
+    ownership: "unverified: exact individual and team contribution boundaries.",
     constraints: [
       "Prices, tax and delivery are resolved on the server",
       "Project and organization scope must survive each procurement write",
@@ -625,9 +604,7 @@ export const projects: Project[] = [
       "The current build models catalogue pricing, checkout, RFQs, quotes, approvals, and procurement records. Live integrations and deployment have not been verified.",
     lessons:
       "Construction commerce becomes safer when project scope, pricing and approval policy are part of the domain model.",
-    verify: [
-      "Production deployment, integrations and ownership — TODO_OWNER_VERIFY",
-    ],
+    verify: ["Production deployment, integrations and ownership — unverified"],
   },
   {
     slug: "accessforge",
@@ -654,15 +631,13 @@ export const projects: Project[] = [
       alt: "AccessForge pipeline from accessibility scan through proof",
       caption: "Nine-step proof pipeline · local build",
     },
-    source: "TODO_OWNER_VERIFY: public repository publication status",
-    revision: "efbe5ee",
     stack: ["FastAPI", "Playwright", "Python", "React", "Semgrep"],
     context:
       "The current build pairs a React interface with a FastAPI service. Playwright runs deterministic scans; bounded remediations pass security checks before a re-scan. Unit, integration, security, and end-to-end tests cover the workflow.",
     problem:
       "A detected defect is not the same as a fixed or verified defect. Accessibility work needs an evidence chain that can survive a re-scan and regression check.",
     ownership:
-      "The local source is attributed to Ajmir Aribam; exact project ownership and any future public repository status remain TODO_OWNER_VERIFY.",
+      "The local source is attributed to Ajmir Aribam; exact project ownership and any future public repository status remain unverified.",
     constraints: [
       "Deterministic checks run before optional model assistance",
       "Patches are bounded and security-checked",
@@ -713,7 +688,7 @@ export const projects: Project[] = [
       "The build separates a finding, an applied change, and a verified fix. It is a local build; no deployed service has been verified.",
     lessons:
       "Accessibility automation earns trust when the result can show what changed, what was checked and what remains uncertain.",
-    verify: ["Production deployment and ownership — TODO_OWNER_VERIFY"],
+    verify: ["Production deployment and ownership — unverified"],
   },
   {
     slug: "scmirn",
@@ -740,15 +715,12 @@ export const projects: Project[] = [
       alt: "SCMIRN civic request flow from issue to guidance, office and tracking",
       caption: "Civic request flow · prototype",
     },
-    source: "TODO_OWNER_VERIFY: source publication status",
-    revision: "TODO_OWNER_VERIFY: local source snapshot has multiple worktrees",
     stack: ["React", "TypeScript", "FastAPI", "PostgreSQL", "Vite"],
     context:
       "The prototype pairs React/Vite screens with FastAPI modules for complaints, progress, office discovery, documents, rights information, analytics, and AI Help. Some interface paths still use mock data.",
     problem:
       "Civic requests are difficult to start when the user must know the department, right process and tracking path in advance.",
-    ownership:
-      "TODO_OWNER_VERIFY: exact individual and team contribution boundaries.",
+    ownership: "unverified: exact individual and team contribution boundaries.",
     constraints: [
       "Guidance must not impersonate an authority or legal counsel",
       "A complaint needs a visible status path",
@@ -800,7 +772,7 @@ export const projects: Project[] = [
       "A working prototype connects citizen-facing service paths with backend modules. Some screens use mock data, and deployment is unverified.",
     lessons:
       "Civic software should reduce the first step while keeping guidance honest about authority and uncertainty.",
-    verify: ["Deployment, data provenance and ownership — TODO_OWNER_VERIFY"],
+    verify: ["Deployment, data provenance and ownership — unverified"],
   },
   {
     slug: "zam-zam-academy",
@@ -829,15 +801,13 @@ export const projects: Project[] = [
       alt: "Current Zam Zam Academy hosted prototype captured from its preview",
       caption: "Current hosted prototype capture · Zam Zam Academy",
     },
-    source: "TODO_OWNER_VERIFY: source repository and ownership",
-    revision: "TODO_OWNER_VERIFY: local source snapshot has no Git metadata",
     stack: ["React", "TypeScript", "Vite", "React Router", "Tailwind CSS"],
     context:
       "The hosted prototype has routes for home, about, academics, admissions, faculty, student life, gallery, notices, and contact. The public preview is available, but ownership and production use are unverified.",
     problem:
       "An academy website needs a readable path from first impression to practical information without relying on a single landing page.",
     ownership:
-      "TODO_OWNER_VERIFY: exact client and individual contribution boundaries.",
+      "unverified: exact client and individual contribution boundaries.",
     constraints: [
       "Keep the portfolio claim about web delivery, not school operations",
       "Treat template copy and supplied figures as source content, not independently verified facts",
@@ -888,7 +858,7 @@ export const projects: Project[] = [
     lessons:
       "A route map can do more for a public site than a crowded first page when people arrive with different questions.",
     verify: [
-      "Client relationship, ownership and production status — TODO_OWNER_VERIFY",
+      "Client relationship, ownership and production status — unverified",
     ],
   },
 ];

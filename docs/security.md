@@ -1,19 +1,19 @@
-# Security model
+# Security and privacy
 
-## Assets and threats
+## Data and trust boundaries
 
-Assets: contact details/messages, service token, database credentials, SMTP credentials, public content integrity. Threats considered: spam and form flooding; stored-message leakage; direct API abuse; cross-site request forgery; XSS from attacker-controlled content; misconfigured proxy headers; credential disclosure; operational logs containing PII.
+Contact submissions contain a name, email address, topic, and message. The browser sends them to the same-origin Next.js route. FastAPI is private to the service network and requires an internal token for writes. PostgreSQL stores inquiries and rate-limit windows. The browser does not receive backend credentials.
 
 ## Implemented controls
 
-- The private FastAPI write route requires a constant-time compared internal token; Compose exposes neither API nor database publicly.
-- Next accepts JSON only, caps body length, checks `Origin` against configured site origin, and forwards only to configured private service. Browser CORS is not enabled on the API.
-- Pydantic rejects extra fields and bounds name, email, topic, message and honeypot. Backend validation is authoritative.
-- A honeypot silently discards obvious bot submissions. PostgreSQL uses an atomic upsert to limit each supplied client IP identity to five inquiries per 15 minutes. The public endpoint ignores forwarded address headers unless `CONTACT_CLIENT_IP_HEADER` names one that a trusted reverse proxy overwrites.
-- Each request has an ID; logs record event/type/topic/opaque inquiry ID, never a full message, secret or email. Generic API errors protect internals.
-- Next uses request nonces and a restrictive CSP, plus HSTS, frame denial, content-type sniffing protection, referrer policy and disabled sensitive browser permissions. Public pages render dynamically to receive per-request nonces.
-- Secrets are environment inputs and excluded from version control. Containers run without root where practical. Compose binds the web port to localhost for a separate TLS proxy.
+- The API compares the internal token in constant time. Compose does not publish the API or database.
+- The web route accepts JSON, limits the request body, checks the exact configured origin, and forwards only to the configured private API.
+- Pydantic applies authoritative validation and bounds input fields. A honeypot discards obvious bot submissions.
+- PostgreSQL applies an atomic, database-backed rate limit. Forwarded client addresses are used only when an explicitly configured trusted-proxy header is supplied.
+- Requests receive an ID. Logs omit message bodies, email addresses, and secrets; API errors do not expose internals.
+- The frontend uses a restrictive Content Security Policy with per-request nonces, HSTS, frame denial, content-type sniffing protection, and a strict referrer policy.
+- Secrets are supplied by the environment and excluded from version control. Containers run without root where practical.
 
-## Verification and limits
+## Limits and operations
 
-OWASP ASVS 5.0 is a reference for relevant checks; no compliance claim is made. Automated checks include API negative cases, concurrent PostgreSQL rate-limit requests, browser accessibility, dependency audit, secret scan in CI and build verification. A production reverse proxy, TLS, secret manager, explicit IP-header policy, database backups, scheduled retention purge, SMTP configuration and monitoring alerts are deployment gates.
+Automated tests and dependency/secret scans are regression checks; they do not establish compliance or eliminate risk. Production requires TLS termination, a trusted proxy policy, managed secret storage, restricted database roles, tested backups, scheduled retention, private inquiry review, and alerting. See [deployment](deployment.md) for release requirements.

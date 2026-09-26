@@ -1,41 +1,80 @@
-# Ajmir Aribam — engineering portfolio
+# Ajmir Aribam — Software Engineering Portfolio
 
-An evidence-led portfolio with nine source-grounded project records, a capability map across backend, cloud, AI systems, and quality engineering, one engineering note, and a persisted inquiry flow. Live work, in-development systems, and prototypes are grouped by evidence maturity. The repository has two application boundaries:
+This repository contains Ajmir Aribam’s portfolio: a Next.js frontend for public pages and a small FastAPI service for contact persistence and operational health checks.
 
-| Path        | Responsibility                                                                                                       |
-| ----------- | -------------------------------------------------------------------------------------------------------------------- |
-| `frontend/` | Next.js 16, React 19, strict TypeScript, public routes, content, assets, browser behavior, frontend tests.           |
-| `backend/`  | Private FastAPI inquiry API, Pydantic input, SQLAlchemy persistence, Alembic migrations, API tests, maintenance CLI. |
-| `docs/`     | Architecture, security, operations, and decisions.                                                                   |
-| `infra/`    | Local-only Compose override for exposing PostgreSQL to a host development process.                                   |
-| `scripts/`  | Repeatable local development, isolated PostgreSQL/Compose verification, and production smoke testing.                |
+## Architecture
 
-Frontend and backend communicate over HTTP. The browser uses the same-origin `/api/contact` route; the private backend keeps its `/inquiries`, `/health/live`, and `/health/ready` contracts. No cross-application source imports or generated API client are needed for this single private request shape.
+```text
+frontend/
+├── src/
+│   ├── app/          # Routes, metadata, and route handlers
+│   ├── components/   # Shared layout and page components
+│   ├── content/      # Project records and editorial content
+│   ├── features/     # Contact, résumé, and telemetry behavior
+│   └── lib/          # Shared frontend utilities
+├── public/           # Brand, portrait, and project assets
+├── tests/
+│   ├── e2e/
+│   └── unit/
+├── package.json
+├── playwright.config.ts
+├── tsconfig.json
+├── next.config.ts
+└── Dockerfile
+
+backend/
+├── app/
+│   ├── api/          # Private inquiry and health routes
+│   ├── core/         # Configuration and logging
+│   ├── db/           # SQLAlchemy database and models
+│   ├── schemas/      # Request validation
+│   └── services/     # Inquiry and notification logic
+├── migrations/
+├── tests/
+├── pyproject.toml
+├── uv.lock
+├── alembic.ini
+└── Dockerfile
+```
+
+The applications communicate over HTTP. Root Compose, Make, CI, and scripts coordinate local development and verification.
+
+## Technology
+
+- **Frontend:** Next.js 16, React 19, TypeScript, CSS Modules and global CSS.
+- **Frontend quality:** Vitest, Playwright, axe-core, ESLint and Prettier.
+- **Backend:** FastAPI, Pydantic, SQLAlchemy, Alembic, PostgreSQL and psycopg.
+- **Backend quality:** pytest and Ruff.
+- **Infrastructure:** Docker, Compose, GitHub Actions and uv.
 
 ## Local development
 
-Requirements: Node 24+, npm 11+, Python 3.12+, [uv](https://docs.astral.sh/uv/), Docker, and GNU Make. On macOS, the system `make` is sufficient.
+Requirements: Node.js 24, npm, Python 3.12, uv, Docker and Make.
 
 ```sh
 cp .env.example .env
-# Set a local POSTGRES_PASSWORD and the matching password in DATABASE_URL.
-# Replace CONTACT_INTERNAL_TOKEN with at least 32 random characters.
 make install
 make dev
 ```
 
-`make dev` starts the local PostgreSQL service using `infra/compose.dev.yaml`, applies migrations, and runs both applications with reload. Open `http://localhost:3000`. `Ctrl-C` stops the host application processes; `make compose-down` stops the database container without deleting its data. The production Compose stack binds only the frontend on localhost and does not expose the database or private API.
-
-Without SMTP configuration, contact inquiries commit to the database and remain `pending`. Review them from a private shell with `cd backend && uv run python -m app.maintenance pending`; that command prints email addresses and must not run in public logs.
+The example file contains local-only placeholders. `make dev` starts PostgreSQL, applies migrations and runs both applications. Open `http://localhost:3000`. Stop the database with `make compose-down` when finished.
 
 ## Verification
 
-Run the complete local gate with `make verify`. It covers format, lint, types, frontend and backend tests, a fresh isolated PostgreSQL migration/integration test, production build, browser journeys, accessibility, dependency/secret scans, both Docker builds, and an isolated Compose readiness/contact smoke test. The scripts use disposable Docker resources and remove them afterward. Install the Playwright browser once with `cd frontend && npx playwright install chromium`.
+Run `make verify` for formatting, lint, TypeScript, frontend and backend tests, PostgreSQL migration and restore checks, Playwright and accessibility checks, dependency and secret scans, production image builds, and the Compose contact/origin smoke test.
 
-Individual commands: `make test`, `make lint`, `make typecheck`, `make e2e`, `make build`, `make security`, `make compose-up`, and `make compose-down`. `make compose-up` uses `.env` and starts the deployable topology; it is not a public deployment.
+## Production configuration
 
-## Deployment boundary
+Production requires a canonical HTTPS `NEXT_PUBLIC_SITE_URL`, PostgreSQL `DATABASE_URL`, a random `CONTACT_INTERNAL_TOKEN` of at least 32 characters, `BUILD_REVISION`, and `APP_ENV=production` for the API. Optional notification delivery uses the `EMAIL_*` variables. Configure secrets in the deployment environment; do not put production credentials in `.env.example` or Git.
 
-Set `NEXT_PUBLIC_SITE_URL` to the real HTTPS origin and provide a trusted TLS reverse proxy that overwrites forwarded IP headers. Supply production PostgreSQL credentials, secret storage, SMTP or a staffed pending-inquiry process, backup/restore, retention scheduling, and alerts. See [production deployment](docs/production-deployment.md), [operations](docs/operations.md) and [security](docs/security.md). No production deployment is claimed here.
+## Deployment
 
-The [portfolio specification](PORTFOLIO_SPEC.md) records evidence confidence. The [architecture](docs/architecture.md), [decisions](docs/decisions.md), [frontend review](FINAL_FRONTEND_REBUILD_REVIEW.md), and [release certification](RELEASE_CERTIFICATION.md) describe the system and its verified limits.
+See [deployment](docs/deployment.md). Local verification does not establish a production deployment.
+
+## Security & privacy
+
+The browser submits inquiries to the same-origin frontend route; the API and database remain private in Compose. The backend validates and persists messages before reporting success. Logs omit message bodies and email addresses. See [security](docs/security.md).
+
+## Documentation
+
+[Architecture](docs/architecture.md) · [Development](docs/development.md) · [Testing](docs/testing.md) · [Deployment](docs/deployment.md) · [Security](docs/security.md) · [Release certification](docs/release-certification.md)

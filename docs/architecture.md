@@ -1,35 +1,31 @@
 # Architecture
 
-## Repository boundaries
+## Application boundaries
 
-`frontend/` owns Next.js routes, browser interactions, content, and assets. `backend/` owns the private FastAPI contract, input schemas, application logic, database models, migrations, and maintenance. `compose.yaml` connects them over HTTP and PostgreSQL; neither application imports the other's source. `infra/compose.dev.yaml` exposes PostgreSQL to host processes only for local development. `scripts/` contains disposable verification workflows. A `contracts/` directory is intentionally absent: there is one private request shape and no duplicated generated client to maintain.
-
-Within `frontend/`, `app/` defines routes, `content/` holds typed project evidence, `components/` holds presentation by purpose, and `features/` holds contact, resume, and telemetry behavior. Within `backend/app/`, `api/` translates HTTP, `schemas/` validates input, `services/` owns inquiry persistence and optional notification, `db/` owns SQLAlchemy, and `core/` centralizes environment inputs and sanitized logging. There is no repository abstraction or microservice layer.
-
-## Runtime boundaries
+`frontend/` owns the Next.js App Router, public content, visual components, assets, contact form, résumé behavior, and browser tests. `backend/` owns the private FastAPI inquiry API, configuration, persistence, migrations, maintenance commands, and API tests. The applications integrate over HTTP; neither imports the other's implementation.
 
 ```text
-Browser
-  ├─ GET pages → Next.js App Router (server-rendered content)
-  ├─ POST /api/contact → Next route handler → private FastAPI /inquiries
-  └─ POST /api/telemetry → Next route handler → structured operational log
-
-FastAPI /inquiries → SQLAlchemy → PostgreSQL inquiries + rate_windows
-                    → optional SMTP notification after commit
+Browser → Next.js pages and same-origin route handlers
+                   ├─ /api/contact → private FastAPI /inquiries
+                   └─ /api/health  → private FastAPI /health/ready
+                                            ↓
+                                       PostgreSQL
 ```
 
-Next owns the public origin, content rendering, metadata, security headers, and the browser form. FastAPI is private on the Compose network and requires a shared internal token for writes. PostgreSQL is authoritative for submissions. Optional SMTP is a notification channel; a stored inquiry is the success condition. If SMTP fails, the record remains pending for operator review.
+The frontend handles page rendering, metadata, security headers, and the browser form. FastAPI validates and stores inquiries. PostgreSQL is the source of truth; optional SMTP sends a notification after commit. A failed notification leaves a pending record for operator review.
 
-The browser does not talk directly to FastAPI, so no cross-origin browser API is necessary. The Next route handler limits body size, checks origin when present, forwards a request ID, and normalizes service errors. Deployment must make the reverse proxy overwrite client IP headers before they reach Next; otherwise an attacker could rotate the throttle identity. Base Compose does not publish the database; the local development override binds it only to `127.0.0.1`.
+## Source layout
 
-## Rendering and content
+In `frontend/src`, `app/` defines routes, `components/` contains reusable presentation, `content/` holds project and writing records, `features/` groups interactive functions, and `lib/` contains shared utilities. In `backend/app`, `api/` handles HTTP, `core/` owns configuration and logging, `db/` contains SQLAlchemy setup and models, `schemas/` validates input, and `services/` handles inquiries and notifications. Alembic migrations live under `backend/migrations/`.
 
-Case study evidence lives in `frontend/src/content/projects.ts`, while concise visitor narratives live in `frontend/src/content/case-stories.ts`. Source references and `TODO_OWNER_VERIFY` markers are not rendered to visitors. Most UI is server-rendered. Small client components handle the mobile menu, theme preference, form behavior, print action, and first-party web-vitals reporting. The portrait is a faithful JPEG conversion of the supplied photo; project imagery consists of public page captures and existing project photographs. Case diagrams map inspected code boundaries and do not claim live deployment topology.
+Root `compose.yaml` describes the deployable service topology. `infra/compose.dev.yaml` exposes PostgreSQL to host processes for development. `scripts/` contains repeatable PostgreSQL and Compose checks and the production smoke command.
 
-## Data and lifecycle
+## Request and data lifecycle
 
-Alembic owns schema changes. The API validates and trims input with Pydantic, discards a filled honeypot, applies a database-backed 15-minute window, commits the inquiry, then schedules best-effort SMTP delivery after the HTTP response. A failure during persistence returns an error; a notification failure leaves an inspectable pending record. The in-process delivery task is not a durable queue, so operators must review pending records. Maintenance commands list pending records and purge old inquiries and throttle windows. A production scheduler must run retention purge daily.
+The browser posts JSON to `/api/contact`. The Next.js handler checks the request origin, bounds the body, adds a request ID, and forwards the submission with a server-only token. FastAPI validates fields, discards honeypot submissions, applies a database-backed rate limit, and commits the inquiry. The response indicates success only after persistence. SMTP is best effort; a scheduled operator process must review pending notifications and enforce retention.
 
-## Observability
+Health endpoints distinguish process liveness, database readiness, and public web readiness. Structured logs use request IDs and omit message bodies and email addresses. Telemetry is first party and does not include contact content.
 
-The API emits structured events keyed by request ID without logging message bodies or email addresses. `/health/live` identifies the process and revision; `/health/ready` checks schema/data access. Web `/api/health` checks API readiness. Browser exceptions are reduced to error type; LCP, INP and CLS samples are sent first-party to `/api/telemetry` and written as structured logs. Production needs a log sink, alert thresholds and field analysis; logging code alone is not a monitoring service.
+## Content evidence
+
+Project records are maintained in `frontend/src/content/projects.ts`; case narratives are in `frontend/src/content/case-stories.ts`. Public claims are limited to inspectable evidence. Ownership, deployment, and outcome details that are not confirmed remain qualified in the source and are not presented as verified facts. Project diagrams describe application boundaries, not production topology.

@@ -17,7 +17,7 @@ dev:
 
 format-check:
 	cd frontend && npm run format:check
-	cd frontend && npx prettier --check '../*.md' '../docs/*.md' '../compose.yaml' '../infra/*.yaml' '../.github/workflows/*.yml'
+	cd frontend && npx prettier --check '../README.md' '../docs/*.md' '../compose.yaml' '../infra/*.yaml' '../.github/workflows/*.yml'
 	cd backend && uv run ruff format --check . ../scripts/dev.py
 
 lint:

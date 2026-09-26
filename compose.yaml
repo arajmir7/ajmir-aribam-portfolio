@@ -28,6 +28,7 @@ services:
       EMAIL_PASSWORD: ${EMAIL_PASSWORD:-}
       EMAIL_FROM: ${EMAIL_FROM:-}
       EMAIL_TO: ${EMAIL_TO:-}
+      MIGRATION_DATABASE_URL: ${MIGRATION_DATABASE_URL:-}
       BUILD_REVISION: ${BUILD_REVISION:-unknown}
     depends_on:
       postgres: { condition: service_healthy }
@@ -54,6 +55,7 @@ services:
       NEXT_PUBLIC_SITE_URL: ${NEXT_PUBLIC_SITE_URL}
       CONTACT_API_URL: http://backend:8000
       CONTACT_INTERNAL_TOKEN: ${CONTACT_INTERNAL_TOKEN}
+      CONTACT_ALLOWED_ORIGIN: ${CONTACT_ALLOWED_ORIGIN:-}
       CONTACT_CLIENT_IP_HEADER: ${CONTACT_CLIENT_IP_HEADER:-}
       BUILD_REVISION: ${BUILD_REVISION:-unknown}
     depends_on:

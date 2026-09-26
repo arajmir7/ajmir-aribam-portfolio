@@ -9,7 +9,7 @@ export const metadata: Metadata = pageMeta(
 );
 
 export default function Labs() {
-  // TODO_OWNER_VERIFY: Academy source repository and ownership details.
+  // Keep unverified Academy source and ownership details out of public claims.
   return (
     <main id="main" className="labs-page shell">
       <header className="labs-heading">
