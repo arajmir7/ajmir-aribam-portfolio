@@ -21,7 +21,7 @@ export default defineConfig({
       timeout: 120_000,
     },
     {
-      command: `npm run start -- -p ${frontendPort}`,
+      command: `npm run build && npm run start -- -p ${frontendPort}`,
       url: frontendUrl,
       env: {
         NEXT_PUBLIC_SITE_URL: frontendUrl,

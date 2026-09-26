@@ -19,7 +19,7 @@ const routes = [
 test("orientation, routes, metadata, and evidence links", async ({
   page,
   request,
-}) => {
+}, testInfo) => {
   expect(projects).toHaveLength(9);
   expect(
     projects.filter((project) => project.maturity === "live"),
@@ -49,9 +49,7 @@ test("orientation, routes, metadata, and evidence links", async ({
     path: "test-results/home-desktop.png",
     fullPage: true,
   });
-  const expectedOrigin = new URL(
-    process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000",
-  ).origin;
+  const expectedOrigin = new URL(String(testInfo.project.use.baseURL)).origin;
   const titles = new Set<string>();
   for (const path of routes) {
     const response = await request.get(path);
