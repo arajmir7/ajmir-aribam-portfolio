@@ -1,9 +1,8 @@
 import type { Metadata } from "next";
 import {
   CurrentFocus,
-  EngineeringPhilosophy,
+  EngineeringCapability,
   PersonalBackground,
-  PracticeAreas,
   ProfileClosing,
   ProfileContact,
   ProfileHero,
@@ -20,9 +19,8 @@ export default function About() {
   return (
     <main id="main">
       <ProfileHero />
+      <EngineeringCapability />
       <PersonalBackground />
-      <EngineeringPhilosophy />
-      <PracticeAreas />
       <CurrentFocus />
       <ProfileClosing />
       <ProfileContact />

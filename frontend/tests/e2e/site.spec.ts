@@ -66,6 +66,12 @@ test("orientation, routes, metadata, and evidence links", async ({
     "I build software across the product, from the interface people use to the systems that keep it working.",
   );
   await expect(page.locator("main img[src*='projects']")).toHaveCount(0);
+  await expect(page.locator("main")).toContainText(
+    "Before software became my main work, I spent years handling banking transactions and public digital-service requests.",
+  );
+  await expect(page.locator("main")).toContainText(
+    "Today I work across frontend products, backend services, APIs, data, AI-assisted workflows, quality engineering, and delivery.",
+  );
   await expect(
     page.getByRole("img", { name: "Portrait of Ajmir Aribam" }),
   ).toBeVisible();

@@ -4,7 +4,7 @@
 }
 
 .hero {
-  padding-block: clamp(3.5rem, 8vw, 6.5rem) clamp(3rem, 6vw, 5rem);
+  padding-block: clamp(2.75rem, 6vw, 4.9rem) clamp(2.35rem, 4.5vw, 3.8rem);
 }
 
 .heroGrid {
@@ -34,7 +34,7 @@
 
 .heroLede {
   max-width: 61ch;
-  margin: 1.75rem 0 0;
+  margin: 1.35rem 0 0;
   color: var(--text-secondary);
   font-size: clamp(1.05rem, 1.4vw, 1.2rem);
 }
@@ -60,7 +60,7 @@
 }
 
 .section {
-  padding-block: clamp(2.75rem, 5vw, 4.5rem);
+  padding-block: clamp(2.25rem, 4vw, 3.5rem);
   border-top: 1px solid var(--border);
 }
 
@@ -91,7 +91,7 @@
   display: grid;
   grid-template-columns: minmax(150px, 1fr) minmax(0, 3fr);
   gap: clamp(1.5rem, 5vw, 5rem);
-  margin-top: 1.75rem;
+  margin-top: 1.35rem;
 }
 
 .copyBlock p,
@@ -106,7 +106,7 @@
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 1.5rem;
-  margin: 2.5rem 0 0;
+  margin: 1.9rem 0 0;
   padding: 0;
   list-style: none;
 }
@@ -132,46 +132,6 @@
   line-height: 1.55;
 }
 
-.practiceList {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 0 3rem;
-  margin: 2.5rem 0 0;
-  padding: 0;
-  list-style: none;
-}
-
-.practiceList li {
-  display: grid;
-  grid-template-columns: 2.25rem minmax(0, 1fr);
-  column-gap: 0.75rem;
-  padding-block: 1.25rem;
-  border-top: 1px solid var(--border);
-}
-
-.practiceList li:nth-last-child(-n + 2) {
-  border-bottom: 1px solid var(--border);
-}
-
-.practiceList > li > span {
-  color: var(--accent);
-  font-family: var(--font-meta);
-  font-size: 0.72rem;
-  line-height: 1.7;
-}
-
-.practiceList h3 {
-  margin: 0;
-  font-size: 1.08rem;
-}
-
-.practiceList p {
-  grid-column: 2;
-  margin: 0.45rem 0 0;
-  color: var(--text-secondary);
-  font-size: 0.9rem;
-}
-
 .focusCopy .text-link {
   grid-column: 2;
   justify-self: start;
@@ -179,7 +139,7 @@
 }
 
 .closing {
-  padding-block: clamp(3rem, 6vw, 5.5rem);
+  padding-block: clamp(2.4rem, 4.75vw, 4.25rem);
   background: var(--surface);
   border-top: 1px solid var(--border);
 }
@@ -202,7 +162,7 @@
 }
 
 .contact {
-  padding-block: clamp(3rem, 6vw, 5rem);
+  padding-block: clamp(2.4rem, 4.75vw, 4rem);
   border-top: 1px solid var(--border);
 }
 
@@ -223,7 +183,7 @@
 
 @media (max-width: 760px) {
   .hero {
-    padding-block: 3rem 3.5rem;
+    padding-block: 2.75rem 3rem;
   }
 
   .heroGrid,
@@ -262,23 +222,13 @@
     grid-column: 1;
   }
 
-  .principles,
-  .practiceList {
+  .principles {
     grid-template-columns: 1fr;
   }
 
   .principles {
     gap: 1.25rem;
-    margin-top: 2rem;
-  }
-
-  .practiceList {
-    gap: 0;
-    margin-top: 2rem;
-  }
-
-  .practiceList li:nth-last-child(2) {
-    border-bottom: 0;
+    margin-top: 1.6rem;
   }
 
   .contactRow {
