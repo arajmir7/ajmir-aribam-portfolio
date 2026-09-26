@@ -1,39 +1,74 @@
-# Release certification — local portfolio candidate
+# Release certification — deployment blocked at external boundary
 
 **Review date:** 2026-09-26
 
-**Scope:** The source tree in this commit.
+**Scope:** The final Git commit containing this document.
+**Decision:** Local and hosted release gates pass. No production deployment or production smoke evidence exists because the final domain and an authenticated hosting target are unavailable.
 
-**Decision:** The local release gate and screenshot review passed. This document does not certify a production deployment. No push or deployment was performed.
+## LOCAL VERIFIED EVIDENCE
 
-## Candidate reviewed
+`make verify` passed on the final source tree. It executed formatting, ESLint, public-name checks, Ruff, strict TypeScript, four frontend unit tests, eight backend unit/API tests, a clean PostgreSQL migration and Alembic drift check, two PostgreSQL integration tests, the Next.js production build, nine Playwright suites, dependency audits, full-history and staged secret scans, both Docker builds, an isolated Compose topology test, and `git diff --check`.
 
-The approved navigation, project order, nine case studies, Ajmir Aribam identity and light/dark system remain in place. Home now gives the introduction and selected projects more balanced space at desktop widths. The header uses a readable name beside the existing mark. Light surfaces have clearer separation; case studies use a tighter desktop reading column. Project screenshots were kept at or below their previous display sizes. No new project cards or decorative effects were added.
+The PostgreSQL gate issued ten concurrent submissions for one rate key and observed exactly five accepted and five rate-limited results. It then created a custom-format dump, restored it to an isolated database, and recovered a known marker inquiry. The Compose gate reached healthy database, private API and public frontend services; persisted one same-origin contact submission; and rejected a foreign origin. Separate negative checks confirmed that the frontend image rejects a non-HTTPS canonical origin and that the production backend image rejects SQLite.
 
-Visitor copy was reviewed across the public routes. Project maturity and evidence limits remain visible: three projects labeled live, four systems in development and two prototypes. The unconfirmed SHAPES destination has no public CTA. Notes stays in primary navigation because its one published technical article is substantive and connects directly to the case studies; no additional note was invented. The résumé keeps selectable text and a one-page A4 print layout.
+Production configuration now requires PostgreSQL, a contact token of at least 32 characters, and a known build revision. The public contact route requires an exact origin, accepts JSON within its size limit, and ignores client-supplied forwarding headers unless one supported header is explicitly trusted. The PostgreSQL rate window uses an atomic upsert. Database pool size, overflow, timeout and recycle settings are explicit. The runtime and migration database URLs can use separate roles.
 
-## Automated local checks
+The three exposed project destinations and the four social profile URLs each returned HTTP 200 on 2026-09-26. SHAPES has no public project CTA because its current destination remains unconfirmed. This response check does not establish ownership, authenticated behavior, availability, or business results.
 
-`make verify` passed on this source tree. It ran formatting, lint, strict TypeScript, frontend unit tests, backend tests, PostgreSQL migration and inquiry integration, the production Next.js build, Playwright browser tests, dependency audits, Gitleaks, frontend and backend Docker builds, isolated Compose health and persisted-contact checks, foreign-origin rejection, and `git diff --check`.
+## HOSTED CI EVIDENCE
 
-Nine Playwright tests passed. They covered all 19 public routes, unique page titles, exact canonical paths, Open Graph and Twitter image metadata, sitemap and robots, image decoding, unknown-route 404, keyboard and mobile navigation, real contact persistence plus validation, service failure and offline fallback, browser errors, responsive overflow, axe scans in both themes, and full-page screenshots. The overflow sweep covered 15 widths from 320 to 2560 px. Two frontend unit tests and four backend tests passed; the PostgreSQL integration check passed separately. Both dependency audits reported no known vulnerabilities at their configured thresholds. Gitleaks reported no leaks in committed or staged source. Both images built; Compose reported healthy services, one persisted inquiry and a rejected foreign origin.
+GitHub Actions `quality-gate` run [36206572286](https://github.com/arajmir7/ajmir-aribam-portfolio/actions/runs/36206572286) passed for commit `aef6a2e`. Its web, API, full-history secret scan and dependent Compose integration jobs all completed successfully on GitHub-hosted runners. Actions are pinned to full commit SHAs; the Gitleaks container is pinned by digest; permissions are read-only; jobs have timeouts; and the integration job cannot start until the other release jobs pass.
 
-These are local automated results, not production availability or human accessibility certification.
+The hosted gate associated with the final documentation commit repeats those same checks. GitHub's check suite is the source of its exact run identifier and result.
 
-## Human visual review
+## PRODUCTION DEPLOYMENT EVIDENCE
 
-Full-page captures of all 19 routes were reviewed at **390, 768, 1440 and 1728 px**, in **light and dark** themes. Review included the first viewport, logo legibility, wrapping, project hierarchy, screenshot cropping, case-study rhythm, whitespace and footer consistency. The 390 px mobile menu was reviewed in both themes. Contact validation, success, service-error and offline states were reviewed at 390 and 1440 px in both themes. No clipping or horizontal overflow was found in these captures.
+None. No service, database, DNS record, TLS setting, secret, environment variable, migration or release image was changed in a production environment.
 
-The résumé PDF rendered on one A4 page with selectable text and no visible clipping. Local screenshots and PDF inspection files are excluded from Git. Automated axe scans and screenshot review do not establish full accessibility compliance or physical-device behavior.
+The repository contains no production URL, hosting token, database credential or configured GitHub deployment secret. The installed Render CLI reports an expired or unauthorized session. The prompt leaves `<FINAL_DOMAIN>` unresolved. The GitHub profile currently points to `ajmir.me`; on 2026-09-26 that hostname resolved to GitHub Pages, served an older Jekyll page over HTTP, and did not provide a working HTTPS origin during the check. It was not assumed to be the selected production origin.
 
-## Links, metadata and deployment assumptions
+## PRODUCTION SMOKE EVIDENCE
 
-The exposed project destinations for Azaeron (`https://invoice.web-com.live/`), Friends Aluminium Works (`https://friendsaluminiumworks.com/`) and the Zam Zam Academy hosted preview (`https://storied-bombolone-5d4a8f.netlify.app/`) each returned HTTP 200 during this review. That verifies the public destination responded; it does not verify authenticated functions, ownership, uptime or business results. SHAPES keeps its case study without an outbound site link until its current address is confirmed.
+None. Production TLS, redirects, canonical metadata, social previews, health, persistence, notification, monitoring and performance cannot be tested before a deployment exists.
 
-The local production build returned route-specific canonical URLs, Open Graph and Twitter images, a 19-entry sitemap, robots rules that exclude `/api/`, the SVG favicon, 180 px Apple-touch icon, 192/512 px icons and the web manifest with successful asset responses. Response headers included CSP, HSTS, `X-Frame-Options: DENY`, `X-Content-Type-Options: nosniff`, referrer and permissions policies. A Docker image built with `NEXT_PUBLIC_SITE_URL=https://example.com` was checked for HTTPS canonical, sitemap, robots and Open Graph URLs. Its public contact route rejected a foreign `Origin`; the same-origin request returned a service-unavailable response when no private API was configured. The `example.com` origin is only a local build check.
+`scripts/production-smoke.sh` is ready to check the selected HTTPS origin, representative routes, security headers, canonical URL, robots, sitemap, icons, Open Graph image, 404 behavior, public dependency readiness and deployed revision. The scheduled `production-monitor` workflow uses the same check after the `PRODUCTION_URL` and `PRODUCTION_REVISION` repository variables are configured.
 
-`NEXT_PUBLIC_SITE_URL` is baked into the frontend build and must match the deployed HTTPS browser origin. The private backend needs a database URL, a strong internal contact token and production secrets. The local Compose check establishes that an accepted inquiry reaches PostgreSQL; it does not establish production email delivery, backups or monitoring. The public `/api/contact` and private `/inquiries`, `/health/live` and `/health/ready` contracts remain unchanged.
+## HUMAN REVIEW
 
-## Remaining production gates
+The approved interface remained design-frozen. The final candidate regenerated full-page captures for all 19 public routes at 390, 768, 1440 and 1728 px in light and dark themes. The captures were reviewed for first-viewport composition, logo and name legibility, wrapping, project hierarchy, image cropping, case-study rhythm, whitespace and footer consistency. Mobile navigation and contact validation, success, service-error and offline states were also reviewed in both themes. No visible clipping, broken image, horizontal overflow, hierarchy regression or footer inconsistency was found.
 
-A real HTTPS domain and reverse proxy, final environment values and secrets, SMTP or an owned pending-inquiry review process, restore-tested backups, retention scheduling, alerts, live canonical/social-preview checks, human accessibility review and field Core Web Vitals remain unverified. No production traffic, user metrics, uptime or operational outcome is claimed here.
+The résumé was regenerated and inspected as a 595.92 × 842.88 point A4 PDF. It contains one page and extractable text, and its rendered page showed no clipping or overlap. The PDF is not tagged, so this inspection does not establish PDF screen-reader accessibility.
+
+Automated axe checks covered all 19 routes in both themes. Keyboard navigation, focus, menu behavior, form errors, landmarks, headings, labels, image alternatives and responsive overflow are covered by the browser suite. This evidence does not constitute human accessibility certification, a physical-device review or a real screen-reader review.
+
+## OPEN LIMITATIONS
+
+- There is no public URL, deployed platform, production database, production migration record or production contact record.
+- Production email delivery or a staffed pending-inquiry schedule is not configured.
+- Provider backups, an independent production export and an isolated production-data restore have not been executed. The restore evidence is against a disposable PostgreSQL instance.
+- Monitoring is defined but inactive until a production URL and alert recipient exist.
+- No production Lighthouse run, field Core Web Vitals, uptime history, traffic, user metric or availability claim exists.
+- No production reverse-proxy IP-header behavior, TLS certificate, apex/`www` redirect or DNS ownership has been verified.
+- The repository documents an executable image and database rollback procedure; no production rollback has been performed.
+
+## OWNER ACTIONS
+
+Provide one authenticated production target with DNS control and confirm the final canonical HTTPS origin. That single handoff must include authority to create the web, private API and PostgreSQL services and to configure required secrets; deployment and external verification can then continue without another design pass.
+
+## Release report
+
+- **FINAL COMMIT:** Reported by Git after this certification is committed.
+- **PUBLIC URL:** Unavailable.
+- **DEPLOYMENT PLATFORM:** Unselected; Render CLI access is unauthorized.
+- **PRODUCTION SERVICES:** None deployed.
+- **DATABASE STATE:** Clean migrations, concurrency behavior and isolated restore pass locally and in hosted CI; no production database exists.
+- **CI RESULT:** GitHub Actions release gate passes for the published code candidate; final commit status is attached to the commit.
+- **SECURITY RESULT:** Local and hosted configured checks pass; production proxy, DNS, TLS and secret-manager controls remain untested.
+- **ACCESSIBILITY RESULT:** Axe and keyboard/browser checks pass; no certification, physical-device or screen-reader claim.
+- **PERFORMANCE RESULT:** Local build behavior only; no production measurements.
+- **CONTACT PIPELINE RESULT:** Full isolated browser-to-PostgreSQL flow passes; no production submission or delivery evidence.
+- **MONITORING RESULT:** Workflow implemented; inactive without production variables and an alert recipient.
+- **BACKUP/RESTORE RESULT:** Disposable PostgreSQL dump and isolated restore pass locally and in hosted CI; no production backup evidence.
+- **ROLLBACK METHOD:** Previous immutable images plus schema-compatible rollback, or pre-release backup restoration into a new database, as documented in `docs/production-deployment.md`.
+- **KNOWN LIMITATIONS:** Listed above without production claims.
+- **REMAINING OWNER ACTIONS:** One authenticated deployment target with DNS control and the final canonical HTTPS origin.
