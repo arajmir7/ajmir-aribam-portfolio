@@ -15,7 +15,9 @@ export default function About() {
     <main id="main" className="about-page">
       <header className="shell about-heading">
         <p className="kicker">About Ajmir</p>
-        <h1>Reliability mattered before I wrote software.</h1>
+        <h1>
+          I learned to care about reliability before I started writing software.
+        </h1>
       </header>
       <div className="shell about-story">
         <figure className="about-portrait">
@@ -24,32 +26,33 @@ export default function About() {
             alt="Portrait of Ajmir Aribam"
             width={768}
             height={960}
-            priority
-            sizes="(max-width: 760px) 100vw, 38vw"
+            preload
+            sizes="(max-width: 820px) 180px, 230px"
           />
           <figcaption>Ajmir Aribam</figcaption>
         </figure>
         <div className="about-narrative">
           <p className="about-lede">
-            I’m a software engineer who works across the product: the screen
-            people see, the rules behind it, and the checks before it ships.
+            Before software became my main work, I spent years handling banking
+            transactions and public digital-service requests. When a record was
+            wrong, a status was unclear or a process failed, somebody felt the
+            consequence immediately.
           </p>
           <p>
-            Before I focused on software, I handled banking and public
-            digital-service workflows. A wrong record, unclear status, or broken
-            process affected a real person immediately. That experience still
-            shapes the questions I ask when I build.
+            That experience still shapes how I build. I think about what happens
+            when a payment fails, who is allowed to change a record, what a
+            person should see when something is unavailable, and how a team can
+            tell whether a release actually works.
           </p>
           <p>
-            My current work spans billing, procurement, institutional
-            publishing, commercial web, accessibility engineering and document
-            review. The tools differ, but each system needs a clear boundary
-            between what a person asks it to do and what it can safely promise.
+            Today I work across frontend products, backend services, APIs, data,
+            delivery, AI-assisted workflows and quality engineering. The tools
+            differ, but each system needs clear boundaries between what a person
+            asks it to do and what it can safely promise.
           </p>
           <p>
-            I enjoy the practical questions: what happens when a payment fails,
-            who can approve a revision, what evidence supports a finding, and
-            how a change is tested before release.
+            I enjoy the practical questions: who can approve a revision, what
+            supports a finding, and how a change is checked before release.
           </p>
           <div className="about-next">
             <Link className="button button-primary" href="/work">

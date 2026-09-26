@@ -35,33 +35,42 @@ test("orientation, routes, metadata, and evidence links", async ({
   await expect(page.getByRole("heading", { level: 1 })).toHaveText(
     "Ajmir Aribam",
   );
-  await expect(page.locator(".home-role")).toHaveText("Software Engineer");
-  await expect(page.locator(".home-proposition")).toContainText(
-    "interface to infrastructure",
+  const introduction = page.locator('[data-section="introduction"]');
+  await expect(introduction).toContainText("Software Engineer");
+  await expect(introduction).toContainText(
+    "I build software that has to work beyond the screen.",
   );
-  await expect(page.getByRole("link", { name: /Explore work/ })).toBeVisible();
+  await expect(
+    introduction.getByRole("link", { name: /View my work/ }),
+  ).toBeVisible();
   await expect(
     page.getByRole("img", { name: "Portrait of Ajmir Aribam" }),
   ).toBeVisible();
-  await expect(page.locator(".home-hero .project-media")).toHaveCount(0);
-  await expect(page.locator(".home-proof > div")).toHaveCount(4);
-  const homeWork = page.locator(".home-work-item");
-  await expect(homeWork).toHaveCount(3);
-  expect((await homeWork.first().boundingBox())?.y).toBeGreaterThanOrEqual(900);
-  await expect(page.locator(".home-work img")).toHaveCount(0);
-  await expect(page.locator(".home-writing")).toContainText(
+  await expect(
+    introduction.locator(".project-media, .project-card"),
+  ).toHaveCount(0);
+  await expect(
+    page.locator('[data-section="engineering-proof"] li'),
+  ).toHaveCount(3);
+  await expect(
+    page.locator('[data-section="public-work"] .project-card'),
+  ).toHaveCount(3);
+  await expect(
+    page.locator('[data-section="current-work"] .project-card'),
+  ).toHaveCount(4);
+  await expect(page.locator("#note-title")).toHaveText(
     "Why status changes belong on the server",
   );
   await page.goto("/work");
-  await expect(page.locator(".work-featured-grid .project-card")).toHaveCount(
-    6,
-  );
-  await expect(page.locator(".archive-list .archive-row")).toHaveCount(3);
-  for (const card of await page
-    .locator(".work-featured-grid .project-card")
-    .all()) {
-    await expect(card.locator(".project-card-meta")).toContainText("2026");
-  }
+  await expect(page.locator("#public-work .project-card")).toHaveCount(3);
+  await expect(page.locator("#current-work .project-card")).toHaveCount(4);
+  await expect(page.locator("#labs .project-card")).toHaveCount(2);
+  await expect(
+    page.locator('#public-work [data-project="azaeron"]'),
+  ).toContainText("Live");
+  await expect(
+    page.locator('#labs [data-project="zam-zam-academy"]'),
+  ).toContainText("Hosted prototype");
   await page.goto("/");
   await page.screenshot({
     path: "test-results/home-desktop.png",
@@ -186,11 +195,9 @@ test("orientation, routes, metadata, and evidence links", async ({
     "invoice lifecycle",
   );
   await page.goto("/work/shapes-india");
-  await expect(page.locator(".case-current")).toContainText(
-    "current public address",
-  );
+  await expect(page.locator(".case-current")).toContainText("shapesindia.org");
   await expect(page.locator('a[href="https://shapesindia.org/"]')).toHaveCount(
-    0,
+    1,
   );
   for (const project of projects) {
     const path = `/work/${project.slug}`;
@@ -264,7 +271,7 @@ test("orientation, routes, metadata, and evidence links", async ({
   ).toBeVisible();
   await page.goto("/work/zam-zam-academy");
   await expect(page.locator(".case-opening .section-label")).toContainText(
-    "Prototype",
+    "Hosted prototype",
   );
   await expect(
     page.getByRole("link", { name: /Open hosted preview/ }),
@@ -347,7 +354,7 @@ test("keyboard navigation and mobile menu", async ({ page }) => {
   await expect(page.getByRole("link", { name: "Contact Ajmir" })).toBeVisible();
   await menu.click();
   await expect(menu).toHaveAttribute("aria-expanded", "true");
-  await menu.press("Escape");
+  await page.keyboard.press("Escape");
   await expect(menu).toBeFocused();
   await expect(menu).toHaveAttribute("aria-expanded", "false");
   await menu.click();
@@ -356,9 +363,9 @@ test("keyboard navigation and mobile menu", async ({ page }) => {
     .getByRole("link", { name: "About", exact: true })
     .click();
   await expect(page).toHaveURL(/\/about$/);
-  await expect(page.locator('.main-nav a[aria-current="page"]')).toHaveText(
-    "About",
-  );
+  await expect(
+    page.locator('.mobile-nav a[aria-current="page"]'),
+  ).toContainText("About");
   await page.goto("/work/azaeron");
   const contents = page.getByRole("navigation", { name: "In this case study" });
   await expect(contents).toBeVisible();
@@ -395,7 +402,7 @@ test("brand mark and readable name stay visible in both themes", async ({
         )
         .toBeGreaterThan(0);
       const name = page.locator(".brand-name");
-      if (width <= 360) await expect(name).toBeHidden();
+      if (width <= 820) await expect(name).toBeHidden();
       else {
         await expect(name).toBeVisible();
         expect(

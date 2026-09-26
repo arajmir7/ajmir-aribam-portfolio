@@ -63,12 +63,12 @@ export const projects: Project[] = [
     ],
     lede: "Azaeron brings invoicing, quotations, payments, inventory, and customer records into one business workspace.",
     summary:
-      "A workspace for invoices, payments, inventory and customer records, with guarded financial state.",
+      "A workspace for invoices, quotations, payments, inventory and customer records, with business rules enforced behind the interface.",
     live: "https://invoice.web-com.live/",
     visual: {
-      src: "/images/projects/azaeron-login.webp",
-      alt: "Azaeron's public workspace sign-in interface",
-      caption: "Public sign-in surface · Azaeron",
+      src: "/images/projects/azaeron-public-desktop.webp",
+      alt: "Current Azaeron sign-in page captured from the public deployment",
+      caption: "Current public deployment capture · Azaeron",
     },
     source: "https://github.com/arajmir7/azaeron-invoice-system",
     revision: "66b0f7c4c023685303ff495f58a6a776b7d67809",
@@ -139,7 +139,7 @@ export const projects: Project[] = [
   {
     slug: "shapes-india",
     name: "SHAPES India",
-    type: "Institutional platform · production",
+    type: "Institutional platform · public",
     year: "2026",
     maturity: "live",
     role: "Application and publishing engineering",
@@ -161,21 +161,21 @@ export const projects: Project[] = [
     ],
     limitations: [
       "Production backup schedule and exact contribution boundaries require owner verification.",
-      "TODO_OWNER_VERIFY: current public URL and deployment state.",
     ],
     lede: "A public site for six centres, with a controlled publishing workflow behind it.",
     summary:
-      "An institutional web platform for six centres, public resources, and content operations.",
+      "A public platform that brings six centres, their programmes and shared resources into one coherent publishing system.",
+    live: "https://shapesindia.org/",
     visual: {
-      src: "/images/projects/shapes-centres.webp",
-      alt: "SHAPES India centre index showing its six-centre navigation",
-      caption: "Public centre index · SHAPES India",
+      src: "/images/projects/shapes-india-public-desktop.webp",
+      alt: "Current SHAPES India homepage captured from the public deployment",
+      caption: "Current public deployment capture · SHAPES India",
     },
     source: "https://github.com/arajmir7/Shapes-India",
     revision: "0dbdf15b3dabce0a7d3bb37582a50426f793d7db",
     stack: ["Flask", "SQLAlchemy", "PostgreSQL", "Vite", "GitHub Actions"],
     context:
-      "SHAPES presents learning, psychological services, research, and community work across six centres. Its public site and local source checkout were inspected.",
+      "SHAPES brings six centres, programmes and shared resources into one public publishing system. The configured public destination responded during the capture pass.",
     problem:
       "Institutional information needs clear public navigation while editors need guarded paths to revise and publish content without blurring permissions or losing history.",
     ownership:
@@ -229,7 +229,7 @@ export const projects: Project[] = [
     operations:
       "Source includes structured request IDs, health/readiness, backup and production verification scripts. Actual schedules and recovery evidence are TODO_OWNER_VERIFY.",
     outcome:
-      "A live institutional site with six visible centres and locally inspected implementation. No audience or performance metrics are asserted.",
+      "A public institutional site with six visible centres and locally inspected implementation. No audience or performance metrics are asserted.",
     lessons:
       "An editorial workflow is a backend system: state, authorization, revision history, and release safety matter as much as presentation.",
     verify: [
@@ -280,12 +280,12 @@ export const projects: Project[] = [
     ],
     lede: "A local fabrication business made clear through products, projects, and a direct path to inquiry.",
     summary:
-      "A responsive product, service, project, and inquiry site for an Imphal fabrication business.",
+      "A product and project website for an aluminium fabrication business, designed to help visitors understand the work and move naturally into an enquiry.",
     live: "https://friendsaluminiumworks.com/",
     visual: {
-      src: "/images/projects/friends-banner.webp",
-      alt: "Aluminium and glass work featured on the Friends Aluminium Works website",
-      caption: "Project photography · Friends Aluminium Works",
+      src: "/images/projects/friends-aluminium-works-public-desktop.webp",
+      alt: "Current Friends Aluminium Works homepage captured from the public deployment",
+      caption: "Current public deployment capture · Friends Aluminium Works",
     },
     source: "https://github.com/arajmir7/friends-aluminium-works",
     revision: "13aa4bfbefb116b5839c18d02907caa5097ecee8",
@@ -474,7 +474,7 @@ export const projects: Project[] = [
     status: "In development",
     lede: "A multi-branch retail workspace taking shape around identity, catalogue, SKU, pricing, and branch access.",
     summary:
-      "A retail operations platform with implemented identity and catalogue modules; inventory, purchasing, and POS remain future milestones.",
+      "A multi-branch retail system taking shape around identity, catalogue, SKU, pricing and store-level operations.",
     visual: {
       src: "/images/projects/scent-bar-architecture.svg",
       alt: "Diagram of the implemented Scent Bar identity and catalogue modules, with later retail modules marked as planned",
@@ -559,7 +559,7 @@ export const projects: Project[] = [
     ],
     lede: "Construction purchasing brings catalogue, pricing, delivery, approvals, and supplier responses into one workflow.",
     summary:
-      "A construction procurement workflow for project scope, server-resolved totals, checkout, RFQs, supplier quotes, and approvals.",
+      "A procurement workflow for project scope, pricing, approvals, supplier requests and purchasing records.",
     visual: {
       src: "/images/projects/azaeron-construction.svg",
       alt: "Azaeron construction procurement flow from project catalogue to RFQ and approval",
@@ -632,7 +632,7 @@ export const projects: Project[] = [
   {
     slug: "accessforge",
     name: "AccessForge",
-    type: "Accessibility engineering · local build",
+    type: "Accessibility engineering · in development",
     year: "2026",
     maturity: "development",
     role: "Product and quality engineering",
@@ -641,14 +641,14 @@ export const projects: Project[] = [
     featured: false,
     caseStudy: true,
     gallery: [],
-    status: "Local build",
+    status: "In development",
     limitations: [
       "The local interface reports an offline state; no production service is available.",
       "Benchmark metrics are kept in internal project evidence rather than presented as portfolio outcomes.",
     ],
     lede: "Accessibility findings become useful when a fix can be re-tested, security-checked and proved.",
     summary:
-      "A local accessibility remediation platform with deterministic scans, bounded changes, security checks, re-scans and evidence bundles.",
+      "An accessibility remediation system that separates finding, changing and verifying so a proposed fix does not become proof by assumption.",
     visual: {
       src: "/images/projects/accessforge-pipeline.svg",
       alt: "AccessForge pipeline from accessibility scan through proof",
@@ -820,14 +820,14 @@ export const projects: Project[] = [
       "The public Netlify URL proves hosting, not client ownership, adoption or production operations.",
       "Template content and school figures are not repeated as portfolio claims.",
     ],
-    lede: "A multi-page school website prototype for academics, admissions, faculty, student life, notices, and contact.",
+    lede: "A hosted prototype for academics, admissions, faculty, student life, notices, and contact.",
     summary:
-      "A Vite/React education website study with multiple public routes and a hosted Netlify preview.",
+      "A multi-page education website study covering academics, admissions, faculty, student life, notices and contact journeys.",
     live: "https://storied-bombolone-5d4a8f.netlify.app/",
     visual: {
-      src: "/images/projects/zam-zam-prototype.svg",
-      alt: "Zam Zam Academy prototype site map with home, academics, admissions and contact",
-      caption: "Hosted prototype · route map",
+      src: "/images/projects/zam-zam-academy-public-desktop.webp",
+      alt: "Current Zam Zam Academy hosted prototype captured from its preview",
+      caption: "Current hosted prototype capture · Zam Zam Academy",
     },
     source: "TODO_OWNER_VERIFY: source repository and ownership",
     revision: "TODO_OWNER_VERIFY: local source snapshot has no Git metadata",

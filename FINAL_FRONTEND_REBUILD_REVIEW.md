@@ -1,45 +1,53 @@
-# Final frontend rebuild review
+# Final portfolio refinement review
 
 **Review date:** 2026-09-26
+**Scope:** Local frontend candidate. No production deployment was performed.
 
-**Scope:** The public Next.js interface. Backend contracts, persistence, migrations, case-study evidence boundaries, and private routes were preserved.
+## What changed
 
-## Implemented direction
+The Home remains personal-first and its first viewport contains no project imagery. Its final sequence is:
 
-Home now opens as a personal engineering portfolio. The first view presents Ajmir Aribam, the Software Engineer role, Imphal location, professional portrait, engineering position, four direct actions, and a compact four-part strengths summary. There is no project screenshot, application interface, product mockup, dashboard preview, or project card anywhere on Home.
+1. Ajmir Aribam — Software Engineer, portrait, personal statement and actions.
+2. What I care about — concrete examples of state, failure handling and verification.
+3. Live on the web — verified public work.
+4. Currently building — functional systems with release work still ahead.
+5. One engineering note.
+6. A brief personal bridge.
+7. Contact and shared footer.
 
-The visual system uses the approved monogram, a warm neutral canvas, ink-like type, a restrained blue accent, controlled semantic surfaces, and a 1200 px content limit. The same hierarchy and contrast system operate in light and dark themes. Motion is limited to a short vertical entrance and is disabled when reduced motion is requested.
+The generic positioning was replaced with: “I build software that has to work beyond the screen.” The supporting copy is specific about product interfaces, backend services, APIs, data, delivery and pre-release checks without claiming seniority or outcomes that have not been verified.
 
-The primary desktop navigation is limited to Work, Engineering, About, and Résumé, followed by theme and Contact controls. Notes remains available from the Home note preview and footer; no additional writing was invented.
+The Engineering page now connects product surface, application rules, data, authorization, AI-assisted workflows, quality, delivery and operations to a real case. About, Labs, Contact, Notes, metadata and the social description received the same editorial pass.
 
-## Home structure
+## Work architecture
 
-A personal profile follows the hero before any work appears. It connects Ajmir's prior banking and public digital-service experience to explicit state, guarded transitions, and repeatable releases without adding unverified claims.
+The Work index no longer treats all nine cases as equivalent. It now communicates maturity before the visitor reads the details.
 
-Selected work is a text-only index of Azaeron, Azaeron Verity, and AccessForge. Each compact row exposes year, maturity, product summary, technical focus, and case-study link without imagery. The following engineering section presents three working principles, followed by the existing published note and a direct contact close.
+| Collection        | Projects                                                                               | Treatment                                                                                          |
+| :---------------- | :------------------------------------------------------------------------------------- | :------------------------------------------------------------------------------------------------- |
+| 01 / Public work  | Azaeron, SHAPES India, Friends Aluminium Works                                         | Live external action and case study; fresh deployment capture.                                     |
+| 02 / Current work | Azaeron Verity, The Scent Bar Retail OS, Azaeron Construction Procurement, AccessForge | In development; restrained text-led cards and case study only.                                     |
+| 03 / Labs         | SCMIRN, Zam Zam Academy                                                                | Prototype boundaries remain explicit. Zam Zam has a hosted-preview action, not a production claim. |
 
-The 390 px layout stacks identity, actions, portrait, strengths, profile, and work in that order. At 768 px the header collapses and the hero keeps a compact two-column portrait composition. At 1440 and 1728 px the name, position, portrait, and proof strip form one bounded first view with no project content.
+Public cards use current local captures from the verified destinations, not remote hotlinks or previous project media. On a 1440 px viewport the three live cards are 320 px wide, roughly 23.7% of the 1354 px content measure, with 170 px screenshots. Current work is two columns on desktop and all cards stack on small screens with 160 px screenshots.
 
-## Work and case studies
+## Public destination evidence
 
-The Work page retains six compact featured cards in a three-column desktop grid, two columns at intermediate widths, and one column on mobile. Friends Aluminium Works, SCMIRN, and Zam Zam Academy remain compact archive rows. Project imagery stays at 160–190 px on desktop and is capped at 210 px on mobile.
+| Project                 | Confirmed URL                                   | Capture result                                                 |
+| :---------------------- | :---------------------------------------------- | :------------------------------------------------------------- |
+| Azaeron                 | `https://invoice.web-com.live/`                 | HTTP 200; redirected to `/login`; desktop and mobile captures. |
+| SHAPES India            | `https://shapesindia.org/`                      | HTTP 200; desktop and mobile captures.                         |
+| Friends Aluminium Works | `https://friendsaluminiumworks.com/`            | HTTP 200; desktop and mobile captures.                         |
+| Zam Zam Academy         | `https://storied-bombolone-5d4a8f.netlify.app/` | HTTP 200; desktop and mobile captures; hosted prototype only.  |
 
-Every project case retains eight explicit sections: Product, Problem, Contribution, Decisions, System, Quality and evidence, Current state, and Limits. Lead visuals remain centered and capped at 960 px wide and 360 px high on desktop. Internal verification markers remain in source and render as natural visitor-facing limitations.
+The capture script and [internal manifest](frontend/src/content/public-captures.json) preserve the source URL, date, viewport and resulting asset path. Its visitor-facing cards show only the product, status and actions.
 
-## Executed review
+## Visual and automated review
 
-`make verify` passed on the final committed candidate. It covered formatting, frontend and backend lint, strict TypeScript, four frontend tests, eight backend tests, PostgreSQL migration and drift checks, two PostgreSQL integration tests, concurrency and isolated restore checks, nine Playwright suites, dependency audits, full-history and staged secret scans, both production container builds, an isolated Compose persistence and origin check, and `git diff --check`.
+Home was captured and manually inspected in both themes at all requested dimensions: 390×844, 430×932, 768×1024, 1024×768, 1280×800, 1440×900, 1728×1117 and 1920×1080. The first viewport held no project image at every size, and no horizontal overflow or page error occurred. The current screenshots are stored locally under `.qa-refinement/final/`; [the 1440×900 light capture](.qa-refinement/final/home-1440x900-light.png) and [Work capture](.qa-refinement/final/work-1440x900.png) show the reviewed state.
 
-The browser suites visited 19 public routes. They checked canonical metadata, Open Graph and Twitter images, sitemap, robots, icons, manifest, security headers, internal links, public copy, case structure, contact success and failure behavior, keyboard navigation, mobile-menu focus, image decoding, browser errors, and horizontal overflow across 15 widths from 320 to 2560 px. Axe reported no WCAG A/AA violations for any route in either theme.
+`make verify` passed on this final source. It includes formatting, lint, strict TypeScript, frontend and backend tests, PostgreSQL migration/concurrency/restore checks, 12 browser tests, both-theme Axe checks across 19 routes, responsive checks, dependency audits, secret scans, Docker builds, isolated Compose contact/origin checks and `git diff --check`.
 
-The final candidate generated 152 full-page route captures: all 19 routes at 390, 768, 1440, and 1728 px in light and dark themes. Eighteen more captures covered the open mobile menu and contact validation, success, service error, and offline states. The current Home was inspected individually at all eight width/theme combinations; Work was inspected on mobile and desktop; all route captures were reviewed in width/theme contact sheets. No visible clipping, uncontrolled crop, missing image, broken hierarchy, inconsistent footer, or unclear form state was found.
+## Remaining deployment blockers
 
-The résumé export remains one 595.92 × 842.88 point A4 page with extractable text and no visible clipping or overlap. The PDF is not tagged.
-
-All three public project destinations and all four social destinations returned HTTP 200 during a fresh 2026-09-26 link sweep. SHAPES still has no public CTA because its destination is not confirmed.
-
-A five-run loopback Chromium observation against the production build recorded median LCP of 356 ms at 390 px and 352 ms at 1440 px, CLS 0 at both widths, and median first-load transfer of approximately 221 KB and 239 KB respectively. These are local lab observations, not field Core Web Vitals or production guarantees.
-
-## Release boundary
-
-No production deployment was performed. No production domain, TLS configuration, database, migration, inquiry, notification, monitoring result, backup, restore, rollback, uptime, user metric, or availability result is claimed. A final authenticated hosting target and canonical HTTPS origin are still required before production smoke checks can run.
+The candidate has not been deployed. Production still needs a confirmed canonical HTTPS origin, environment configuration, contact ownership and operational monitoring. SHAPES backup/recovery evidence and exact contribution boundaries require owner verification. Field performance, human accessibility review and tagged-PDF review have not been completed.

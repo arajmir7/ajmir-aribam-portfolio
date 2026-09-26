@@ -30,7 +30,7 @@ export const caseStories: Record<string, CaseStory> = {
     validation:
       "The six-centre site is captured in the case images. The application code includes publishing checks, role permissions, readiness, request IDs and operational scripts.",
     current:
-      "The current public address and production backup schedule need confirmation. My exact contribution under the contract is also unconfirmed.",
+      "The public site is available at shapesindia.org. Its backup schedule and my exact contribution under the contract still need confirmation.",
   },
   "friends-aluminium-works": {
     product:

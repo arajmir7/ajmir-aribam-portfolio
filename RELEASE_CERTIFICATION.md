@@ -1,90 +1,60 @@
-# Release certification — final frontend candidate
+# Release certification — public work refinement
 
 **Review date:** 2026-09-26
 
-**Scope:** The final Git commit containing this document.
+**Scope:** Local frontend candidate only.
 
-**Decision:** The local source, browser, security, container, and integration gates pass. Production deployment remains unexecuted because no authenticated hosting target or confirmed canonical HTTPS origin is available.
+**Decision:** `make verify` passed with exit code 0. The candidate is ready for deployment preparation, but no production deployment has been performed.
 
-## Local release gate
+## Product boundary
 
-`make verify` passed on the final candidate and executed:
+The first Home viewport presents Ajmir Aribam, Software Engineer, a personal statement, supporting engineering copy and direct actions. It contains no project media or project card.
 
-- Prettier and Ruff format checks.
-- ESLint, the canonical public-name check, and Ruff lint.
-- Next.js route generation and strict TypeScript.
-- Four frontend unit tests and eight backend unit/API tests.
-- A clean PostgreSQL migration, Alembic drift check, two PostgreSQL integration tests, concurrent rate-window behavior, and an isolated dump/restore drill.
-- The production Next.js build and nine Playwright suites.
-- `npm audit`, `pip-audit`, and Gitleaks scans of Git history and staged source.
-- Production frontend and backend container builds.
-- Isolated Compose startup, health, contact persistence, and foreign-origin rejection.
+The Home sequence is personal introduction, engineering judgment, public work, current work, engineering note, personal bridge and contact. Work uses the same order: public work, current work, then Labs.
+
+The public collection contains only the three verified live products:
+
+| Project                 | Verified destination                 | Status |
+| :---------------------- | :----------------------------------- | :----- |
+| Azaeron                 | `https://invoice.web-com.live/`      | Live   |
+| SHAPES India            | `https://shapesindia.org/`           | Live   |
+| Friends Aluminium Works | `https://friendsaluminiumworks.com/` | Live   |
+
+Zam Zam Academy’s Netlify preview at `https://storied-bombolone-5d4a8f.netlify.app/` also responded and was captured. It remains in Labs as a **Hosted prototype** because hosting does not verify client ownership or production use. No public destination remains unverified.
+
+## Fresh public-work captures
+
+`frontend/scripts/capture-public-work.mjs` opened each configured destination in Chromium at 1440×900 and 390×844, waited for fonts, visible images and stable layout, then stored optimized local WebP assets. The tracked internal manifest is [public-captures.json](frontend/src/content/public-captures.json).
+
+The current desktop captures are used by the corresponding portfolio cards:
+
+- `frontend/public/images/projects/azaeron-public-desktop.webp`
+- `frontend/public/images/projects/shapes-india-public-desktop.webp`
+- `frontend/public/images/projects/friends-aluminium-works-public-desktop.webp`
+- `frontend/public/images/projects/zam-zam-academy-public-desktop.webp` for the hosted-prototype card only
+
+Mobile companions were captured for all four destinations. The manifest records source URL, final URL, capture date, viewport, asset path and capture authority; none of that metadata is displayed to visitors.
+
+## Local verification
+
+The final `make verify` run passed:
+
+- Prettier, ESLint, public-name checks, Ruff and strict TypeScript.
+- Four frontend unit tests, eight backend tests and two PostgreSQL integration tests, with migration, drift, concurrency and restore checks.
+- All 12 Playwright tests against a production Next.js build.
+- Automated Axe WCAG A/AA checks across all 19 public routes in light and dark themes.
+- Responsive no-overflow checks across 15 widths from 320 to 2560 px.
+- Dependency audits, Git history and staged secret scans.
+- Frontend and backend production image builds.
+- An isolated Compose stack, including persisted contact inquiry and rejected foreign origin.
 - `git diff --check`.
 
-## Browser and accessibility evidence
+The final visual audit captured Home in both themes at 390×844, 430×932, 768×1024, 1024×768, 1280×800, 1440×900, 1728×1117 and 1920×1080. It found no page errors, horizontal overflow or first-viewport project images. At 1440×900, the introduction ends at y=921; engineering proof begins at y=921 and public work begins at y=1466. The artifacts and measurements are ignored local files under `.qa-refinement/`.
 
-The browser suite visited these 19 routes:
+At 1440 px, the three verified public cards are 320 px wide, about 23.7% of the 1354 px content measure, with 170 px screenshots. At 390 px, cards stack in one column at 350 px wide, with 160 px screenshots. Current-work cards use a two-column desktop text-led grid and stack on mobile.
 
-- `/`
-- `/work`
-- `/work/azaeron`
-- `/work/shapes-india`
-- `/work/friends-aluminium-works`
-- `/work/azaeron-verity`
-- `/work/the-scent-bar-retail-os`
-- `/work/azaeron-construction-procurement`
-- `/work/accessforge`
-- `/work/scmirn`
-- `/work/zam-zam-academy`
-- `/engineering`
-- `/labs`
-- `/about`
-- `/resume`
-- `/notes`
-- `/notes/state-is-a-boundary`
-- `/contact`
-- `/privacy`
+## Deployment boundary and remaining blockers
 
-All routes passed canonical URL, title, Open Graph, Twitter image, sitemap inclusion, internal-link, public-copy, browser-error, and image decoding checks. The suite also checked the manifest, favicon and Apple-touch assets, robots rules, 404 behavior, security headers, contact readiness, same-origin handling, persistence, service failure, offline handling, keyboard navigation, focus restoration, mobile navigation, and brand legibility.
+No production service, DNS, TLS, secret, database, migration, inquiry, notification, monitoring, backup, rollback or deployment was changed. The public `/api/contact` route and private `/inquiries`, `/health/live` and `/health/ready` contracts remain unchanged.
 
-Axe reported no WCAG A/AA violations on all 19 routes in light and dark themes. Responsive checks found no horizontal overflow across 15 widths from 320 to 2560 px. This is automated evidence, not human screen-reader or accessibility certification.
-
-## Visual evidence
-
-The final candidate generated and received manual review of 152 full-page route captures: all 19 routes at 390, 768, 1440, and 1728 px in light and dark themes. Eighteen additional captures covered the open mobile menu and contact validation, success, service error, and offline states.
-
-The review covered first-viewport identity, logo and name legibility, type wrapping, project hierarchy, screenshot scale and crop, case-study rhythm, whitespace, footer consistency, mobile navigation, and form-state clarity. No visible clipping, missing image, uncontrolled project visual, broken hierarchy, or inconsistent footer was found.
-
-Home was rebuilt around Ajmir Aribam, the Software Engineer role, professional portrait, personal positioning, four direct actions, and a four-part engineering-strengths summary. No project screenshot, application interface, product mockup, dashboard preview, or project card appears anywhere on Home. Its three selected projects are presented later as compact text-only rows after a separate personal profile. The primary navigation is limited to Work, Engineering, About, and Résumé, followed by theme and Contact controls; Notes remains linked from Home and the footer. Work retains six compact featured cards and three archive rows. Case lead visuals remain bounded to 960 × 360 px on desktop.
-
-The résumé export is one A4 page with extractable text and no visible clipping or overlap. It is not a tagged PDF.
-
-## Outbound destination evidence
-
-On 2026-09-26, fresh HTTP checks returned 200 for the three public project destinations and the GitHub, LinkedIn, Instagram, and X profile URLs. SHAPES exposes no public CTA because its destination is not confirmed. An HTTP response does not verify ownership, authenticated behavior, business results, or availability.
-
-## Performance evidence
-
-A five-run loopback Chromium observation against the production build recorded:
-
-| Viewport   | Median LCP | CLS | Approximate first-load transfer |
-| ---------- | ---------: | --: | ------------------------------: |
-| 390 × 900  |     356 ms |   0 |                          221 KB |
-| 1440 × 900 |     352 ms |   0 |                          239 KB |
-
-These are local lab observations. No production Lighthouse result, field Core Web Vitals, traffic metric, user metric, uptime history, or availability claim exists.
-
-## Production evidence
-
-None. No production service, DNS record, TLS setting, environment variable, secret, database, migration, inquiry, notification, monitoring check, backup, restore, rollback, or deployment image was changed or tested for this candidate.
-
-The repository requires a final canonical HTTPS origin, PostgreSQL, a contact token of at least 32 characters, and a known build revision. The public contact route enforces the configured origin and the private API retains `/inquiries`, `/health/live`, and `/health/ready`.
-
-## Open limitations
-
-- A production target, canonical HTTPS origin, DNS control, and valid hosting credentials are unavailable.
-- Production contact delivery ownership and a staffed inquiry process are unconfirmed.
-- Production backup, restore, monitoring, alerting, rollback, TLS, proxy, and redirect behavior have not been exercised.
-- The SHAPES production destination and exact contribution boundary still require owner confirmation.
-- Physical-device, human screen-reader, and tagged-PDF review have not been performed.
-- The exact final commit hash is reported by Git after this certification is committed.
+Before a production deployment, confirm the canonical HTTPS origin, deployment environment variables and contact-inquiry ownership. Production backup/recovery evidence, field performance, physical-device and human screen-reader review, and tagged-PDF review are still outstanding. SHAPES’ active backup schedule and exact contribution boundaries remain owner-verification items. Unknown software employment seniority and team boundaries remain marked in source and are not represented as fact in visitor copy.

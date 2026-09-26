@@ -14,9 +14,9 @@ export default function Writing() {
     <main id="main" className="notes-page shell">
       <header className="notes-heading">
         <p className="kicker">Notes</p>
-        <h1>Decisions worth writing down.</h1>
+        <h1>Notes from the work.</h1>
         <p>
-          Notes on decisions behind the work. The first looks at why status
+          Short notes on decisions behind the work, starting with why status
           changes belong on the server.
         </p>
       </header>

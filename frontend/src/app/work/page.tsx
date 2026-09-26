@@ -1,127 +1,89 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import {
-  ProjectCard,
-  ProjectMedia,
-  statusLabel,
-} from "@/components/projects/project-card";
-import { projects } from "@/content/projects";
+import { ProjectCollection } from "@/components/projects/project-collection";
+import { ContactClose } from "@/components/layout/contact-close";
+import { publicWork, currentWork, prototypes } from "@/content/project-groups";
 import { pageMeta } from "@/lib/site";
 
 export const metadata: Metadata = pageMeta(
   "Work",
-  "Business systems, institutional publishing, accessibility engineering and prototypes by Ajmir Aribam.",
+  "Public websites, software in development and prototypes by Ajmir Aribam, with contributions, decisions and unfinished work explained.",
   "/work",
 );
 
-const featuredSlugs = [
-  "azaeron",
-  "azaeron-verity",
-  "accessforge",
-  "shapes-india",
-  "the-scent-bar-retail-os",
-  "azaeron-construction-procurement",
+const groups = [
+  {
+    id: "public-work",
+    label: "01 / Public work",
+    title: "Live on the web",
+    description: "A selection of work you can open and inspect today.",
+    projects: publicWork,
+    compact: false,
+  },
+  {
+    id: "current-work",
+    label: "02 / Current work",
+    title: "Currently building",
+    description:
+      "Systems that are functional enough to inspect, but still have important release work ahead.",
+    projects: currentWork,
+    compact: true,
+  },
+  {
+    id: "labs",
+    label: "03 / Labs",
+    title: "Prototypes & experiments",
+    description:
+      "Earlier explorations and research-driven builds, kept visible with their boundaries intact.",
+    projects: prototypes,
+    compact: false,
+  },
 ];
-const featured = featuredSlugs.map((slug) =>
-  projects.find((project) => project.slug === slug)!,
-);
-const archive = projects.filter(
-  (project) => !featuredSlugs.includes(project.slug),
-);
 
 export default function Work() {
   return (
-    <main id="main" className="rebuild-work">
-      <header className="shell work-intro">
-        <p className="section-label">Project archive / 2026</p>
-        <div>
-          <h1>Work</h1>
-          <p>
-            Software products, public websites and working prototypes. Open a
-            case to see the build, the decisions and its current status.
-          </p>
-        </div>
-      </header>
-      <section
-        className="shell work-featured"
-        aria-labelledby="work-featured-title"
-      >
-        <div className="section-intro">
-          <p className="section-label">01 / Featured</p>
-          <div>
-            <h2 id="work-featured-title">Featured projects.</h2>
-            <p>
-              Six systems spanning billing, publishing, document review,
-              accessibility, retail operations and procurement.
-            </p>
-          </div>
-        </div>
-        <div className="work-featured-grid">
-          {featured.map((project, index) => (
-            <ProjectCard
-              key={project.slug}
-              project={project}
-              index={index + 1}
-            />
+    <main id="main" className="work-index">
+      <header className="shell work-opening">
+        <p className="section-label">Work / 2026</p>
+        <h1>Work</h1>
+        <p>
+          Software products and public experiences I have designed, built or
+          helped bring into working form. Each case explains the product, my
+          contribution, the decisions behind it and what remains unfinished.
+        </p>
+        <nav className="work-key" aria-label="Work collections">
+          {groups.map((group) => (
+            <a key={group.id} href={`#${group.id}`}>
+              {group.title} ↓
+            </a>
           ))}
-        </div>
-      </section>
-      <section className="work-archive" aria-labelledby="work-archive-title">
-        <div className="shell">
-          <div className="section-intro">
-            <p className="section-label">02 / Archive</p>
-            <div>
-              <h2 id="work-archive-title">More work</h2>
-              <p>
-                Three additional projects spanning commercial delivery and
-                working prototypes.
-              </p>
-            </div>
-          </div>
-          <div className="archive-list">
-            {archive.map((project, index) => (
-              <article className="archive-row" key={project.slug}>
-                <Link
-                  href={`/work/${project.slug}`}
-                  className="archive-media"
-                  aria-label={`View ${project.name} case study`}
-                >
-                  <ProjectMedia
-                    project={project}
-                    sizes="(max-width: 700px) 98px, 220px"
-                  />
-                </Link>
-                <div className="archive-main">
-                  <span>
-                    {String(index + 7).padStart(2, "0")} /{" "}
-                    {project.type.split(" · ")[0]}
-                  </span>
-                  <h3>
-                    <Link href={`/work/${project.slug}`}>{project.name}</Link>
-                  </h3>
-                  <p>{project.summary}</p>
-                </div>
-                <div className="archive-detail">
-                  <span>
-                    {statusLabel(project)} · {project.year}
-                  </span>
-                  <p>{project.role ?? project.technicalFocus}</p>
-                  <Link
-                    href={`/work/${project.slug}`}
-                    aria-label={`Read ${project.name} case study`}
-                  >
-                    Case study ↗
-                  </Link>
-                </div>
-              </article>
-            ))}
-          </div>
-          <p className="archive-note">
-            The two prototypes are also collected in{" "}
-            <Link href="/labs">Labs and experiments ↗</Link>.
-          </p>
-        </div>
-      </section>
+        </nav>
+      </header>
+      {groups.map((group) => (
+        <section
+          key={group.id}
+          id={group.id}
+          className="shell work-collection"
+          aria-labelledby={`${group.id}-title`}
+          data-section={group.id}
+        >
+          <header className="work-collection-heading">
+            <p className="section-label">{group.label}</p>
+            <h2 id={`${group.id}-title`}>{group.title}</h2>
+            <p>{group.description}</p>
+          </header>
+          <ProjectCollection
+            projects={group.projects}
+            compact={group.compact}
+          />
+          {group.id === "labs" && (
+            <Link className="text-link work-labs-link" href="/labs">
+              Explore Labs <span aria-hidden="true">↗</span>
+            </Link>
+          )}
+        </section>
+      ))}
+      <ContactClose />
     </main>
   );
 }

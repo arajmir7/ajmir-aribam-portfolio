@@ -14,7 +14,7 @@ export default function Labs() {
     <main id="main" className="labs-page shell">
       <header className="labs-heading">
         <p className="kicker">Labs &amp; experiments</p>
-        <h1>Ideas with working parts.</h1>
+        <h1>Prototypes with their boundaries intact.</h1>
         <p>
           These early builds show the ideas and their current limits. Neither is
           presented as a finished service.
@@ -35,9 +35,10 @@ export default function Labs() {
             <span>Civic services</span>
             <h2>A place to start and follow a civic request.</h2>
             <p>
-              SCMIRN explores complaint screens, service discovery and request
-              tracking. Its AI and rights surfaces are informational guidance,
-              not legal counsel or an official service.
+              A civic-service prototype that connects complaint intake,
+              guidance, office discovery, documents and progress tracking. Its
+              AI and rights surfaces are informational guidance, not legal
+              advice or an official government service.
             </p>
             <Link href="/work/scmirn">Read the SCMIRN case ↗</Link>
           </div>
@@ -54,10 +55,11 @@ export default function Labs() {
           </div>
           <div className="lab-project-copy">
             <span>Education site study</span>
-            <h2>Exploring how an academy could present itself.</h2>
+            <h2>A hosted education website study.</h2>
             <p>
-              A template study of website structure, navigation and
-              presentation. It remains a prototype.
+              A multi-page study for academics, admissions, faculty, student
+              life, notices and contact. It remains a hosted prototype, not a
+              verified client production site.
             </p>
             <div className="lab-links">
               <Link href="/work/zam-zam-academy">Read the case ↗</Link>

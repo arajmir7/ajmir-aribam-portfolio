@@ -7,40 +7,50 @@ export function SiteFooter() {
   return (
     <footer className="site-footer">
       <div className="shell footer-main">
-        <div className="footer-identity">
-          <Image
-            className="footer-mark brand-light"
-            src="/brand/mark.svg"
-            alt=""
-            width={410}
-            height={300}
-          />
-          <Image
-            className="footer-mark brand-dark"
-            src="/brand/mark-dark.svg"
-            alt=""
-            width={410}
-            height={300}
-          />
-          <div>
-            <strong>Ajmir Aribam</strong>
-            <span>Software Engineer</span>
-          </div>
-        </div>
-        <div className="footer-contact">
-          <span>Direct email</span>
-          <a href={`mailto:${email}`}>
+        <div>
+          <Link
+            className="footer-identity"
+            href="/"
+            aria-label="Ajmir Aribam, home"
+          >
+            <Image
+              className="footer-mark brand-light"
+              src="/brand/mark.svg"
+              alt=""
+              width={410}
+              height={300}
+            />
+            <Image
+              className="footer-mark brand-dark"
+              src="/brand/mark-dark.svg"
+              alt=""
+              width={410}
+              height={300}
+            />
+            <div>
+              <strong>Ajmir Aribam</strong>
+              <span>Software Engineer · Imphal, India</span>
+            </div>
+          </Link>
+          <a className="footer-email" href={`mailto:${email}`}>
             {email} <span aria-hidden="true">↗</span>
           </a>
         </div>
         <nav aria-label="Footer navigation" className="footer-nav">
-          <Link href="/work">Work</Link>
-          <Link href="/engineering">Engineering</Link>
-          <Link href="/about">About</Link>
-          <Link href="/notes">Notes</Link>
-          <Link href="/resume">Résumé</Link>
-          <Link href="/contact">Contact</Link>
-          <Link href="/privacy">Privacy</Link>
+          <div>
+            <span className="section-label">Explore</span>
+            <Link href="/work">Work</Link>
+            <Link href="/engineering">Engineering</Link>
+            <Link href="/about">About</Link>
+            <Link href="/resume">Résumé</Link>
+          </div>
+          <div>
+            <span className="section-label">More</span>
+            <Link href="/notes">Notes</Link>
+            <Link href="/labs">Labs & experiments</Link>
+            <Link href="/contact">Contact</Link>
+            <Link href="/privacy">Privacy</Link>
+          </div>
         </nav>
       </div>
       <div className="shell footer-bottom">

@@ -13,7 +13,7 @@ import {
 import { headers } from "next/headers";
 import localFont from "next/font/local";
 import "./globals.css";
-import "./rebuild.css";
+import "./identity.css";
 
 const instrumentSans = localFont({
   src: "../assets/instrument-sans-latin.woff2",
@@ -29,14 +29,14 @@ export const metadata: Metadata = {
     template: "%s — Ajmir Aribam",
   },
   description:
-    "Ajmir Aribam is a software engineer building products across backend systems, full-stack interfaces, cloud delivery, AI-enabled workflows and quality engineering.",
+    "Ajmir Aribam is a software engineer working across product interfaces, backend services, APIs, data, delivery and quality engineering.",
   alternates: { canonical: "/" },
   openGraph: {
     type: "website",
     siteName: "Ajmir Aribam",
     title: "Ajmir Aribam — Software Engineer",
     description:
-      "Backend · Full stack · Cloud delivery · AI-enabled systems · Quality engineering. Real projects and the decisions behind them.",
+      "Software that has to work beyond the screen. Public work, systems in development and the decisions behind them.",
     url: "/",
     images: ["/opengraph-image"],
   },
@@ -55,8 +55,8 @@ export const viewport: Viewport = {
   initialScale: 1,
   colorScheme: "light dark",
   themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#edf1f5" },
-    { media: "(prefers-color-scheme: dark)", color: "#0e1623" },
+    { media: "(prefers-color-scheme: light)", color: "#f7f4ee" },
+    { media: "(prefers-color-scheme: dark)", color: "#101716" },
   ],
 };
 

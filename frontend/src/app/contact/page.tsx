@@ -14,9 +14,10 @@ export default function Contact() {
     <main id="main" className="contact-page shell">
       <header className="contact-heading">
         <p className="kicker">Contact</p>
-        <h1>Tell me what you’re working on.</h1>
+        <h1>Tell me what you’re working through.</h1>
         <p>
-          A short note about the product, role or problem is enough to start.
+          A short note about the product, role or problem is enough to begin a
+          useful conversation.
         </p>
       </header>
       <div className="contact-layout">
@@ -25,10 +26,7 @@ export default function Contact() {
           <a href={`mailto:${email}`}>
             {email} <span aria-hidden="true">↗</span>
           </a>
-          <p>
-            If the form is inconvenient, write to me directly. I’ll reply from
-            this address.
-          </p>
+          <p>If the form is inconvenient, write to me directly.</p>
           <div>
             <span>Elsewhere</span>
             <SocialLinks />

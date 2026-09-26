@@ -1,0 +1,130 @@
+[
+  {
+    "project": "azaeron",
+    "sourceUrl": "https://invoice.web-com.live/",
+    "finalUrl": "https://invoice.web-com.live/login",
+    "captureDate": "2026-09-26T10:36:07.757Z",
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "assetPath": "/images/projects/azaeron-public-desktop.webp",
+    "status": 200,
+    "title": "Azaeron Invoice & Business Operations Platform | GST, POS",
+    "kind": "public surface",
+    "authority": "src/content/projects.ts",
+    "failedVisibleImages": []
+  },
+  {
+    "project": "azaeron",
+    "sourceUrl": "https://invoice.web-com.live/",
+    "finalUrl": "https://invoice.web-com.live/login",
+    "captureDate": "2026-09-26T10:36:09.448Z",
+    "viewport": {
+      "width": 390,
+      "height": 844
+    },
+    "assetPath": "/images/projects/azaeron-public-mobile.webp",
+    "status": 200,
+    "title": "Azaeron Invoice & Business Operations Platform | GST, POS",
+    "kind": "public surface",
+    "authority": "src/content/projects.ts",
+    "failedVisibleImages": []
+  },
+  {
+    "project": "friends-aluminium-works",
+    "sourceUrl": "https://friendsaluminiumworks.com/",
+    "finalUrl": "https://friendsaluminiumworks.com/",
+    "captureDate": "2026-09-26T10:36:08.426Z",
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "assetPath": "/images/projects/friends-aluminium-works-public-desktop.webp",
+    "status": 200,
+    "title": "Friends Aluminium Works | Imphal, Manipur",
+    "kind": "public surface",
+    "authority": "src/content/projects.ts",
+    "failedVisibleImages": []
+  },
+  {
+    "project": "friends-aluminium-works",
+    "sourceUrl": "https://friendsaluminiumworks.com/",
+    "finalUrl": "https://friendsaluminiumworks.com/",
+    "captureDate": "2026-09-26T10:36:11.270Z",
+    "viewport": {
+      "width": 390,
+      "height": 844
+    },
+    "assetPath": "/images/projects/friends-aluminium-works-public-mobile.webp",
+    "status": 200,
+    "title": "Friends Aluminium Works | Imphal, Manipur",
+    "kind": "public surface",
+    "authority": "src/content/projects.ts",
+    "failedVisibleImages": []
+  },
+  {
+    "project": "shapes-india",
+    "sourceUrl": "https://shapesindia.org/",
+    "finalUrl": "https://shapesindia.org/",
+    "captureDate": "2026-09-26T10:36:07.400Z",
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "assetPath": "/images/projects/shapes-india-public-desktop.webp",
+    "status": 200,
+    "title": "Society for Health & Psychology Enabled Services | SHAPES",
+    "kind": "public surface",
+    "authority": "ShapesIndia/.env.example SITE_URL; ShapesIndia/config.py SITE_URL",
+    "failedVisibleImages": []
+  },
+  {
+    "project": "shapes-india",
+    "sourceUrl": "https://shapesindia.org/",
+    "finalUrl": "https://shapesindia.org/",
+    "captureDate": "2026-09-26T10:36:09.217Z",
+    "viewport": {
+      "width": 390,
+      "height": 844
+    },
+    "assetPath": "/images/projects/shapes-india-public-mobile.webp",
+    "status": 200,
+    "title": "Society for Health & Psychology Enabled Services | SHAPES",
+    "kind": "public surface",
+    "authority": "ShapesIndia/.env.example SITE_URL; ShapesIndia/config.py SITE_URL",
+    "failedVisibleImages": []
+  },
+  {
+    "project": "zam-zam-academy",
+    "sourceUrl": "https://storied-bombolone-5d4a8f.netlify.app/",
+    "finalUrl": "https://storied-bombolone-5d4a8f.netlify.app/",
+    "captureDate": "2026-09-26T10:36:11.140Z",
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "assetPath": "/images/projects/zam-zam-academy-public-desktop.webp",
+    "status": 200,
+    "title": "Zam Zam Academy | Excellence in Education",
+    "kind": "hosted prototype",
+    "authority": "src/content/projects.ts",
+    "failedVisibleImages": []
+  },
+  {
+    "project": "zam-zam-academy",
+    "sourceUrl": "https://storied-bombolone-5d4a8f.netlify.app/",
+    "finalUrl": "https://storied-bombolone-5d4a8f.netlify.app/",
+    "captureDate": "2026-09-26T10:36:14.966Z",
+    "viewport": {
+      "width": 390,
+      "height": 844
+    },
+    "assetPath": "/images/projects/zam-zam-academy-public-mobile.webp",
+    "status": 200,
+    "title": "Zam Zam Academy | Excellence in Education",
+    "kind": "hosted prototype",
+    "authority": "src/content/projects.ts",
+    "failedVisibleImages": []
+  }
+]

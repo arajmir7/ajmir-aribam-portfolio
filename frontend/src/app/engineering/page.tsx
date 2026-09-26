@@ -11,9 +11,10 @@ export const metadata: Metadata = pageMeta(
 const layers = [
   {
     name: "Product surface",
-    detail: "Make the task understandable before asking for input.",
-    proof: "SHAPES public navigation",
-    href: "/work/shapes-india",
+    detail:
+      "Make the next task and its feedback clear before asking for input.",
+    proof: "Friends enquiry path",
+    href: "/work/friends-aluminium-works",
   },
   {
     name: "Application rules",
@@ -22,7 +23,7 @@ const layers = [
     href: "/work/azaeron#decisions",
   },
   {
-    name: "Data boundaries",
+    name: "Data",
     detail: "Give records a clear owner, version and scope.",
     proof: "Verity evidence model",
     href: "/work/azaeron-verity#system",
@@ -32,6 +33,13 @@ const layers = [
     detail: "Check identity and permission at the server boundary.",
     proof: "SHAPES editorial permissions",
     href: "/work/shapes-india#decisions",
+  },
+  {
+    name: "AI-assisted workflows",
+    detail:
+      "Keep source, uncertainty and human review beside an assisted finding.",
+    proof: "Verity review boundary",
+    href: "/work/azaeron-verity#system",
   },
   {
     name: "Quality",
@@ -60,11 +68,11 @@ export default function Engineering() {
       <header className="shell engineering-opening">
         <p className="section-label">Engineering / approach</p>
         <div>
-          <h1>Build from the boundary inward.</h1>
+          <h1>The interface is only one part of the system.</h1>
           <p>
-            A screen can look finished while the system behind it is still
-            ambiguous. I work through the rules, records and checks that let a
-            product make a reliable promise.
+            I like working across the boundaries where products usually become
+            difficult: state changes, permissions, data ownership, failure
+            handling, deployment and verification.
           </p>
         </div>
       </header>
@@ -75,11 +83,8 @@ export default function Engineering() {
         <div className="section-intro">
           <p className="section-label">01 / System model</p>
           <div>
-            <h2 id="system-title">Seven connected concerns.</h2>
-            <p>
-              Each layer affects the next. The project links show how these
-              decisions work in practice.
-            </p>
+            <h2 id="system-title">Eight connected concerns.</h2>
+            <p>Each one points to a decision in a real case study.</p>
           </div>
         </div>
         <ol className="engineering-layer-list">
@@ -143,9 +148,9 @@ export default function Engineering() {
           <h2>Check the boundary where failure matters.</h2>
         </div>
         <p>
-          Unit and API tests guard rules. Database tests guard records and
+          Unit and API tests check rules. Database tests check records and
           scope. Browser checks cover navigation, accessibility and responsive
-          behavior. Release checks cover dependencies, secrets, containers and
+          behaviour. Release checks cover dependencies, containers and
           readiness.
         </p>
       </section>

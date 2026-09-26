@@ -51,8 +51,8 @@ export default function Image() {
             letterSpacing: -2.5,
           }}
         >
-          <span>Products people use.</span>
-          <span>Systems they can depend on.</span>
+          <span>Software that has to work</span>
+          <span>beyond the screen.</span>
         </div>
       </div>
       <div
