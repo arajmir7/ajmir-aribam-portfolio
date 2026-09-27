@@ -12,6 +12,7 @@ frontend = services["frontend"]
 backend = services["backend"]
 assert frontend["root"] == "frontend"
 assert frontend["framework"] == "nextjs"
+assert frontend["buildCommand"] == ("NEXT_PUBLIC_SITE_URL=https://ajmiraribam.me npm run build")
 assert frontend["bindings"] == [
     {
         "type": "service",

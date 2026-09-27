@@ -4,6 +4,7 @@
     "frontend": {
       "root": "frontend",
       "framework": "nextjs",
+      "buildCommand": "NEXT_PUBLIC_SITE_URL=https://ajmiraribam.me npm run build",
       "bindings": [
         {
           "type": "service",
