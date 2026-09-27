@@ -4,11 +4,12 @@ from typing import Annotated
 
 from fastapi import APIRouter, Depends
 from fastapi.responses import JSONResponse
-from sqlalchemy import text
+from sqlalchemy import func, select, text
 from sqlalchemy.orm import Session
 
 from app.api.dependencies import session
 from app.core.config import get_settings
+from app.db.models import EmailDelivery
 
 router = APIRouter()
 
@@ -26,6 +27,21 @@ def ready(db: Annotated[Session, Depends(session)]):
     try:
         db.execute(text("SELECT 1"))
         db.execute(text("SELECT 1 FROM inquiries LIMIT 1"))
-        return {"status": "ready", "revision": settings.build_revision}
+        db.execute(text("SELECT 1 FROM email_deliveries LIMIT 1"))
+        deliveries = dict(
+            db.execute(
+                select(EmailDelivery.status, func.count()).group_by(EmailDelivery.status)
+            ).all()
+        )
+        return {
+            "status": "ready",
+            "revision": settings.build_revision,
+            "database": "ready",
+            "email_delivery": settings.email_status,
+            "outbox": {
+                status: deliveries.get(status, 0)
+                for status in ("pending", "attempting", "sent", "failed")
+            },
+        }
     except Exception:
         return JSONResponse(status_code=503, content={"status": "unavailable"})

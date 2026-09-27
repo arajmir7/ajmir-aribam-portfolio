@@ -94,6 +94,14 @@ grep -Eq '"status"[[:space:]]*:[[:space:]]*"ready"' "$workdir/health" || {
   echo "Public readiness endpoint is not ready." >&2
   exit 1
 }
+grep -Eq '"database"[[:space:]]*:[[:space:]]*"ready"' "$workdir/health" || {
+  echo "Public readiness endpoint did not confirm database readiness." >&2
+  exit 1
+}
+grep -Eq '"email_delivery"[[:space:]]*:[[:space:]]*"(configured|not_configured|misconfigured)"' "$workdir/health" || {
+  echo "Public readiness endpoint did not report email configuration state." >&2
+  exit 1
+}
 grep -Fq "\"revision\":\"$expected_revision\"" "$workdir/health" || {
   echo "Health revision does not match EXPECTED_REVISION." >&2
   exit 1

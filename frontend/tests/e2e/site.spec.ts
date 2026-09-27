@@ -339,7 +339,13 @@ test("contact journey, validation, and API readiness", async ({
   page,
   request,
 }) => {
-  expect((await request.get("/api/health")).status()).toBe(200);
+  const health = await request.get("/api/health");
+  expect(health.status()).toBe(200);
+  const healthState = await health.json();
+  expect(healthState.database).toBe("ready");
+  expect(["configured", "not_configured", "misconfigured"]).toContain(
+    healthState.email_delivery,
+  );
   const missingOrigin = await request.post("/api/contact", {
     data: {
       name: "Origin Check",
@@ -361,9 +367,14 @@ test("contact journey, validation, and API readiness", async ({
   await page
     .getByLabel("Message")
     .fill("I would like to discuss a backend system for a real project.");
+  const acceptedRequestPromise = page.waitForRequest("**/api/contact");
   await page.getByRole("button", { name: /Send inquiry/ }).click();
+  const acceptedRequest = await acceptedRequestPromise;
+  expect(acceptedRequest.headers()["idempotency-key"]).toMatch(
+    /^[0-9a-f-]{36}$/i,
+  );
   await expect(page.getByRole("status")).toContainText(
-    "Your inquiry was received",
+    "Your inquiry is safely recorded",
   );
   await page.route("**/api/contact", (route) =>
     route.fulfill({
@@ -377,10 +388,23 @@ test("contact journey, validation, and API readiness", async ({
   await page
     .getByLabel("Message")
     .fill("A second inquiry should have an email fallback.");
+  const firstRetryPromise = page.waitForRequest("**/api/contact");
   await page.getByRole("button", { name: /Send inquiry/ }).click();
+  const firstRetryKey = (await firstRetryPromise).headers()["idempotency-key"];
   await expect(page.locator(".form-status[role='alert']")).toContainText(
     "You can email me directly",
   );
+  const secondRetryPromise = page.waitForRequest("**/api/contact");
+  const secondRetryResponse = page.waitForResponse((response) =>
+    response.url().endsWith("/api/contact"),
+  );
+  await page.getByRole("button", { name: /Send inquiry/ }).click();
+  const secondRetryKey = (await secondRetryPromise).headers()[
+    "idempotency-key"
+  ];
+  await secondRetryResponse;
+  expect(firstRetryKey).toMatch(/^[0-9a-f-]{36}$/i);
+  expect(secondRetryKey).toBe(firstRetryKey);
   await expect(
     page.getByRole("link", { name: /Email .* instead/ }),
   ).toHaveAttribute("href", /^mailto:/);
@@ -643,7 +667,7 @@ test("interactive visual states are captured", async ({ page }) => {
       await fillInquiry();
       await page.getByRole("button", { name: /Send inquiry/ }).click();
       await expect(page.getByRole("status")).toContainText(
-        "Your inquiry was received",
+        "Your inquiry is safely recorded",
       );
       await captureContact("success", width, theme);
       await page.unroute("**/api/contact");

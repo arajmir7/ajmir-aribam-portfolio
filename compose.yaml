@@ -31,6 +31,7 @@ services:
       EMAIL_PASSWORD: ${EMAIL_PASSWORD:-}
       EMAIL_FROM: ${EMAIL_FROM:-}
       EMAIL_TO: ${EMAIL_TO:-}
+      EMAIL_USE_TLS: ${EMAIL_USE_TLS:-true}
       BUILD_REVISION: ${BUILD_REVISION:?set BUILD_REVISION}
     depends_on:
       postgres: { condition: service_healthy }
@@ -46,6 +47,30 @@ services:
       timeout: 3s
       retries: 10
       start_period: 10s
+    restart: unless-stopped
+  delivery-worker:
+    build: ./backend
+    command: ["python", "-m", "app.delivery_worker"]
+    environment:
+      APP_ENV: production
+      MIGRATION_DATABASE_URL: postgresql+psycopg://portfolio:${POSTGRES_PASSWORD}@postgres:5432/portfolio
+      DATABASE_RUNTIME_USER: ${DATABASE_RUNTIME_USER:?set DATABASE_RUNTIME_USER}
+      DATABASE_RUNTIME_PASSWORD: ${DATABASE_RUNTIME_PASSWORD:?set DATABASE_RUNTIME_PASSWORD}
+      CONTACT_INTERNAL_TOKEN: ${CONTACT_INTERNAL_TOKEN:?set CONTACT_INTERNAL_TOKEN}
+      DATABASE_POOL_SIZE: ${DATABASE_POOL_SIZE:-5}
+      DATABASE_MAX_OVERFLOW: ${DATABASE_MAX_OVERFLOW:-5}
+      DATABASE_POOL_TIMEOUT: ${DATABASE_POOL_TIMEOUT:-10}
+      DATABASE_POOL_RECYCLE: ${DATABASE_POOL_RECYCLE:-300}
+      EMAIL_HOST: ${EMAIL_HOST:-}
+      EMAIL_PORT: ${EMAIL_PORT:-587}
+      EMAIL_USER: ${EMAIL_USER:-}
+      EMAIL_PASSWORD: ${EMAIL_PASSWORD:-}
+      EMAIL_FROM: ${EMAIL_FROM:-}
+      EMAIL_TO: ${EMAIL_TO:-}
+      EMAIL_USE_TLS: ${EMAIL_USE_TLS:-true}
+      BUILD_REVISION: ${BUILD_REVISION:?set BUILD_REVISION}
+    depends_on:
+      postgres: { condition: service_healthy }
     restart: unless-stopped
   frontend:
     build:

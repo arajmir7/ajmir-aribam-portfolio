@@ -3,15 +3,17 @@
 import hashlib
 import hmac
 from datetime import UTC, datetime, timedelta
+from uuid import uuid4
 
 from fastapi import HTTPException
 from sqlalchemy import case, or_, select
 from sqlalchemy.dialects.postgresql import insert as postgresql_insert
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from app.core.config import get_settings
 from app.core.logging import log
-from app.db.models import Inquiry, RateWindow
+from app.db.models import EmailDelivery, Inquiry, RateWindow
 from app.schemas.inquiries import InquiryInput
 
 
@@ -64,7 +66,21 @@ def enforce_rate_limit(db: Session, key: str, now: datetime) -> None:
         window.count += 1
 
 
-def store_inquiry(db: Session, payload: InquiryInput, request_id: str, client_ip: str) -> Inquiry:
+def store_inquiry(
+    db: Session,
+    payload: InquiryInput,
+    request_id: str,
+    client_ip: str,
+    idempotency_key: str | None = None,
+    source_origin: str | None = None,
+) -> Inquiry:
+    idempotency_key = idempotency_key or str(uuid4())
+    existing = db.scalar(select(Inquiry).where(Inquiry.idempotency_key == idempotency_key))
+    if existing is not None:
+        _ensure_same_submission(existing, payload)
+        log("inquiry_replayed", request_id, inquiry_id=existing.id)
+        return existing
+
     try:
         enforce_rate_limit(db, rate_key(client_ip), datetime.now(UTC))
         inquiry = Inquiry(
@@ -73,16 +89,42 @@ def store_inquiry(db: Session, payload: InquiryInput, request_id: str, client_ip
             topic=payload.topic,
             message=payload.message,
             request_id=request_id,
+            idempotency_key=idempotency_key,
+            source_origin=source_origin,
         )
         db.add(inquiry)
+        db.flush()
+        db.add(EmailDelivery(inquiry_id=inquiry.id, status="pending", attempt_count=0))
         db.commit()
         db.refresh(inquiry)
     except HTTPException:
         db.rollback()
         raise
+    except IntegrityError:
+        db.rollback()
+        existing = db.scalar(select(Inquiry).where(Inquiry.idempotency_key == idempotency_key))
+        if existing is not None:
+            _ensure_same_submission(existing, payload)
+            log("inquiry_replayed", request_id, inquiry_id=existing.id)
+            return existing
+        log("persistence_failed", request_id)
+        raise HTTPException(status_code=503, detail="Inquiry could not be stored") from None
     except Exception:
         db.rollback()
         log("persistence_failed", request_id)
         raise HTTPException(status_code=503, detail="Inquiry could not be stored") from None
     log("inquiry_stored", request_id, topic=inquiry.topic, inquiry_id=inquiry.id)
     return inquiry
+
+
+def _ensure_same_submission(existing: Inquiry, payload: InquiryInput) -> None:
+    if (
+        existing.name != payload.name
+        or existing.email != str(payload.email)
+        or existing.topic != payload.topic
+        or existing.message != payload.message
+    ):
+        raise HTTPException(
+            status_code=409,
+            detail="The idempotency key was already used for different inquiry details.",
+        )

@@ -36,6 +36,102 @@ services:
         value: "10"
       - key: DATABASE_POOL_RECYCLE
         value: "300"
+      - key: EMAIL_HOST
+        sync: false
+      - key: EMAIL_PORT
+        value: "587"
+      - key: EMAIL_USER
+        sync: false
+      - key: EMAIL_PASSWORD
+        sync: false
+      - key: EMAIL_FROM
+        sync: false
+      - key: EMAIL_TO
+        sync: false
+      - key: EMAIL_USE_TLS
+        value: "true"
+
+  - type: worker
+    name: portfolio-email-worker
+    runtime: docker
+    plan: 0.5c-512mb
+    region: singapore
+    numInstances: 1
+    dockerfilePath: ./backend/Dockerfile
+    dockerContext: ./backend
+    dockerCommand: python -m app.delivery_worker
+    maxShutdownDelaySeconds: 60
+    autoDeployTrigger: checksPass
+    envVars:
+      - key: APP_ENV
+        value: production
+      - key: MIGRATION_DATABASE_URL
+        fromDatabase:
+          name: portfolio-db
+          property: connectionString
+      - key: DATABASE_RUNTIME_USER
+        fromService:
+          name: portfolio-api
+          type: pserv
+          envVarKey: DATABASE_RUNTIME_USER
+      - key: DATABASE_RUNTIME_PASSWORD
+        fromService:
+          name: portfolio-api
+          type: pserv
+          envVarKey: DATABASE_RUNTIME_PASSWORD
+      - key: CONTACT_INTERNAL_TOKEN
+        fromService:
+          name: portfolio-api
+          type: pserv
+          envVarKey: CONTACT_INTERNAL_TOKEN
+      - key: BUILD_REVISION
+        fromService:
+          name: portfolio-api
+          type: pserv
+          envVarKey: BUILD_REVISION
+      - key: DATABASE_POOL_SIZE
+        value: "2"
+      - key: DATABASE_MAX_OVERFLOW
+        value: "1"
+      - key: DATABASE_POOL_TIMEOUT
+        value: "10"
+      - key: DATABASE_POOL_RECYCLE
+        value: "300"
+      - key: EMAIL_HOST
+        fromService:
+          name: portfolio-api
+          type: pserv
+          envVarKey: EMAIL_HOST
+      - key: EMAIL_PORT
+        fromService:
+          name: portfolio-api
+          type: pserv
+          envVarKey: EMAIL_PORT
+      - key: EMAIL_USER
+        fromService:
+          name: portfolio-api
+          type: pserv
+          envVarKey: EMAIL_USER
+      - key: EMAIL_PASSWORD
+        fromService:
+          name: portfolio-api
+          type: pserv
+          envVarKey: EMAIL_PASSWORD
+      - key: EMAIL_FROM
+        fromService:
+          name: portfolio-api
+          type: pserv
+          envVarKey: EMAIL_FROM
+      - key: EMAIL_TO
+        fromService:
+          name: portfolio-api
+          type: pserv
+          envVarKey: EMAIL_TO
+      - key: EMAIL_USE_TLS
+        fromService:
+          name: portfolio-api
+          type: pserv
+          envVarKey: EMAIL_USE_TLS
 
   - type: web
     name: portfolio-web

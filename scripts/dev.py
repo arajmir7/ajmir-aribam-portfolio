@@ -36,6 +36,17 @@ def main() -> int:
 
     signal.signal(signal.SIGTERM, stop_on_term)
     processes: list[subprocess.Popen] = []
+    development_environment = os.environ.copy()
+    if not development_environment.get("EMAIL_HOST"):
+        development_environment["EMAIL_HOST"] = "127.0.0.1"
+        development_environment["EMAIL_PORT"] = "1025"
+        development_environment["EMAIL_USER"] = ""
+        development_environment["EMAIL_PASSWORD"] = ""
+        development_environment["EMAIL_FROM"] = "Ajmir Aribam <no-reply@example.com>"
+        development_environment["EMAIL_TO"] = "ajmir@example.com"
+        development_environment["EMAIL_USE_TLS"] = "false"
+    api_port = os.environ.get("PORTFOLIO_API_PORT", "8000")
+    web_port = os.environ.get("PORT", "3000")
     try:
         processes.append(
             subprocess.Popen(
@@ -48,17 +59,27 @@ def main() -> int:
                     "--host",
                     "127.0.0.1",
                     "--port",
-                    "8000",
+                    api_port,
                 ],
                 cwd=ROOT / "backend",
                 start_new_session=True,
+                env=development_environment,
             )
         )
         processes.append(
             subprocess.Popen(
-                ["npm", "run", "dev"],
+                ["uv", "run", "python", "-m", "app.delivery_worker"],
+                cwd=ROOT / "backend",
+                start_new_session=True,
+                env=development_environment,
+            )
+        )
+        processes.append(
+            subprocess.Popen(
+                ["npm", "run", "dev", "--", "--hostname", "127.0.0.1", "--port", web_port],
                 cwd=ROOT / "frontend",
                 start_new_session=True,
+                env=development_environment,
             )
         )
         while True:

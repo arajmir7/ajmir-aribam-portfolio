@@ -10,6 +10,7 @@ import {
 export const runtime = "nodejs";
 export async function POST(request: NextRequest) {
   const id = randomUUID();
+  const idempotencyKey = request.headers.get("idempotency-key");
   const expected =
     process.env.CONTACT_ALLOWED_ORIGIN || process.env.NEXT_PUBLIC_SITE_URL;
   const origin = request.headers.get("origin");
@@ -20,6 +21,16 @@ export async function POST(request: NextRequest) {
     );
   if (!request.headers.get("content-type")?.startsWith("application/json"))
     return NextResponse.json({ message: "Expected JSON." }, { status: 415 });
+  if (
+    idempotencyKey &&
+    !/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(
+      idempotencyKey,
+    )
+  )
+    return NextResponse.json(
+      { message: "A valid request key is required." },
+      { status: 400 },
+    );
   const bytes = Number(request.headers.get("content-length") || 0);
   if (bytes > 6000)
     return NextResponse.json(
@@ -76,7 +87,9 @@ export async function POST(request: NextRequest) {
         "Content-Type": "application/json",
         "X-Internal-Token": token,
         "X-Request-ID": id,
+        "Idempotency-Key": idempotencyKey || randomUUID(),
         "X-Client-IP": clientIp || "untrusted-proxy",
+        "X-Source-Origin": origin!,
       },
       body: JSON.stringify(payload),
       signal: AbortSignal.timeout(8000),

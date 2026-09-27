@@ -25,9 +25,11 @@ export function ContactForm() {
   );
   const [feedback, setFeedback] = useState("");
   const [emailFallback, setEmailFallback] = useState(false);
+  const [idempotencyKey, setIdempotencyKey] = useState("");
   function update(key: keyof Fields, value: string) {
     setValues((v) => ({ ...v, [key]: value }));
     setErrors((e) => ({ ...e, [key]: "" }));
+    setIdempotencyKey("");
   }
   async function submit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -57,10 +59,15 @@ export function ContactForm() {
     setStatus("sending");
     setFeedback("");
     setEmailFallback(false);
+    const submissionKey = idempotencyKey || crypto.randomUUID();
+    if (!idempotencyKey) setIdempotencyKey(submissionKey);
     try {
       const response = await fetch("/api/contact", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          "Idempotency-Key": submissionKey,
+        },
         body: JSON.stringify(values),
       });
       const result: { message?: string; errors?: Record<string, string> } =
@@ -75,22 +82,21 @@ export function ContactForm() {
         throw new Error(
           response.status === 429
             ? "Please wait a little before trying again."
-            : "I couldn’t receive that just now. You can email me directly.",
+            : "I couldn’t record that just now. You can email me directly.",
         );
       }
       setStatus("sent");
-      setFeedback(
-        "Your inquiry was received. Thank you — I’ll reply by email.",
-      );
+      setFeedback("Your inquiry is safely recorded. I’ll follow up by email.");
       setValues(initial);
       setErrors({});
+      setIdempotencyKey("");
     } catch (error) {
       setStatus("failed");
       setEmailFallback(true);
       setFeedback(
         error instanceof Error
           ? error.message
-          : "I couldn’t receive that just now. You can email me directly.",
+          : "I couldn’t record that just now. You can email me directly.",
       );
     }
   }

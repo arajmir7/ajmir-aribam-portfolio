@@ -2,8 +2,10 @@
 
 import os
 from dataclasses import dataclass
+from email.utils import getaddresses, parseaddr
 from re import fullmatch
 
+from email_validator import EmailNotValidError, validate_email
 from sqlalchemy.engine import make_url
 
 
@@ -18,11 +20,13 @@ class Settings:
     database_pool_timeout: int
     database_pool_recycle: int
     email_host: str
-    email_port: str
+    email_port: int
     email_user: str
     email_password: str
     email_from: str
     email_to: str
+    email_use_tls: bool
+    email_status: str
 
 
 def get_settings() -> Settings:
@@ -132,6 +136,29 @@ def get_settings() -> Settings:
     pool_recycle = int(os.environ.get("DATABASE_POOL_RECYCLE", "300"))
     if pool_size < 1 or max_overflow < 0 or pool_timeout < 1 or pool_recycle < 1:
         raise RuntimeError("Database pool settings must be positive (overflow may be zero)")
+    email_host = os.environ.get("EMAIL_HOST", "").strip()
+    email_user = os.environ.get("EMAIL_USER", "")
+    email_password = os.environ.get("EMAIL_PASSWORD", "")
+    email_from = os.environ.get("EMAIL_FROM", "").strip()
+    email_to = os.environ.get("EMAIL_TO", "").strip()
+    email_use_tls = _parse_bool(os.environ.get("EMAIL_USE_TLS", "true"), "EMAIL_USE_TLS")
+    try:
+        email_port = int(os.environ.get("EMAIL_PORT", "587"))
+    except ValueError as error:
+        raise RuntimeError("EMAIL_PORT must be an integer between 1 and 65535") from error
+    if not 1 <= email_port <= 65535:
+        raise RuntimeError("EMAIL_PORT must be an integer between 1 and 65535")
+
+    email_status = _email_status(
+        environment,
+        host=email_host,
+        user=email_user,
+        password=email_password,
+        sender=email_from,
+        recipient=email_to,
+        use_tls=email_use_tls,
+    )
+
     return Settings(
         database_url=database_url,
         migration_database_url=migration_database_url,
@@ -141,10 +168,53 @@ def get_settings() -> Settings:
         database_max_overflow=max_overflow,
         database_pool_timeout=pool_timeout,
         database_pool_recycle=pool_recycle,
-        email_host=os.environ.get("EMAIL_HOST", ""),
-        email_port=os.environ.get("EMAIL_PORT", "587"),
-        email_user=os.environ.get("EMAIL_USER", ""),
-        email_password=os.environ.get("EMAIL_PASSWORD", ""),
-        email_from=os.environ.get("EMAIL_FROM", ""),
-        email_to=os.environ.get("EMAIL_TO", ""),
+        email_host=email_host,
+        email_port=email_port,
+        email_user=email_user,
+        email_password=email_password,
+        email_from=email_from,
+        email_to=email_to,
+        email_use_tls=email_use_tls,
+        email_status=email_status,
     )
+
+
+def _parse_bool(value: str, name: str) -> bool:
+    normalized = value.strip().lower()
+    if normalized in {"true", "1", "yes", "on"}:
+        return True
+    if normalized in {"false", "0", "no", "off"}:
+        return False
+    raise RuntimeError(f"{name} must be true or false")
+
+
+def _email_status(
+    environment: str,
+    *,
+    host: str,
+    user: str,
+    password: str,
+    sender: str,
+    recipient: str,
+    use_tls: bool,
+) -> str:
+    configured_values = (host, user, password, sender, recipient)
+    if not any(configured_values):
+        return "not_configured"
+    if not all((host, sender, recipient)) or bool(user) != bool(password):
+        return "misconfigured"
+    if "\r" in sender or "\n" in sender or "\r" in recipient or "\n" in recipient:
+        return "misconfigured"
+    try:
+        sender_address = parseaddr(sender)[1]
+        recipient_addresses = getaddresses([recipient])
+        validate_email(sender_address, check_deliverability=False)
+        if not recipient_addresses:
+            return "misconfigured"
+        for _name, address in recipient_addresses:
+            validate_email(address, check_deliverability=False)
+    except (ValueError, EmailNotValidError):
+        return "misconfigured"
+    if environment == "production" and not use_tls:
+        return "misconfigured"
+    return "configured"

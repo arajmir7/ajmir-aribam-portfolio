@@ -48,9 +48,14 @@ unset DATABASE_URL
 )
 
 docker exec "$container" psql -U portfolio -d portfolio_verify -v ON_ERROR_STOP=1 -c \
-  "INSERT INTO inquiries (id, name, email, topic, message, request_id, created_at, notification_status)
-   VALUES ('00000000-0000-0000-0000-000000000001', 'Restore Drill', 'restore@example.com',
-   'question', 'Restore verification record.', 'restore-drill', now(), 'pending');" >/dev/null
+  "WITH inquiry AS (
+     INSERT INTO inquiries (id, name, email, topic, message, request_id, idempotency_key, created_at)
+     VALUES ('00000000-0000-0000-0000-000000000001', 'Restore Drill', 'restore@example.com',
+       'question', 'Restore verification record.', 'restore-drill', 'restore-drill-idempotency', now())
+     RETURNING id
+   )
+   INSERT INTO email_deliveries (id, inquiry_id, status, attempt_count, created_at, next_attempt_at)
+   SELECT '00000000-0000-0000-0000-000000000002', id, 'pending', 0, now(), now() FROM inquiry;" >/dev/null
 
 docker build -f infra/backup/Dockerfile -t portfolio-backup:verify .
 docker run --rm --user "$(id -u):$(id -g)" --network "container:$container" \
@@ -74,7 +79,7 @@ docker run --rm --network "container:$container" \
   /app/restore_postgres.py "/backups/$backup_name"
 
 restored="$(docker exec "$container" psql -U portfolio -d portfolio_restore -Atc \
-  "SELECT count(*) FROM inquiries WHERE request_id = 'restore-drill';")"
+  "SELECT count(*) FROM inquiries i JOIN email_deliveries d ON d.inquiry_id = i.id WHERE i.request_id = 'restore-drill' AND d.status = 'pending';")"
 [[ "$restored" == "1" ]] || { echo "Restore drill did not recover the marker inquiry" >&2; exit 1; }
 docker exec -e "PGPASSWORD=$runtime_password" "$container" psql -h 127.0.0.1 \
   -U "$runtime_user" -d portfolio_restore -Atc \

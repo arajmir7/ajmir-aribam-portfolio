@@ -1,16 +1,16 @@
 """HTTP adapter for the existing private /inquiries contract."""
 
 from typing import Annotated
+from urllib.parse import urlsplit
 from uuid import uuid4
 
-from fastapi import APIRouter, BackgroundTasks, Depends, Request
+from fastapi import APIRouter, Depends, HTTPException, Request
 from sqlalchemy.orm import Session
 
 from app.api.dependencies import require_internal_token, session
 from app.core.logging import log
 from app.schemas.inquiries import InquiryInput
 from app.services.inquiries import store_inquiry
-from app.services.notifications import deliver_notification
 
 router = APIRouter()
 
@@ -19,14 +19,43 @@ router = APIRouter()
 def create_inquiry(
     payload: InquiryInput,
     request: Request,
-    background_tasks: BackgroundTasks,
     db: Annotated[Session, Depends(session)],
 ):
     request_id = request.headers.get("x-request-id", str(uuid4()))[:80]
+    idempotency_key = request.headers.get("idempotency-key", str(uuid4())).strip()
+    if not idempotency_key or len(idempotency_key) > 80:
+        raise HTTPException(status_code=400, detail="A valid idempotency key is required.")
     if payload.website:
         log("spam_discarded", request_id)
         return {"message": "Your inquiry was received."}
     client_ip = request.headers.get("x-client-ip", "unknown")[:128]
-    inquiry = store_inquiry(db, payload, request_id, client_ip)
-    background_tasks.add_task(deliver_notification, inquiry.id, request_id)
-    return {"message": "Your inquiry was received.", "request_id": request_id}
+    source_origin = _validated_source_origin(request.headers.get("x-source-origin"))
+    inquiry = store_inquiry(
+        db, payload, request_id, client_ip, idempotency_key, source_origin=source_origin
+    )
+    return {"message": "Your inquiry was received.", "request_id": inquiry.request_id}
+
+
+def _validated_source_origin(value: str | None) -> str | None:
+    if (
+        not value
+        or len(value) > 253
+        or any(ord(char) < 0x21 or ord(char) == 0x7F for char in value)
+    ):
+        return None
+    try:
+        parsed = urlsplit(value)
+        if (
+            parsed.scheme not in {"http", "https"}
+            or not parsed.hostname
+            or parsed.username is not None
+            or parsed.password is not None
+            or parsed.path
+            or parsed.query
+            or parsed.fragment
+        ):
+            return None
+        _ = parsed.port
+    except ValueError:
+        return None
+    return f"{parsed.scheme}://{parsed.netloc}"

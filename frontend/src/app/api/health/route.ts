@@ -36,8 +36,35 @@ export async function GET() {
       cache: "no-store",
     });
     if (!response.ok) throw new Error("not ready");
+    const serviceHealth = (await response.json()) as {
+      database?: string;
+      email_delivery?: string;
+      outbox?: {
+        pending?: number;
+        attempting?: number;
+        sent?: number;
+        failed?: number;
+      };
+    };
     return NextResponse.json(
-      { status: "ready", revision: process.env.BUILD_REVISION || "unknown" },
+      {
+        status: "ready",
+        revision: process.env.BUILD_REVISION || "unknown",
+        database: serviceHealth.database === "ready" ? "ready" : "unavailable",
+        email_delivery: [
+          "configured",
+          "not_configured",
+          "misconfigured",
+        ].includes(serviceHealth.email_delivery || "")
+          ? serviceHealth.email_delivery
+          : "misconfigured",
+        outbox: {
+          pending: serviceHealth.outbox?.pending || 0,
+          attempting: serviceHealth.outbox?.attempting || 0,
+          sent: serviceHealth.outbox?.sent || 0,
+          failed: serviceHealth.outbox?.failed || 0,
+        },
+      },
       { headers: { "Cache-Control": "no-store" } },
     );
   } catch {

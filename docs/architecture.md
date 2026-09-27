@@ -10,9 +10,13 @@ Browser → Next.js pages and same-origin route handlers
                     └─ /api/health  → private FastAPI /health/ready
                                              ↓
                                         PostgreSQL
+                                             ↑
+                                 Render email worker → SMTP
 ```
 
-The public `/api/contact` route and private `/inquiries`, `/health/live`, and `/health/ready` contracts are stable. Next.js validates the exact origin and forwards a server-only token and a proxy-derived address. FastAPI performs authoritative validation and a PostgreSQL-backed rate check, then persists before returning success. SMTP notification is optional and happens after persistence; failure leaves a pending inquiry for operator review.
+The public `/api/contact` route and private `/inquiries`, `/health/live`, and `/health/ready` contracts are stable. Next.js validates the exact origin and forwards a server-only token, proxy-derived address and idempotency key. FastAPI performs authoritative validation and a PostgreSQL-backed rate check, then atomically commits the inquiry and one uniquely keyed email-delivery row before returning success. A separate Render worker claims outbox rows using PostgreSQL row locks, sends over authenticated TLS SMTP and records pending/attempting/sent/failed state, bounded retry count, safe error code and timestamps. Restarted workers reclaim expired leases. Replays with the same key and payload return the existing inquiry; reusing a key for changed content returns `409`.
+
+SMTP is an asynchronous notification channel, not part of inquiry acceptance. `/health/ready` reports PostgreSQL/API readiness separately from the validated SMTP configuration and aggregate outbox counts. `not_configured` means rows remain pending; `configured` means required settings pass validation and does not prove the SMTP server accepted a message. Actual delivery is evidenced by a row marked `sent` and, for provider acceptance, the SMTP/provider records. SMTP is an external side effect: a process crash after provider acceptance but before the database update can result in a repeated message on lease recovery. The unique inquiry-to-delivery constraint prevents duplicate queue entries and concurrent claims, but generic SMTP does not provide exactly-once delivery.
 
 ## Database roles and migrations
 
@@ -24,7 +28,7 @@ Migrations are run explicitly before application start: by Render's paid pre-dep
 
 In `frontend/src`, `app/` defines routes, `components/` contains reusable UI, `content/` holds evidence-backed project/editorial data, `features/` groups interactive functions, and `lib/` contains shared utilities. `backend/app` separates HTTP routes, core settings, SQLAlchemy setup/models, schemas and services; `backend/migrations/` contains Alembic history.
 
-`compose.yaml` describes the production-like local topology. `infra/compose.dev.yaml` supports host-based development. `infra/backup/` builds the backup job container. `render.yaml` describes the Render services. `scripts/` contains disposable PostgreSQL/Compose verification, production smoke checks, and backup/restore commands. `.github/workflows/ci.yml` is the release quality gate; `production-monitor.yml` is an optional scheduled public smoke workflow after owner configuration.
+`compose.yaml` describes the production-like local topology, including a separately runnable outbox worker. `infra/compose.dev.yaml` supports host-based development and a loopback-only Mailpit capture service. `infra/backup/` builds the backup job container. `render.yaml` describes the Render services. `scripts/` contains disposable PostgreSQL/Compose verification, production smoke checks, and backup/restore commands. `.github/workflows/ci.yml` is the release quality gate; `production-monitor.yml` is an optional scheduled public smoke workflow after owner configuration.
 
 ## Content evidence
 

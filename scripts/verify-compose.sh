@@ -13,6 +13,13 @@ export CONTACT_INTERNAL_TOKEN=local-compose-token-at-least-32-characters
 export NEXT_PUBLIC_SITE_URL=https://ajmiraribam.me
 export CONTACT_ALLOWED_ORIGIN=https://ajmiraribam.me
 export CONTACT_CLIENT_IP_HEADER=x-forwarded-for
+export EMAIL_HOST=
+export EMAIL_PORT=587
+export EMAIL_USER=
+export EMAIL_PASSWORD=
+export EMAIL_FROM=
+export EMAIL_TO=
+export EMAIL_USE_TLS=true
 export BUILD_REVISION="$(git rev-parse --short HEAD)"
 export PORTFOLIO_WEB_PORT="$port"
 
@@ -64,6 +71,10 @@ status="$(curl --silent --show-error -o /dev/null -w '%{http_code}' \
 
 count="$(docker compose exec -T postgres psql -U portfolio -d portfolio -Atc 'select count(*) from inquiries')"
 [[ "$count" == 5 ]] || { echo "Expected five persisted inquiries; found $count" >&2; exit 1; }
+delivery_count="$(docker compose exec -T postgres psql -U portfolio -d portfolio -Atc 'select count(*) from email_deliveries')"
+[[ "$delivery_count" == 5 ]] || { echo "Expected five durable email deliveries; found $delivery_count" >&2; exit 1; }
+pending_count="$(docker compose exec -T postgres psql -U portfolio -d portfolio -Atc "select count(*) from email_deliveries where status = 'pending'")"
+[[ "$pending_count" == 5 ]] || { echo "SMTP-missing inquiries should remain pending; found $pending_count" >&2; exit 1; }
 
 status="$(curl --silent --show-error -o /dev/null -w '%{http_code}' \
   -H 'Origin: https://wrong.example' -H 'Content-Type: application/json' \
@@ -71,4 +82,4 @@ status="$(curl --silent --show-error -o /dev/null -w '%{http_code}' \
   "http://127.0.0.1:${port}/api/contact")"
 [[ "$status" == 403 ]] || { echo "Cross-origin smoke returned $status" >&2; exit 1; }
 
-echo "Compose readiness, security headers, contact persistence/validation/origin/rate limits passed."
+echo "Compose readiness, security headers, contact persistence/outbox/origin/rate limits passed. SMTP is explicitly unconfigured and records remain pending."

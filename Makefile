@@ -3,7 +3,7 @@ SHELL := /bin/bash
 -include .env
 export
 
-.PHONY: install dev test lint typecheck e2e build security verify compose-up compose-down format-check blueprint-check containers compose-smoke production-smoke
+.PHONY: install dev test lint typecheck e2e build security verify compose-up compose-down format-check blueprint-check containers compose-smoke email-qa production-smoke
 
 install:
 	cd frontend && npm ci
@@ -11,7 +11,7 @@ install:
 
 dev:
 	@test -n "$(POSTGRES_PASSWORD)" -a -n "$(DATABASE_URL)" -a -n "$(CONTACT_INTERNAL_TOKEN)" || (echo "Copy .env.example to .env and configure the local values." >&2; exit 1)
-	docker compose -f compose.yaml -f infra/compose.dev.yaml up -d --wait postgres
+	docker compose -f compose.yaml -f infra/compose.dev.yaml up -d --wait postgres mailpit
 	cd backend && uv run alembic upgrade head
 	python3 scripts/dev.py
 
@@ -54,6 +54,9 @@ containers:
 compose-smoke:
 	bash scripts/verify-compose.sh
 
+email-qa:
+	bash scripts/verify-email-outbox.sh
+
 production-smoke:
 	bash scripts/production-smoke.sh
 
@@ -68,6 +71,7 @@ verify:
 	$(MAKE) security
 	$(MAKE) containers
 	$(MAKE) compose-smoke
+	$(MAKE) email-qa
 	git diff --check
 
 compose-up:
@@ -85,4 +89,5 @@ compose-up:
 	docker compose up -d --build --wait
 
 compose-down:
+	docker compose -f compose.yaml -f infra/compose.dev.yaml down
 	docker compose down

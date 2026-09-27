@@ -23,6 +23,7 @@ def test_production_settings_accept_explicit_secure_inputs(monkeypatch: pytest.M
     assert settings.database_url.startswith("postgresql+psycopg://app:")
     assert settings.migration_database_url.startswith("postgresql+psycopg://migrator:")
     assert settings.build_revision == "0123456789abcdef01234567"
+    assert settings.email_status == "not_configured"
 
 
 @pytest.mark.parametrize(
@@ -96,3 +97,35 @@ def test_database_pool_settings_reject_unsafe_values(
     monkeypatch.setenv(name, value)
     with pytest.raises(RuntimeError, match="pool settings"):
         get_settings()
+
+
+def test_smtp_configuration_is_distinguished_from_database_readiness(
+    monkeypatch: pytest.MonkeyPatch,
+):
+    configure_production(monkeypatch)
+    for key in ("EMAIL_HOST", "EMAIL_USER", "EMAIL_PASSWORD", "EMAIL_FROM", "EMAIL_TO"):
+        monkeypatch.delenv(key, raising=False)
+    assert get_settings().email_status == "not_configured"
+
+    monkeypatch.setenv("EMAIL_HOST", "smtp.example.test")
+    monkeypatch.setenv("EMAIL_FROM", "Portfolio <no-reply@example.com>")
+    monkeypatch.setenv("EMAIL_TO", "owner@example.com")
+    monkeypatch.setenv("EMAIL_USE_TLS", "false")
+    assert get_settings().email_status == "misconfigured"
+
+    monkeypatch.setenv("EMAIL_USE_TLS", "true")
+    assert get_settings().email_status == "configured"
+
+
+def test_smtp_rejects_incomplete_auth_and_header_injection(monkeypatch: pytest.MonkeyPatch):
+    configure_production(monkeypatch)
+    monkeypatch.setenv("EMAIL_HOST", "smtp.example.test")
+    monkeypatch.setenv("EMAIL_FROM", "Portfolio <no-reply@example.com>")
+    monkeypatch.setenv("EMAIL_TO", "owner@example.com")
+    monkeypatch.setenv("EMAIL_USER", "portfolio")
+    monkeypatch.setenv("EMAIL_PASSWORD", "")
+    assert get_settings().email_status == "misconfigured"
+
+    monkeypatch.setenv("EMAIL_USER", "")
+    monkeypatch.setenv("EMAIL_TO", "owner@example.com\nBcc: attacker@example.com")
+    assert get_settings().email_status == "misconfigured"
