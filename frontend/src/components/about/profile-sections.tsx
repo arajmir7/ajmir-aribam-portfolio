@@ -36,7 +36,7 @@ export function ProfileHero() {
         <div className={styles.heroGrid}>
           <figure className={styles.portrait}>
             <Image
-              src="/images/ajmir-portrait.jpg"
+              src="/images/ajmir-aribam-portrait.jpg"
               alt="Portrait of Ajmir Aribam"
               width={448}
               height={560}

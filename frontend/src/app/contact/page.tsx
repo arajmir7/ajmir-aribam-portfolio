@@ -4,7 +4,7 @@ import { ContactForm } from "@/features/contact/contact-form";
 import { email, pageMeta } from "@/lib/site";
 
 export const metadata: Metadata = pageMeta(
-  "Contact",
+  "Contact a Software Engineer",
   "Contact Ajmir Aribam about a software engineering project or opportunity.",
   "/contact",
 );

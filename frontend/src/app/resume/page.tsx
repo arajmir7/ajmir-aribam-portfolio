@@ -4,7 +4,7 @@ import { PrintButton } from "@/features/resume/print-button";
 import { email, githubUrl, linkedinUrl, pageMeta } from "@/lib/site";
 
 export const metadata: Metadata = pageMeta(
-  "Résumé",
+  "Software Engineer Résumé",
   "Résumé of Ajmir Aribam, Software Engineer, with project, professional experience and technical capabilities.",
   "/resume",
 );

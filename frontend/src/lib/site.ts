@@ -42,6 +42,32 @@ export const instagramUrl = "https://www.instagram.com/ajmiraribam/";
 export const xUrl = "https://x.com/AribamAjmir";
 export const email = "arajmir7@gmail.com";
 export const publicName = "Ajmir Aribam";
+export const personId = `${siteUrl}/#person`;
+export const personEntity = {
+  "@type": "Person",
+  "@id": personId,
+  name: publicName,
+  url: `${siteUrl}/about`,
+  image: `${siteUrl}/images/ajmir-aribam-portrait.jpg`,
+  jobTitle: "Software Engineer",
+  sameAs: [githubUrl, linkedinUrl, instagramUrl, xUrl],
+};
+
+export const homeTitle =
+  "Ajmir Aribam — Software Engineer | Full-Stack & Backend Systems";
+export const homeDescription =
+  "Ajmir Aribam is a Software Engineer building full-stack products across frontend interfaces, backend systems and APIs, with a focus on quality, delivery and dependable software.";
+
+export const websiteEntity = {
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "@id": `${siteUrl}/#website`,
+  url: `${siteUrl}/`,
+  name: publicName,
+  description: homeDescription,
+  publisher: { "@id": personId },
+  author: { "@id": personId },
+};
 
 export function pageMeta(title: string, description: string, path: string) {
   return {

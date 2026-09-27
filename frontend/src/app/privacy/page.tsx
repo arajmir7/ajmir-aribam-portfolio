@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { email, pageMeta } from "@/lib/site";
 export const metadata: Metadata = pageMeta(
-  "Privacy",
+  "Privacy Policy",
   "How this portfolio handles contact inquiries and basic operational data.",
   "/privacy",
 );

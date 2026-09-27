@@ -5,10 +5,13 @@ import { FieldNote } from "@/components/home/field-note";
 import { ContactClose } from "@/components/layout/contact-close";
 import { CurrentWork } from "@/components/home/current-work";
 import { AboutBridge } from "@/components/home/about-bridge";
+import { StructuredData } from "@/components/seo/structured-data";
+import { websiteEntity } from "@/lib/site";
 
 export default function Home() {
   return (
     <main id="main" className="identity-home">
+      <StructuredData value={websiteEntity} />
       <PersonalIntroduction />
       <EngineeringProof />
       <SelectedWork />

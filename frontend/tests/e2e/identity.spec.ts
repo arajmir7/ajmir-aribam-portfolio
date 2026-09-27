@@ -43,7 +43,7 @@ test("personal introduction precedes proof, public work and current work at ever
       await expect(portrait).toHaveCount(1);
       await expect(portrait).toHaveAttribute(
         "src",
-        "/images/ajmir-portrait.jpg",
+        "/images/ajmir-aribam-portrait.jpg",
       );
       expect(
         await portrait.evaluate(

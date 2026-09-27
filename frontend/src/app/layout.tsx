@@ -3,12 +3,11 @@ import { SiteHeader } from "@/components/layout/site-header";
 import { SiteFooter } from "@/components/layout/site-footer";
 import { WebVitals } from "@/features/telemetry/web-vitals";
 import {
-  githubUrl,
-  instagramUrl,
-  linkedinUrl,
+  homeDescription,
+  homeTitle,
+  personEntity,
   publicName,
   siteUrl,
-  xUrl,
 } from "@/lib/site";
 import { headers } from "next/headers";
 import localFont from "next/font/local";
@@ -25,18 +24,19 @@ const instrumentSans = localFont({
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: {
-    default: "Ajmir Aribam — Software Engineer",
+    default: homeTitle,
     template: "%s — Ajmir Aribam",
   },
-  description:
-    "Ajmir Aribam is a software engineer working across product interfaces, backend services, APIs, data, delivery and quality engineering.",
+  description: homeDescription,
+  authors: [{ name: publicName, url: `${siteUrl}/about` }],
+  creator: publicName,
   alternates: { canonical: "/" },
   openGraph: {
     type: "website",
     siteName: "Ajmir Aribam",
-    title: "Ajmir Aribam — Software Engineer",
+    title: homeTitle,
     description:
-      "Software that has to work beyond the screen. Public work, systems in development and the decisions behind them.",
+      "Full-stack product engineering, backend systems and APIs by Ajmir Aribam, with project evidence and engineering decisions.",
     url: "/",
     images: ["/opengraph-image"],
   },
@@ -47,7 +47,12 @@ export const metadata: Metadata = {
     ],
     apple: "/apple-icon.png",
   },
-  twitter: { card: "summary_large_image" },
+  twitter: {
+    card: "summary_large_image",
+    title: homeTitle,
+    description: homeDescription,
+    images: ["/opengraph-image"],
+  },
   robots: { index: true, follow: true },
 };
 export const viewport: Viewport = {
@@ -64,14 +69,7 @@ export default async function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   const nonce = (await headers()).get("x-nonce") || undefined;
-  const person = {
-    "@context": "https://schema.org",
-    "@type": "Person",
-    name: publicName,
-    url: siteUrl,
-    sameAs: [githubUrl, linkedinUrl, instagramUrl, xUrl],
-    jobTitle: "Software Engineer",
-  };
+  const person = { "@context": "https://schema.org", ...personEntity };
   return (
     <html lang="en" className={instrumentSans.variable}>
       <body>

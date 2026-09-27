@@ -138,6 +138,16 @@ test("orientation, routes, metadata, and evidence links", async ({
     const title = html.match(/<title>([^<]+)<\/title>/)?.[1];
     expect(title, `${path} title`).toBeTruthy();
     titles.add(title!);
+    const description = html.match(
+      /<meta name="description" content="([^"]+)"/,
+    )?.[1];
+    expect(description, `${path} description`).toBeTruthy();
+    expect(html.match(/<h1\b/g) ?? [], `${path} primary heading`).toHaveLength(
+      1,
+    );
+    expect(html, `${path} is indexable`).not.toMatch(
+      /<meta name="robots" content="[^"]*noindex/i,
+    );
     const canonical = html.match(/<link rel="canonical" href="([^"]+)"/)?.[1];
     expect(canonical, `${path} canonical`).toBeTruthy();
     expect(new URL(canonical!).origin, `${path} canonical origin`).toBe(
@@ -152,6 +162,68 @@ test("orientation, routes, metadata, and evidence links", async ({
     );
     expect(html, `${path} previous name`).not.toMatch(/\bmd\s+ajmir\b/i);
     expect(html, `${path} public identity`).toContain("Ajmir Aribam");
+    const structuredData = Array.from(
+      html.matchAll(
+        /<script\b(?=[^>]*type="application\/ld\+json")[^>]*>([\s\S]*?)<\/script>/g,
+      ),
+      (match) => JSON.parse(match[1]),
+    );
+    expect(structuredData.length, `${path} JSON-LD`).toBeGreaterThan(0);
+    const person = structuredData.find((value) => value["@type"] === "Person");
+    expect(person?.name, `${path} Person name`).toBe("Ajmir Aribam");
+    expect(person?.jobTitle, `${path} Person job title`).toBe(
+      "Software Engineer",
+    );
+    expect(person?.["@id"], `${path} stable Person ID`).toBe(
+      `${expectedOrigin}/#person`,
+    );
+    expect(person?.sameAs, `${path} sameAs`).toEqual([
+      "https://github.com/arajmir7",
+      "https://linkedin.com/in/ajmir-aribam/",
+      "https://www.instagram.com/ajmiraribam/",
+      "https://x.com/AribamAjmir",
+    ]);
+    if (path === "/") {
+      expect(title).toBe(
+        "Ajmir Aribam — Software Engineer | Full-Stack &amp; Backend Systems",
+      );
+      const website = structuredData.find(
+        (value) => value["@type"] === "WebSite",
+      );
+      expect(website?.["@id"]).toBe(`${expectedOrigin}/#website`);
+      expect(website?.publisher?.["@id"]).toBe(`${expectedOrigin}/#person`);
+    }
+    if (path === "/about") {
+      const profile = structuredData.find(
+        (value) => value["@type"] === "ProfilePage",
+      );
+      expect(profile?.mainEntity?.["@type"]).toBe("Person");
+      expect(profile?.mainEntity?.["@id"]).toBe(`${expectedOrigin}/#person`);
+      expect(profile?.mainEntity?.image).toBe(
+        `${expectedOrigin}/images/ajmir-aribam-portrait.jpg`,
+      );
+    }
+    if (path.startsWith("/work/")) {
+      expect(
+        structuredData.some((value) => value["@type"] === "BreadcrumbList"),
+      ).toBe(true);
+    }
+    if (path.startsWith("/notes/")) {
+      const article = structuredData.find(
+        (value) => value["@type"] === "BlogPosting",
+      );
+      expect(article?.headline).toBeTruthy();
+      expect(article?.description).toBeTruthy();
+      expect(article?.datePublished).toBeTruthy();
+      expect(article?.author?.["@id"]).toBe(`${expectedOrigin}/#person`);
+      expect(article?.author?.url).toBe(`${expectedOrigin}/about`);
+      expect(article?.mainEntityOfPage?.["@id"]).toBe(
+        `${expectedOrigin}${path}`,
+      );
+      expect(
+        structuredData.some((value) => value["@type"] === "BreadcrumbList"),
+      ).toBe(true);
+    }
     if (path === "/") {
       const headers = response.headers();
       expect(headers["content-security-policy"]).toContain(

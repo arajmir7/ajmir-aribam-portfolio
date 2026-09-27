@@ -3,7 +3,7 @@ import Link from "next/link";
 import { pageMeta } from "@/lib/site";
 
 export const metadata: Metadata = pageMeta(
-  "Labs & experiments",
+  "Engineering Prototypes",
   "Early civic-service and education website prototypes by Ajmir Aribam.",
   "/labs",
 );

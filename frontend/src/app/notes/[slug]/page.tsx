@@ -2,8 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { writing } from "@/content/writing";
-import { pageMeta } from "@/lib/site";
-import { siteUrl } from "@/lib/site";
+import { pageMeta, personId, publicName, siteUrl } from "@/lib/site";
 import { StructuredData } from "@/components/seo/structured-data";
 
 export function generateStaticParams() {
@@ -40,16 +39,42 @@ export default async function Article({
   if (!article) notFound();
   const structured = {
     "@context": "https://schema.org",
-    "@type": "Article",
+    "@type": "BlogPosting",
+    "@id": `${siteUrl}/notes/${slug}#article`,
     headline: article.title,
     description: article.description,
     datePublished: article.date,
-    author: { "@type": "Person", name: "Ajmir Aribam" },
-    mainEntityOfPage: `${siteUrl}/notes/${slug}`,
+    author: {
+      "@id": personId,
+      "@type": "Person",
+      name: publicName,
+      url: `${siteUrl}/about`,
+    },
+    mainEntityOfPage: { "@type": "WebPage", "@id": `${siteUrl}/notes/${slug}` },
+  };
+  const breadcrumbs = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Home", item: `${siteUrl}/` },
+      {
+        "@type": "ListItem",
+        position: 2,
+        name: "Notes",
+        item: `${siteUrl}/notes`,
+      },
+      {
+        "@type": "ListItem",
+        position: 3,
+        name: article.title,
+        item: `${siteUrl}/notes/${slug}`,
+      },
+    ],
   };
   return (
     <main id="main" className="shell article-page">
       <StructuredData value={structured} />
+      <StructuredData value={breadcrumbs} />
       <Link className="back-link" href="/notes">
         All notes
       </Link>

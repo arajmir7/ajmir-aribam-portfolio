@@ -2,6 +2,8 @@
 
 Personal portfolio built with Next.js and a private FastAPI contact service. Production is designed for one Vercel Services project, Neon PostgreSQL, and Resend at `https://ajmiraribam.me`.
 
+**Live portfolio:** <https://ajmiraribam.me>
+
 ## Architecture
 
 The browser uses the public Next.js app and same-origin `/api/contact`. The frontend calls FastAPI through a Vercel service binding; the backend has no public route. FastAPI persists inquiries and email outbox records in Neon, then calls Resend. Runtime database access uses Neon’s pooled endpoint; schema migrations use a separate direct operator connection.
@@ -41,9 +43,9 @@ Run the repository release gate with `make verify`. It includes format/lint/type
 
 ## Production setup
 
-The repository is prepared for one Vercel project configured with Framework Preset **Services** and `vercel.json` at the repository root. Vercel Services and private bindings require account access to that feature. Add Neon and Resend resources separately, configure only the environment variables in [deployment](docs/deployment.md), apply migrations from a trusted operator shell, then add `ajmiraribam.me` and `www.ajmiraribam.me` using the exact DNS records shown by Vercel. This repository does not provision cloud resources, set DNS, or deploy.
+Production is deployed at <https://ajmiraribam.me> on Vercel Services, with a private FastAPI service, Neon PostgreSQL and Resend. The frontend reaches the backend through a private Vercel service binding. Deployment, configuration, migration and rollback procedures are documented in [deployment](docs/deployment.md); delivery and retry procedures are in [contact delivery](docs/contact-delivery.md) and [operations](docs/operations.md).
 
-Production environment variables, deployment order, migration commands, domain setup, and rollback steps are in [deployment](docs/deployment.md). Email delivery and retry procedures are in [contact delivery](docs/contact-delivery.md) and [operations](docs/operations.md). Security boundaries are documented in [security](docs/security.md); failure diagnosis is in [troubleshooting](docs/troubleshooting.md).
+Security boundaries are documented in [security](docs/security.md); failure diagnosis is in [troubleshooting](docs/troubleshooting.md).
 
 After deployment, run:
 

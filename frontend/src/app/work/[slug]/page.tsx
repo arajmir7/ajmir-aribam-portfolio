@@ -48,12 +48,18 @@ export default async function CaseStudy({
       {
         "@type": "ListItem",
         position: 1,
+        name: "Home",
+        item: `${siteUrl}/`,
+      },
+      {
+        "@type": "ListItem",
+        position: 2,
         name: "Work",
         item: `${siteUrl}/work`,
       },
       {
         "@type": "ListItem",
-        position: 2,
+        position: 3,
         name: project.name,
         item: `${siteUrl}/work/${project.slug}`,
       },

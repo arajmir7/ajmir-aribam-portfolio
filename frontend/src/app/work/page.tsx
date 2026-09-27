@@ -4,9 +4,11 @@ import { ProjectCollection } from "@/components/projects/project-collection";
 import { ContactClose } from "@/components/layout/contact-close";
 import { publicWork, currentWork, prototypes } from "@/content/project-groups";
 import { pageMeta } from "@/lib/site";
+import { StructuredData } from "@/components/seo/structured-data";
+import { siteUrl } from "@/lib/site";
 
 export const metadata: Metadata = pageMeta(
-  "Work",
+  "Software Engineering Projects",
   "Public websites, software in development and prototypes by Ajmir Aribam, with contributions, decisions and unfinished work explained.",
   "/work",
 );
@@ -42,8 +44,22 @@ const groups = [
 ];
 
 export default function Work() {
+  const breadcrumbs = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Home", item: `${siteUrl}/` },
+      {
+        "@type": "ListItem",
+        position: 2,
+        name: "Work",
+        item: `${siteUrl}/work`,
+      },
+    ],
+  };
   return (
     <main id="main" className="work-index">
+      <StructuredData value={breadcrumbs} />
       <header className="shell work-opening">
         <p className="section-label">Work / 2026</p>
         <h1>Work</h1>

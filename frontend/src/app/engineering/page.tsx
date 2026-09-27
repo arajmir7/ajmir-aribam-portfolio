@@ -3,7 +3,7 @@ import Link from "next/link";
 import { pageMeta } from "@/lib/site";
 
 export const metadata: Metadata = pageMeta(
-  "Engineering",
+  "Engineering Approach",
   "How Ajmir Aribam approaches product surfaces, application rules, data, quality and delivery.",
   "/engineering",
 );

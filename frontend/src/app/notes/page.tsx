@@ -4,7 +4,7 @@ import { writing } from "@/content/writing";
 import { pageMeta } from "@/lib/site";
 
 export const metadata: Metadata = pageMeta(
-  "Engineering notes",
+  "Engineering Notes",
   "Notes on the decisions behind the software projects of Ajmir Aribam.",
   "/notes",
 );

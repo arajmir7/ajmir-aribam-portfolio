@@ -19,7 +19,7 @@ export function PersonalIntroduction() {
         <div className={styles.identity}>
           <Image
             className={styles.portrait}
-            src="/images/ajmir-portrait.jpg"
+            src="/images/ajmir-aribam-portrait.jpg"
             alt="Portrait of Ajmir Aribam"
             width={112}
             height={112}
