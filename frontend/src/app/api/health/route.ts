@@ -35,7 +35,22 @@ export async function GET() {
       signal: AbortSignal.timeout(10000),
       cache: "no-store",
     });
-    if (!response.ok) throw new Error("not ready");
+    if (!response.ok) {
+      console.error(
+        JSON.stringify({
+          event: "contact_backend_not_ready",
+          status: response.status,
+        }),
+      );
+      await response.body?.cancel();
+      return NextResponse.json(
+        {
+          status: "unavailable",
+          revision: buildRevision,
+        },
+        { status: 503, headers: { "Cache-Control": "no-store" } },
+      );
+    }
     await response.body?.cancel();
     return NextResponse.json(
       {
@@ -44,7 +59,13 @@ export async function GET() {
       },
       { headers: { "Cache-Control": "no-store" } },
     );
-  } catch {
+  } catch (error) {
+    console.error(
+      JSON.stringify({
+        event: "contact_backend_unreachable",
+        error_name: error instanceof Error ? error.name : "unknown",
+      }),
+    );
     return NextResponse.json(
       {
         status: "unavailable",
