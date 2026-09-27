@@ -75,7 +75,7 @@ backup_file="$(find "$backup_dir" -maxdepth 1 -type f -name 'portfolio-*.dump' -
 backup_name="$(basename "$backup_file")"
 docker exec "$container" createdb -U portfolio portfolio_restore
 restore_url="postgresql://portfolio:${migration_password}@127.0.0.1:5432/portfolio_restore"
-docker run --rm --network "container:$container" \
+docker run --rm --user "$(id -u):$(id -g)" --network "container:$container" \
   -e "DATABASE_URL=$restore_url" \
   -e RESTORE_CONFIRM=restore-into-empty-database \
   -v "$backup_dir:/backups" \
