@@ -74,7 +74,7 @@ export default defineConfig({
         CONTACT_API_URL: `http://e2e-api.internal:${backendPort}`,
         CONTACT_INTERNAL_TOKEN: token,
         CONTACT_CLIENT_IP_HEADER: "x-forwarded-for",
-        BUILD_REVISION: revision,
+        VERCEL_GIT_COMMIT_SHA: revision,
         NODE_OPTIONS: `--import=${resolve("tests/e2e/resolve-e2e-api.mjs")}`,
       },
       reuseExistingServer: !process.env.CI,

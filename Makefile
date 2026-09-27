@@ -19,10 +19,12 @@ dev:
 
 format-check:
 	cd frontend && npm run format:check
-	cd frontend && npx prettier --check '../README.md' '../RELEASE_CERTIFICATION.md' '../docs/*.md' '../compose.yaml' '../infra/*.yaml' '../.github/workflows/*.yml' '../backend/vercel.json'
+	cd frontend && npx prettier --check '../README.md' '../docs/*.md' '../compose.yaml' '../infra/*.yaml' '../.github/workflows/*.yml' '../vercel.json'
 	cd backend && uv run ruff format --check . ../scripts/*.py
 	cd backend && uv lock --check
 	python3 -m json.tool frontend/package.json >/dev/null
+	python3 -m json.tool vercel.json >/dev/null
+	python3 scripts/verify-vercel-services.py
 
 lint:
 	cd frontend && npm run lint

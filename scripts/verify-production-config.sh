@@ -11,7 +11,7 @@ env \
   DATABASE_URL='postgresql+psycopg://portfolio_app:verification-only-password@ep-calm-sunset-pooler.us-east-2.aws.neon.tech/portfolio?sslmode=require' \
   CONTACT_INTERNAL_TOKEN='verification-only-internal-token-with-32-characters' \
   CONTACT_ALLOWED_ORIGIN='https://ajmiraribam.me' \
-  BUILD_REVISION=0123456789abcdef0123456789abcdef01234567 \
+  VERCEL_GIT_COMMIT_SHA=0123456789abcdef0123456789abcdef01234567 \
   RESEND_API_KEY='re_verification_only_key_12345678901234567890' \
   CONTACT_EMAIL_FROM='Ajmir Aribam <contact@ajmiraribam.me>' \
   CONTACT_EMAIL_TO=arajmir7@gmail.com \

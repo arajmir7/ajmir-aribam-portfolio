@@ -4,6 +4,8 @@ import {
   contactApiBaseUrl,
   isContactRuntimeReady,
   isAllowedOrigin,
+  readBoundedRequestBody,
+  requestIdFromHeaders,
 } from "../../src/lib/contact-security";
 
 describe("contact origin boundary", () => {
@@ -63,21 +65,24 @@ describe("contact runtime readiness", () => {
   const productionConfig = {
     siteUrl: "https://ajmiraribam.me",
     allowedOrigin: "https://ajmiraribam.me",
-    apiUrl: "https://api.ajmiraribam.me",
+    apiUrl: "https://deployment.vercel.app",
     internalToken: "a-random-production-token-with-32-characters",
     trustedClientIpHeader: "x-forwarded-for",
     buildRevision: "0123456789abcdef0123456789abcdef01234567",
     production: true,
   };
 
-  it("requires canonical HTTPS, the expected API host, token, proxy, and Git revision", () => {
+  it("requires canonical HTTPS, the bound Vercel service, token, proxy, and Git revision", () => {
     expect(isContactRuntimeReady(productionConfig)).toBe(true);
     expect(contactApiBaseUrl(productionConfig)).toBe(
-      "https://api.ajmiraribam.me",
+      "https://deployment.vercel.app",
     );
     expect(
       isContactRuntimeReady({ ...productionConfig, allowedOrigin: "" }),
     ).toBe(false);
+    expect(isContactRuntimeReady({ ...productionConfig, apiUrl: "" })).toBe(
+      false,
+    );
     expect(
       isContactRuntimeReady({ ...productionConfig, internalToken: "" }),
     ).toBe(false);
@@ -117,14 +122,42 @@ describe("contact runtime readiness", () => {
     expect(
       contactApiBaseUrl({
         ...productionConfig,
-        apiUrl: "https://api.ajmiraribam.me/path",
+        apiUrl: "https://deployment.vercel.app/backend",
       }),
-    ).toBeNull();
+    ).toBe("https://deployment.vercel.app/backend");
     expect(
       contactApiBaseUrl({
         ...productionConfig,
         apiUrl: "https://api.example.com",
       }),
     ).toBeNull();
+  });
+});
+
+describe("contact proxy request safeguards", () => {
+  it("preserves a valid request ID and replaces caller-controlled IDs", () => {
+    const trustedId = "550e8400-e29b-41d4-a716-446655440000";
+    expect(
+      requestIdFromHeaders(new Headers({ "x-request-id": trustedId })),
+    ).toBe(trustedId);
+    expect(
+      requestIdFromHeaders(
+        new Headers({ "x-request-id": "attacker supplied" }),
+      ),
+    ).toMatch(/^[0-9a-f-]{36}$/i);
+  });
+
+  it("reads a bounded body and rejects a larger streamed body", async () => {
+    const accepted = new Request("https://example.test/api/contact", {
+      method: "POST",
+      body: JSON.stringify({ message: "hello" }),
+    });
+    expect(await readBoundedRequestBody(accepted)).toBe('{"message":"hello"}');
+
+    const oversized = new Request("https://example.test/api/contact", {
+      method: "POST",
+      body: "x".repeat(6001),
+    });
+    expect(await readBoundedRequestBody(oversized)).toBeNull();
   });
 });

@@ -7,10 +7,7 @@ import {
 export const runtime = "nodejs";
 export async function GET() {
   const production = process.env.VERCEL_ENV === "production";
-  const buildRevision =
-    process.env.BUILD_REVISION ||
-    process.env.VERCEL_GIT_COMMIT_SHA ||
-    "unknown";
+  const buildRevision = process.env.VERCEL_GIT_COMMIT_SHA || "unknown";
   const api = contactApiBaseUrl({
     apiUrl: process.env.CONTACT_API_URL,
     production,

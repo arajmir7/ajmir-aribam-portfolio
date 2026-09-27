@@ -1,17 +1,18 @@
 # Architecture
 
-`frontend/` is the public Next.js application; `backend/` is a separate FastAPI service. They deploy as separate Vercel projects from this monorepo. The browser calls only same-origin Next.js route handlers. Those server routes call FastAPI at `api.ajmiraribam.me` with a server-only token. The backend connects to Neon and Resend.
+`frontend/` is the public Next.js application and `backend/` is a private FastAPI service. Both are services in one Vercel project and share a deployment revision. The frontend declares a service binding that injects `CONTACT_API_URL` for server-side calls. No public rewrite targets the backend. The browser calls only same-origin Next.js route handlers. FastAPI connects to Neon and Resend.
 
 ```text
-Browser → Vercel / Next.js → same-origin /api/contact
-                                  │ server-only token
-                                  ▼
-                       Vercel / FastAPI (api subdomain)
-                          ├── Neon PostgreSQL
-                          └── Resend HTTPS API
+Browser → ajmiraribam.me → Vercel Services
+                               ├── frontend: Next.js, public
+                               │       └── /api/contact
+                               │             └── private service binding + token
+                               └── backend: FastAPI, private
+                                       ├── Neon PostgreSQL
+                                       └── Resend HTTPS API
 ```
 
-The frontend checks exact Origin and request size, then forwards a request ID, idempotency key, and Vercel-derived client address. FastAPI validates again, enforces a PostgreSQL-backed rate window, and commits the inquiry and unique `email_deliveries` row in one transaction. It attempts Resend only after commit. Contact success means the inquiry was stored; it does not claim mailbox delivery.
+The frontend checks exact Origin and a streamed request-size limit, then forwards a request ID, idempotency key, and a single trusted Vercel client address. FastAPI validates again, enforces a PostgreSQL-backed rate window, and commits the inquiry and unique `email_deliveries` row in one transaction. It attempts Resend only after commit. Contact success means the inquiry was stored; it does not claim mailbox delivery.
 
 Outbox rows track `pending`, `attempting`, `sent`, or `failed`, attempt count, retry time, a safe error code, timestamps, and Resend message ID when accepted. Row locks prevent simultaneous claims. Each email uses a stable Resend idempotency key. Provider retention is time-limited, so exactly-once delivery across arbitrary delays is not promised. There is no always-running worker: delivery is attempted during the request, with explicit operator retry/dispatch commands for recovery.
 

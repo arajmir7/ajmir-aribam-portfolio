@@ -9,7 +9,7 @@ export COMPOSE_PROJECT_NAME="portfolio_resend_qa_$$"
 export POSTGRES_PASSWORD=portfolio_resend_qa_password_32_chars
 export APP_ENV=test
 export CONTACT_INTERNAL_TOKEN=portfolio_resend_qa_token_32_chars_min
-export BUILD_REVISION="$(git -C "$root" rev-parse --short HEAD)"
+export VERCEL_GIT_COMMIT_SHA="$(git -C "$root" rev-parse HEAD)"
 export PORTFOLIO_DB_PORT="$(python3 -c 'import socket; s=socket.socket(); s.bind(("127.0.0.1", 0)); print(s.getsockname()[1]); s.close()')"
 export PORT="$(python3 -c 'import socket; s=socket.socket(); s.bind(("127.0.0.1", 0)); print(s.getsockname()[1]); s.close()')"
 export PORTFOLIO_API_PORT="$(python3 -c 'import socket; s=socket.socket(); s.bind(("127.0.0.1", 0)); print(s.getsockname()[1]); s.close()')"

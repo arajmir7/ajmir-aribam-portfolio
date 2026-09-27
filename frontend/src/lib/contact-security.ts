@@ -1,4 +1,44 @@
 import { isIP } from "node:net";
+import { randomUUID } from "node:crypto";
+
+const requestIdPattern =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+
+export function requestIdFromHeaders(headers: Pick<Headers, "get">): string {
+  const incoming = headers.get("x-request-id")?.trim();
+  return incoming && requestIdPattern.test(incoming) ? incoming : randomUUID();
+}
+
+export async function readBoundedRequestBody(
+  request: Request,
+  maxBytes = 6000,
+): Promise<string | null> {
+  const reader = request.body?.getReader();
+  if (!reader) return "";
+  const chunks: Uint8Array[] = [];
+  let size = 0;
+  try {
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      size += value.byteLength;
+      if (size > maxBytes) {
+        await reader.cancel();
+        return null;
+      }
+      chunks.push(value);
+    }
+  } finally {
+    reader.releaseLock();
+  }
+  const body = new Uint8Array(size);
+  let offset = 0;
+  for (const chunk of chunks) {
+    body.set(chunk, offset);
+    offset += chunk.byteLength;
+  }
+  return new TextDecoder("utf-8", { fatal: true }).decode(body);
+}
 
 export function isAllowedOrigin(
   origin: string | null,
@@ -46,16 +86,16 @@ export function contactApiBaseUrl(config: ContactRuntimeConfig): string | null {
       !["http:", "https:"].includes(url.protocol) ||
       url.username ||
       url.password ||
-      url.pathname !== "/" ||
       url.search ||
       url.hash ||
       (config.production &&
         (url.protocol !== "https:" ||
-          url.origin !== "https://api.ajmiraribam.me"))
+          !url.hostname.endsWith(".vercel.app") ||
+          url.port !== ""))
     ) {
       return null;
     }
-    return url.origin;
+    return `${url.origin}${url.pathname.replace(/\/$/, "")}`;
   } catch {
     return null;
   }

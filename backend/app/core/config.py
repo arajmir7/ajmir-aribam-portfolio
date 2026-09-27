@@ -47,9 +47,7 @@ def get_settings() -> Settings:
 
     contact_internal_token = os.environ.get("CONTACT_INTERNAL_TOKEN", "")
     contact_allowed_origin = os.environ.get("CONTACT_ALLOWED_ORIGIN", "").strip()
-    build_revision = (
-        os.environ.get("BUILD_REVISION") or os.environ.get("VERCEL_GIT_COMMIT_SHA") or "unknown"
-    ).strip()
+    build_revision = os.environ.get("VERCEL_GIT_COMMIT_SHA", "unknown").strip()
     resend_api_key = os.environ.get("RESEND_API_KEY", "").strip()
     resend_api_url = os.environ.get("RESEND_API_URL", RESEND_API_ORIGIN).strip().rstrip("/")
     contact_email_from = os.environ.get("CONTACT_EMAIL_FROM", "").strip()
@@ -70,9 +68,15 @@ def get_settings() -> Settings:
         ):
             raise RuntimeError("Production requires a 32-character CONTACT_INTERNAL_TOKEN")
         if not fullmatch(r"[0-9a-fA-F]{7,64}", build_revision):
-            raise RuntimeError("Production requires BUILD_REVISION to be a Git commit SHA")
+            raise RuntimeError("Production requires VERCEL_GIT_COMMIT_SHA to be a Git commit SHA")
         if contact_allowed_origin != "https://ajmiraribam.me":
             raise RuntimeError("Production CONTACT_ALLOWED_ORIGIN must be https://ajmiraribam.me")
+        if contact_email_from:
+            sender_domain = parseaddr(contact_email_from)[1].rsplit("@", 1)[-1].lower()
+            if sender_domain != "ajmiraribam.me" and not sender_domain.endswith(".ajmiraribam.me"):
+                raise RuntimeError("Production CONTACT_EMAIL_FROM must use the portfolio domain")
+        if contact_email_to and contact_email_to.lower() != "arajmir7@gmail.com":
+            raise RuntimeError("Production CONTACT_EMAIL_TO must be the owner's inbox")
         if resend_api_url != RESEND_API_ORIGIN:
             raise RuntimeError("Production RESEND_API_URL must use the official Resend API")
 

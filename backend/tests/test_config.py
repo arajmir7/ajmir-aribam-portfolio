@@ -13,7 +13,7 @@ def configure_production(monkeypatch: pytest.MonkeyPatch) -> None:
     )
     monkeypatch.setenv("CONTACT_INTERNAL_TOKEN", "a-production-token-with-32-characters")
     monkeypatch.setenv("CONTACT_ALLOWED_ORIGIN", "https://ajmiraribam.me")
-    monkeypatch.setenv("BUILD_REVISION", "0123456789abcdef0123456789abcdef01234567")
+    monkeypatch.setenv("VERCEL_GIT_COMMIT_SHA", "0123456789abcdef0123456789abcdef01234567")
     monkeypatch.setenv("RESEND_API_KEY", "re_" + "a" * 32)
     monkeypatch.setenv("CONTACT_EMAIL_FROM", "Ajmir Aribam <contact@ajmiraribam.me>")
     monkeypatch.setenv("CONTACT_EMAIL_TO", "arajmir7@gmail.com")
@@ -49,8 +49,10 @@ def test_production_settings_accept_explicit_secure_inputs(monkeypatch: pytest.M
             "TLS",
         ),
         ("CONTACT_INTERNAL_TOKEN", "short", "32-character CONTACT_INTERNAL_TOKEN"),
-        ("BUILD_REVISION", "unknown", "BUILD_REVISION"),
+        ("VERCEL_GIT_COMMIT_SHA", "unknown", "VERCEL_GIT_COMMIT_SHA"),
         ("CONTACT_ALLOWED_ORIGIN", "http://ajmiraribam.me", "CONTACT_ALLOWED_ORIGIN"),
+        ("CONTACT_EMAIL_FROM", "Ajmir <verified@example.com>", "portfolio domain"),
+        ("CONTACT_EMAIL_TO", "owner@example.com", "owner's inbox"),
         ("RESEND_API_KEY", "", "valid Resend key"),
         ("CONTACT_EMAIL_FROM", "", "valid Resend key"),
         ("CONTACT_EMAIL_TO", "", "valid Resend key"),
@@ -76,12 +78,12 @@ def test_production_requires_database_url(monkeypatch: pytest.MonkeyPatch):
 def test_production_requires_resend_variables_to_be_consistent(monkeypatch: pytest.MonkeyPatch):
     configure_production(monkeypatch)
     monkeypatch.setenv("CONTACT_EMAIL_TO", "owner@example.com,second@example.com")
-    with pytest.raises(RuntimeError, match="valid Resend key"):
+    with pytest.raises(RuntimeError, match="owner's inbox"):
         get_settings()
 
     configure_production(monkeypatch)
     monkeypatch.setenv("CONTACT_EMAIL_FROM", "owner@example.com\r\nBcc: attacker@example.com")
-    with pytest.raises(RuntimeError, match="valid Resend key"):
+    with pytest.raises(RuntimeError, match="portfolio domain"):
         get_settings()
 
 

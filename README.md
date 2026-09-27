@@ -1,50 +1,54 @@
-# Ajmir Aribam Portfolio
+# Ajmir Aribam — portfolio
 
-An approved Next.js portfolio repository with a FastAPI contact service configured for PostgreSQL persistence and Resend transactional email. The migration changes deployment and operations only; it preserves the public presentation, routes, and project content.
+Personal portfolio built with Next.js and a private FastAPI contact service. Production is designed for one Vercel Services project, Neon PostgreSQL, and Resend at `https://ajmiraribam.me`.
 
-## Architecture and technology
+## Architecture
 
-- **Frontend:** Next.js 16, React 19, TypeScript; deployment target is a Vercel frontend project.
-- **Backend:** FastAPI; deployment target is Vercel's Python runtime at `api.ajmiraribam.me`.
-- **Database:** Neon PostgreSQL with TLS, pooled runtime connections, and Alembic migrations.
-- **Email:** Resend HTTPS API with a persisted, idempotent delivery outbox.
-- **Verification:** GitHub Actions, Vitest, pytest, PostgreSQL, Playwright, accessibility checks, dependency audits, and secret scanning.
+The browser uses the public Next.js app and same-origin `/api/contact`. The frontend calls FastAPI through a Vercel service binding; the backend has no public route. FastAPI persists inquiries and email outbox records in Neon, then calls Resend. Runtime database access uses Neon’s pooled endpoint; schema migrations use a separate direct operator connection.
 
-## Repository structure
+## Repository
 
-- `frontend/` — pages, public content, assets, and browser/unit tests
-- `backend/` — API, persistence, Alembic migrations, and API tests
-- `docs/` — architecture, deployment, security, development, and operations
-- `infra/` — local PostgreSQL Compose and backup utility image
-- `.github/workflows/` — CI release gate and optional public smoke workflow
-- `scripts/` — local development, verification, smoke, backup, and restore tools
-- `compose.yaml`, `.env.example`, and `Makefile` — local operations
+```text
+frontend/   Next.js pages, components, API routes, and browser tests
+backend/    FastAPI app, SQLAlchemy models, Alembic migrations, and API tests
+docs/       Architecture, development, deployment, security, and operations
+scripts/    Local database, contact QA, backup/restore, and production smoke tools
+infra/      Local-only Compose overrides
+.github/    CI and optional public production monitoring
+vercel.json Vercel Services definitions and private service binding
+```
+
+## Stack
+
+- Next.js 16, React 19, TypeScript, Vitest, Playwright, axe-core
+- FastAPI, Pydantic, SQLAlchemy, Alembic, PostgreSQL, pytest, Ruff
+- Vercel Services, Neon PostgreSQL, Resend
 
 ## Local development
 
-Requirements: Node.js 24, npm, Python 3.12, uv, Docker, and Make.
+Install Node.js 24, Python 3.12+, `uv`, and Docker Compose. Copy `.env.example` to `.env`, replace local token/password placeholders, then run:
 
 ```sh
-cp .env.example .env
-# Replace the local PostgreSQL password and internal-token placeholders.
 make install
 make dev
 ```
 
-`make dev` starts local PostgreSQL, applies migrations, and launches Next.js and FastAPI. The local email check uses a loopback fake Resend server and never sends real mail. Visit `http://127.0.0.1:3000`; `make compose-down` stops PostgreSQL.
-
-## Environment and database migrations
-
-`.env.example` documents local-only values. Configure production secrets in Vercel's encrypted environment settings; keep `NEXT_PUBLIC_*` values public. Migrations run explicitly, never at API startup: `cd backend && uv run alembic upgrade head`. Use a trusted local environment for the direct Neon migration URI; keep it out of Vercel runtime settings and logs.
-
-## Contact delivery
-
-FastAPI commits the inquiry and its outbox record before attempting Resend. A successful form response confirms durable storage, not email receipt. Provider failures remain stored and retryable; an accepted provider message ID is recorded. Real-provider smoke is opt-in and requires `resend-smoke --confirm-send`. See [contact delivery](docs/contact-delivery.md).
+The local PostgreSQL service binds only to loopback. Local email credentials are removed by the development launcher. See [development](docs/development.md) and [architecture](docs/architecture.md).
 
 ## Verification
 
-`make verify` runs formatting, lint, strict TypeScript, unit/API/PostgreSQL tests, migration/drift checks, production frontend build, browser/accessibility/responsive tests, dependency and secret scans, Compose contact checks, mocked Resend success/failure/replay, PostgreSQL backup and isolated restore, and `git diff --check`. These are local results; they do not prove account setup, live email, production uptime, or field performance.
+Run the repository release gate with `make verify`. It includes format/lint/type checks, frontend and backend tests, local PostgreSQL migrations and integration, browser accessibility/responsive checks, production build, dependency and history-secret audits, mocked email, and backup/restore checks. It does not access production accounts or send real email. See [development](docs/development.md).
 
-## Deployment, security, and operations
+## Production setup
 
-The intended host is Vercel, with `ajmiraribam.me` as the HTTPS canonical origin, Neon PostgreSQL, and Resend. The frontend and FastAPI are prepared as separate Vercel projects in this monorepo; account configuration and deployment remain outstanding. Copy DNS records from Vercel's project domain settings. Production configuration fails closed when required settings are absent. Read [deployment](docs/deployment.md), [security](docs/security.md), [operations](docs/operations.md), [testing](docs/testing.md), and [release certification](RELEASE_CERTIFICATION.md). No deployment, DNS change, live backup, external alert, or real email delivery is claimed here.
+The repository is prepared for one Vercel project configured with Framework Preset **Services** and `vercel.json` at the repository root. Vercel Services and private bindings require account access to that feature. Add Neon and Resend resources separately, configure only the environment variables in [deployment](docs/deployment.md), apply migrations from a trusted operator shell, then add `ajmiraribam.me` and `www.ajmiraribam.me` using the exact DNS records shown by Vercel. This repository does not provision cloud resources, set DNS, or deploy.
+
+Production environment variables, deployment order, migration commands, domain setup, and rollback steps are in [deployment](docs/deployment.md). Email delivery and retry procedures are in [contact delivery](docs/contact-delivery.md) and [operations](docs/operations.md). Security boundaries are documented in [security](docs/security.md); failure diagnosis is in [troubleshooting](docs/troubleshooting.md).
+
+After deployment, run:
+
+```sh
+PRODUCTION_URL=https://ajmiraribam.me EXPECTED_REVISION=<full-commit-sha> bash scripts/production-smoke.sh
+```
+
+This checks public routes, canonical redirects, security headers, health/revision, assets, and invalid contact requests. A real email test is an explicit owner action.
