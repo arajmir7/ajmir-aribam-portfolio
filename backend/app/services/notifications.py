@@ -73,6 +73,8 @@ def send_notification(
         data=json.dumps(payload, ensure_ascii=False).encode("utf-8"),
         headers={
             "Authorization": f"Bearer {configuration.resend_api_key}",
+            "User-Agent": "portfolio-contact-service/1.0 (+https://ajmiraribam.me)",
+            "Accept": "application/json",
             "Content-Type": "application/json",
             "Idempotency-Key": f"portfolio-inquiry/{delivery_id}",
         },

@@ -62,6 +62,10 @@ def test_resend_request_uses_stable_key_secure_sender_and_plain_text(monkeypatch
     )
     assert captured["url"] == "https://api.resend.com/emails"
     assert captured["headers"]["authorization"] == f"Bearer {get_settings().resend_api_key}"
+    assert captured["headers"]["user-agent"] == (
+        "portfolio-contact-service/1.0 (+https://ajmiraribam.me)"
+    )
+    assert captured["headers"]["accept"] == "application/json"
     assert captured["headers"]["idempotency-key"] == "portfolio-inquiry/delivery-uuid-1"
     assert captured["timeout"] == 8
     assert captured["payload"]["from"] == "Ajmir Aribam <contact@example.com>"
@@ -181,6 +185,24 @@ def test_non_json_provider_rejection_retains_a_redacted_excerpt(monkeypatch):
     assert diagnostics["provider_content_type"] == "text/plain"
     assert diagnostics["provider_request_id"] == "request_456"
     assert secret not in str(diagnostics)
+
+
+def test_non_json_edge_signature_block_is_retained_for_diagnosis(monkeypatch):
+    def fail(*_args, **_kwargs):
+        raise HTTPError(
+            "https://api.resend.com/emails",
+            403,
+            "private-provider-detail",
+            {"content-type": "text/plain"},
+            BytesIO(b"error code: 1010"),
+        )
+
+    monkeypatch.setattr(notifications, "urlopen", fail)
+    with pytest.raises(DeliveryFailure) as raised:
+        notifications.send_notification(inquiry(), "delivery-uuid-edge-block", get_settings())
+
+    assert raised.value.diagnostics["provider_http_status"] == 403
+    assert raised.value.diagnostics["provider_response_excerpt"] == "error code: 1010"
 
 
 def test_resend_network_error_does_not_expose_provider_details(monkeypatch):
