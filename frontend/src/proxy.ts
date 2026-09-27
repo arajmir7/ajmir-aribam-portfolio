@@ -2,6 +2,16 @@ import { NextRequest, NextResponse } from "next/server";
 import { projectBySlug } from "@/content/projects";
 
 export function proxy(request: NextRequest) {
+  if (
+    request.nextUrl.hostname.toLowerCase() === "www.ajmiraribam.me" &&
+    process.env.NEXT_PUBLIC_SITE_URL === "https://ajmiraribam.me"
+  ) {
+    const canonicalUrl = new URL(request.nextUrl);
+    canonicalUrl.protocol = "https:";
+    canonicalUrl.hostname = "ajmiraribam.me";
+    canonicalUrl.port = "";
+    return NextResponse.redirect(canonicalUrl, 308);
+  }
   const nonce = Buffer.from(crypto.randomUUID()).toString("base64");
   const dev = process.env.NODE_ENV === "development";
   const csp = [
@@ -59,7 +69,7 @@ export function proxy(request: NextRequest) {
 export const config = {
   matcher: [
     {
-      source: "/((?!api|_next/static|_next/image|favicon.ico|images/).*)",
+      source: "/((?!_next/static|_next/image|favicon.ico|images/).*)",
       missing: [
         { type: "header", key: "next-router-prefetch" },
         { type: "header", key: "purpose", value: "prefetch" },

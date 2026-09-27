@@ -3,6 +3,7 @@ set -euo pipefail
 
 origin="${PRODUCTION_URL:-}"
 expected_revision="${EXPECTED_REVISION:-}"
+api_origin="${API_URL:-https://api.ajmiraribam.me}"
 
 if [[ ! "$origin" =~ ^https://[^/]+$ ]]; then
   echo "PRODUCTION_URL must be one HTTPS origin without a trailing slash or path." >&2
@@ -15,6 +16,10 @@ if [[ "$host" == www.* ]]; then
 fi
 if [[ ! "$expected_revision" =~ ^[0-9a-fA-F]{40}$ ]]; then
   echo "EXPECTED_REVISION must be the full deployed Git commit SHA." >&2
+  exit 1
+fi
+if [[ "$api_origin" != "https://api.ajmiraribam.me" ]]; then
+  echo "API_URL must be https://api.ajmiraribam.me." >&2
   exit 1
 fi
 
@@ -94,16 +99,31 @@ grep -Eq '"status"[[:space:]]*:[[:space:]]*"ready"' "$workdir/health" || {
   echo "Public readiness endpoint is not ready." >&2
   exit 1
 }
-grep -Eq '"database"[[:space:]]*:[[:space:]]*"ready"' "$workdir/health" || {
-  echo "Public readiness endpoint did not confirm database readiness." >&2
-  exit 1
-}
-grep -Eq '"email_delivery"[[:space:]]*:[[:space:]]*"(configured|not_configured|misconfigured)"' "$workdir/health" || {
-  echo "Public readiness endpoint did not report email configuration state." >&2
-  exit 1
-}
 grep -Fq "\"revision\":\"$expected_revision\"" "$workdir/health" || {
   echo "Health revision does not match EXPECTED_REVISION." >&2
+  exit 1
+}
+if grep -Eq '"(database|email_delivery|outbox)"[[:space:]]*:' "$workdir/health"; then
+  echo "Public health endpoint exposed internal infrastructure state." >&2
+  exit 1
+fi
+
+api_status="$(curl --silent --show-error --output "$workdir/private-health" \
+  --write-out '%{http_code}' --proto '=https' --tlsv1.2 \
+  --connect-timeout 10 --max-time 30 "$api_origin/health/ready")"
+[[ "$api_status" == "403" ]] || {
+  echo "FastAPI readiness endpoint returned $api_status without its internal token." >&2
+  exit 1
+}
+api_live_status="$(curl --silent --show-error --output "$workdir/api-live" \
+  --write-out '%{http_code}' --proto '=https' --tlsv1.2 \
+  --connect-timeout 10 --max-time 30 "$api_origin/health/live")"
+[[ "$api_live_status" == "200" ]] || {
+  echo "FastAPI liveness endpoint returned $api_live_status." >&2
+  exit 1
+}
+grep -Fq "\"revision\":\"$expected_revision\"" "$workdir/api-live" || {
+  echo "FastAPI revision does not match EXPECTED_REVISION." >&2
   exit 1
 }
 
@@ -135,4 +155,4 @@ status="$(curl --silent --show-error --output /dev/null --write-out '%{http_code
   "$origin/this-route-must-not-exist")"
 [[ "$status" == "404" ]] || { echo "Unknown route returned $status instead of 404." >&2; exit 1; }
 
-echo "Production smoke passed for $origin${expected_revision:+ at revision $expected_revision}; redirects, routes, readiness, headers, SEO, and contact rejection checked."
+echo "Production smoke passed for $origin at revision $expected_revision; redirects, routes, frontend/API revisions, private readiness boundary, headers, SEO, and contact rejection checked."

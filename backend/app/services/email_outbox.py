@@ -33,7 +33,12 @@ class DeliveryClaim:
     inquiry: Inquiry
 
 
-def claim_next(db: Session, now: datetime | None = None) -> DeliveryClaim | None:
+def claim_next(
+    db: Session,
+    now: datetime | None = None,
+    *,
+    inquiry_id: str | None = None,
+) -> DeliveryClaim | None:
     timestamp = now or datetime.now(UTC)
     expired_claim = timestamp - CLAIM_LEASE
     eligible = or_(
@@ -45,10 +50,11 @@ def claim_next(db: Session, now: datetime | None = None) -> DeliveryClaim | None
         ),
         and_(EmailDelivery.status == "attempting", EmailDelivery.claimed_at <= expired_claim),
     )
+    query = select(EmailDelivery).where(eligible)
+    if inquiry_id is not None:
+        query = query.where(EmailDelivery.inquiry_id == inquiry_id)
     delivery = db.scalar(
-        select(EmailDelivery)
-        .where(eligible)
-        .order_by(EmailDelivery.created_at, EmailDelivery.id)
+        query.order_by(EmailDelivery.created_at, EmailDelivery.id)
         .limit(1)
         .with_for_update(skip_locked=True)
     )
@@ -92,6 +98,7 @@ def finish_claim(
     claim: DeliveryClaim,
     *,
     failure: DeliveryFailure | None = None,
+    provider_message_id: str | None = None,
     now: datetime | None = None,
 ) -> bool:
     timestamp = now or datetime.now(UTC)
@@ -103,6 +110,7 @@ def finish_claim(
     if failure is None:
         delivery.status = "sent"
         delivery.sent_at = timestamp
+        delivery.provider_message_id = provider_message_id
         delivery.next_attempt_at = None
         delivery.last_error = None
         inquiry = db.get(Inquiry, claim.inquiry_id)
@@ -141,10 +149,40 @@ def finish_claim(
     return True
 
 
+def process_inquiry(
+    inquiry_id: str,
+    session_factory: sessionmaker = SessionLocal,
+    settings: Settings | None = None,
+) -> bool:
+    configuration = settings or get_settings()
+    if configuration.email_status != "configured":
+        return False
+    with session_factory() as db:
+        claim = claim_next(db, inquiry_id=inquiry_id)
+    if claim is None:
+        return False
+
+    failure = None
+    provider_message_id = None
+    try:
+        provider_message_id = send_notification(claim.inquiry, claim.delivery_id, configuration)
+    except DeliveryFailure as error:
+        failure = error
+    with session_factory() as db:
+        finish_claim(
+            db,
+            claim,
+            failure=failure,
+            provider_message_id=provider_message_id,
+        )
+    return True
+
+
 def process_one(
     session_factory: sessionmaker = SessionLocal,
     settings: Settings | None = None,
 ) -> bool:
+    """Process one due delivery for explicit operator use; no daemon is required."""
     configuration = settings or get_settings()
     if configuration.email_status != "configured":
         return False
@@ -154,10 +192,16 @@ def process_one(
         return False
 
     failure = None
+    provider_message_id = None
     try:
-        send_notification(claim.inquiry, configuration)
+        provider_message_id = send_notification(claim.inquiry, claim.delivery_id, configuration)
     except DeliveryFailure as error:
         failure = error
     with session_factory() as db:
-        finish_claim(db, claim, failure=failure)
+        finish_claim(
+            db,
+            claim,
+            failure=failure,
+            provider_message_id=provider_message_id,
+        )
     return True

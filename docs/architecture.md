@@ -1,35 +1,22 @@
 # Architecture
 
-## Application boundaries
-
-`frontend/` owns Next.js routes, public content, shared presentation, assets, contact forwarding, résumé behavior and browser tests. `backend/` owns the private FastAPI inquiry API, configuration, database models, persistence, maintenance commands, migrations and API tests. The applications integrate over HTTP; neither imports the other's implementation.
+`frontend/` is the public Next.js application; `backend/` is a separate FastAPI service. They deploy as separate Vercel projects from this monorepo. The browser calls only same-origin Next.js route handlers. Those server routes call FastAPI at `api.ajmiraribam.me` with a server-only token. The backend connects to Neon and Resend.
 
 ```text
-Browser → Next.js pages and same-origin route handlers
-                    ├─ /api/contact → private FastAPI /inquiries
-                    └─ /api/health  → private FastAPI /health/ready
-                                             ↓
-                                        PostgreSQL
-                                             ↑
-                                 Render email worker → SMTP
+Browser → Vercel / Next.js → same-origin /api/contact
+                                  │ server-only token
+                                  ▼
+                       Vercel / FastAPI (api subdomain)
+                          ├── Neon PostgreSQL
+                          └── Resend HTTPS API
 ```
 
-The public `/api/contact` route and private `/inquiries`, `/health/live`, and `/health/ready` contracts are stable. Next.js validates the exact origin and forwards a server-only token, proxy-derived address and idempotency key. FastAPI performs authoritative validation and a PostgreSQL-backed rate check, then atomically commits the inquiry and one uniquely keyed email-delivery row before returning success. A separate Render worker claims outbox rows using PostgreSQL row locks, sends over authenticated TLS SMTP and records pending/attempting/sent/failed state, bounded retry count, safe error code and timestamps. Restarted workers reclaim expired leases. Replays with the same key and payload return the existing inquiry; reusing a key for changed content returns `409`.
+The frontend checks exact Origin and request size, then forwards a request ID, idempotency key, and Vercel-derived client address. FastAPI validates again, enforces a PostgreSQL-backed rate window, and commits the inquiry and unique `email_deliveries` row in one transaction. It attempts Resend only after commit. Contact success means the inquiry was stored; it does not claim mailbox delivery.
 
-SMTP is an asynchronous notification channel, not part of inquiry acceptance. `/health/ready` reports PostgreSQL/API readiness separately from the validated SMTP configuration and aggregate outbox counts. `not_configured` means rows remain pending; `configured` means required settings pass validation and does not prove the SMTP server accepted a message. Actual delivery is evidenced by a row marked `sent` and, for provider acceptance, the SMTP/provider records. SMTP is an external side effect: a process crash after provider acceptance but before the database update can result in a repeated message on lease recovery. The unique inquiry-to-delivery constraint prevents duplicate queue entries and concurrent claims, but generic SMTP does not provide exactly-once delivery.
+Outbox rows track `pending`, `attempting`, `sent`, or `failed`, attempt count, retry time, a safe error code, timestamps, and Resend message ID when accepted. Row locks prevent simultaneous claims. Each email uses a stable Resend idempotency key. Provider retention is time-limited, so exactly-once delivery across arbitrary delays is not promised. There is no always-running worker: delivery is attempted during the request, with explicit operator retry/dispatch commands for recovery.
 
-## Database roles and migrations
+`DATABASE_URL` is the pooled Neon TLS URI used at runtime. `MIGRATION_DATABASE_URL` is an optional direct connection used only by trusted-shell Alembic commands; it is not a Vercel runtime secret. Use separate Neon migration and application roles. Migrations are explicit, not run at application startup.
 
-`MIGRATION_DATABASE_URL` is reserved for Alembic and pre-deploy maintenance. `DATABASE_URL` (or the derived runtime URL for local Compose) is used by API requests under a distinct runtime role. The maintenance task grants only database connection, schema usage, table DML and sequence access to that role, including defaults for future migration-created objects. Production checks reject identical usernames and incomplete/weak PostgreSQL credentials. Compose creates the local role from disposable development secrets; Render role creation depends on the managed database credential's actual permissions and must be proven before launch.
+In `frontend/src`, `app/` defines routes, `components/` contains shared UI, `content/` holds approved public copy/project data, `features/` groups interactive behavior, and `lib/` contains utilities. `backend/app` separates routes, configuration, database models, schemas, and services; `backend/migrations/` holds Alembic history. `compose.yaml` is local PostgreSQL; scripts verify the API, email, database, backup, restore, and public smoke behavior. CI is in `.github/workflows/ci.yml`.
 
-Migrations are run explicitly before application start: by Render's paid pre-deploy command or `make compose-up`. The API container starts only Uvicorn, so multiple app replicas cannot race on startup migrations. Production schema changes must support the current and previous application version during a rolling deploy.
-
-## Runtime and repository layout
-
-In `frontend/src`, `app/` defines routes, `components/` contains reusable UI, `content/` holds evidence-backed project/editorial data, `features/` groups interactive functions, and `lib/` contains shared utilities. `backend/app` separates HTTP routes, core settings, SQLAlchemy setup/models, schemas and services; `backend/migrations/` contains Alembic history.
-
-`compose.yaml` describes the production-like local topology, including a separately runnable outbox worker. `infra/compose.dev.yaml` supports host-based development and a loopback-only Mailpit capture service. `infra/backup/` builds the backup job container. `render.yaml` describes the Render services. `scripts/` contains disposable PostgreSQL/Compose verification, production smoke checks, and backup/restore commands. `.github/workflows/ci.yml` is the release quality gate; `production-monitor.yml` is an optional scheduled public smoke workflow after owner configuration.
-
-## Content evidence
-
-Project records are maintained in `frontend/src/content/projects.ts`; case narratives are in `frontend/src/content/case-stories.ts`. Public claims are limited to inspectable evidence. Unknown ownership, deployment and outcome facts remain qualified in source and are not presented as verified. Project diagrams describe application boundaries, not an asserted production topology.
+Project records and case narratives remain in `frontend/src/content/`. This infrastructure migration does not add production claims to project content.

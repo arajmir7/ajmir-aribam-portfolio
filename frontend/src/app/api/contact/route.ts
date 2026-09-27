@@ -8,6 +8,7 @@ import {
 } from "@/lib/contact-security";
 
 export const runtime = "nodejs";
+export const maxDuration = 20;
 export async function POST(request: NextRequest) {
   const id = randomUUID();
   const idempotencyKey = request.headers.get("idempotency-key");
@@ -37,21 +38,21 @@ export async function POST(request: NextRequest) {
       { message: "Inquiry is too large." },
       { status: 413 },
     );
-  const production = process.env.NODE_ENV === "production";
+  const production = process.env.VERCEL_ENV === "production";
   const api = contactApiBaseUrl({
     apiUrl: process.env.CONTACT_API_URL,
-    apiHostport: process.env.CONTACT_API_HOSTPORT,
     production,
   });
+  const buildRevision =
+    process.env.BUILD_REVISION || process.env.VERCEL_GIT_COMMIT_SHA;
   const token = process.env.CONTACT_INTERNAL_TOKEN;
   const ready = isContactRuntimeReady({
     siteUrl: process.env.NEXT_PUBLIC_SITE_URL,
     allowedOrigin: process.env.CONTACT_ALLOWED_ORIGIN,
     apiUrl: process.env.CONTACT_API_URL,
-    apiHostport: process.env.CONTACT_API_HOSTPORT,
     internalToken: token,
     trustedClientIpHeader: process.env.CONTACT_CLIENT_IP_HEADER,
-    buildRevision: process.env.BUILD_REVISION,
+    buildRevision,
     production,
   });
   if (!api || !token || !ready)
@@ -92,7 +93,7 @@ export async function POST(request: NextRequest) {
         "X-Source-Origin": origin!,
       },
       body: JSON.stringify(payload),
-      signal: AbortSignal.timeout(8000),
+      signal: AbortSignal.timeout(20000),
       cache: "no-store",
     });
     const result = await response.json();

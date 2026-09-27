@@ -52,6 +52,7 @@ class EmailDelivery(Base):
     claim_token: Mapped[str | None] = mapped_column(String(36))
     next_attempt_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), default=now)
     sent_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    provider_message_id: Mapped[str | None] = mapped_column(String(128))
     last_error: Mapped[str | None] = mapped_column(String(64))
 
 

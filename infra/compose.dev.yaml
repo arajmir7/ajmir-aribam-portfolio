@@ -1,12 +1,5 @@
-# Local development only: expose PostgreSQL to the host backend process.
+# Local development only: expose PostgreSQL to host processes on loopback.
 services:
   postgres:
     ports:
       - "127.0.0.1:${PORTFOLIO_DB_PORT:-5432}:5432"
-  mailpit:
-    image: axllent/mailpit:v1.31.2
-    environment:
-      MP_MAX_MESSAGES: "100"
-    ports:
-      - "127.0.0.1:${PORTFOLIO_MAIL_SMTP_PORT:-1025}:1025"
-      - "127.0.0.1:${PORTFOLIO_MAIL_UI_PORT:-8025}:8025"

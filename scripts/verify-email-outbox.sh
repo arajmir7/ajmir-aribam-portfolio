@@ -3,192 +3,150 @@ set -euo pipefail
 
 root="$(cd "$(dirname "$0")/.." && pwd)"
 workdir="$(mktemp -d)"
+chmod 0700 "$workdir"
 compose=(docker compose -f "$root/compose.yaml" -f "$root/infra/compose.dev.yaml")
-export COMPOSE_PROJECT_NAME="portfolio_email_qa_$$"
-export POSTGRES_PASSWORD=portfolio_email_qa_migration_password_32_chars
-export DATABASE_RUNTIME_USER=portfolio_app
-export DATABASE_RUNTIME_PASSWORD=portfolio_email_qa_runtime_password_32_chars
-export CONTACT_INTERNAL_TOKEN=portfolio_email_qa_internal_token_32_chars
-export APP_ENV=development
+export COMPOSE_PROJECT_NAME="portfolio_resend_qa_$$"
+export POSTGRES_PASSWORD=portfolio_resend_qa_password_32_chars
+export APP_ENV=test
+export CONTACT_INTERNAL_TOKEN=portfolio_resend_qa_token_32_chars_min
 export BUILD_REVISION="$(git -C "$root" rev-parse --short HEAD)"
 export PORTFOLIO_DB_PORT="$(python3 -c 'import socket; s=socket.socket(); s.bind(("127.0.0.1", 0)); print(s.getsockname()[1]); s.close()')"
-export PORTFOLIO_MAIL_SMTP_PORT="$(python3 -c 'import socket; s=socket.socket(); s.bind(("127.0.0.1", 0)); print(s.getsockname()[1]); s.close()')"
-export PORTFOLIO_MAIL_UI_PORT="$(python3 -c 'import socket; s=socket.socket(); s.bind(("127.0.0.1", 0)); print(s.getsockname()[1]); s.close()')"
 export PORT="$(python3 -c 'import socket; s=socket.socket(); s.bind(("127.0.0.1", 0)); print(s.getsockname()[1]); s.close()')"
 export PORTFOLIO_API_PORT="$(python3 -c 'import socket; s=socket.socket(); s.bind(("127.0.0.1", 0)); print(s.getsockname()[1]); s.close()')"
+export MOCK_RESEND_PORT="$(python3 -c 'import socket; s=socket.socket(); s.bind(("127.0.0.1", 0)); print(s.getsockname()[1]); s.close()')"
 export NEXT_PUBLIC_SITE_URL="http://127.0.0.1:${PORT}"
 export CONTACT_ALLOWED_ORIGIN="$NEXT_PUBLIC_SITE_URL"
 export CONTACT_API_URL="http://127.0.0.1:${PORTFOLIO_API_PORT}"
 export CONTACT_CLIENT_IP_HEADER=x-forwarded-for
-export EMAIL_HOST=127.0.0.1
-export EMAIL_PORT="$PORTFOLIO_MAIL_SMTP_PORT"
-export EMAIL_USER=
-export EMAIL_PASSWORD=
-export EMAIL_FROM='Portfolio QA <no-reply@example.com>'
-export EMAIL_TO=qa-inbox@example.com
-export EMAIL_USE_TLS=false
-export MIGRATION_DATABASE_URL="postgresql+psycopg://portfolio:${POSTGRES_PASSWORD}@127.0.0.1:${PORTFOLIO_DB_PORT}/portfolio"
-export DATABASE_URL="$MIGRATION_DATABASE_URL"
+export DATABASE_URL="postgresql+psycopg://portfolio:${POSTGRES_PASSWORD}@127.0.0.1:${PORTFOLIO_DB_PORT}/portfolio"
+export RESEND_API_KEY=re_test_portfolio_local_only
+export RESEND_API_URL="http://127.0.0.1:${MOCK_RESEND_PORT}"
+export CONTACT_EMAIL_FROM='Ajmir Aribam QA <qa@example.com>'
+export CONTACT_EMAIL_TO=qa-inbox@example.com
+export MOCK_RESEND_CAPTURE="$workdir/resend-captured.json"
 
-dev_pid=""
+api_pid=""
+web_pid=""
+resend_pid=""
 cleanup() {
-  if [[ -n "$dev_pid" ]]; then
-    kill "$dev_pid" >/dev/null 2>&1 || true
-    wait "$dev_pid" >/dev/null 2>&1 || true
-  fi
+  for pid in "$web_pid" "$api_pid" "$resend_pid"; do
+    if [[ -n "$pid" ]]; then kill "$pid" >/dev/null 2>&1 || true; fi
+  done
+  for pid in "$web_pid" "$api_pid" "$resend_pid"; do
+    if [[ -n "$pid" ]]; then wait "$pid" >/dev/null 2>&1 || true; fi
+  done
   "${compose[@]}" down -v --remove-orphans >/dev/null 2>&1 || true
   rm -rf "$workdir"
 }
 trap cleanup EXIT
 
-"${compose[@]}" up -d --wait postgres mailpit >/dev/null
+"${compose[@]}" up -d --wait postgres >/dev/null
 (
   cd "$root/backend"
-  uv run python -m app.maintenance prepare-runtime-role >/dev/null
   uv run alembic upgrade head >/dev/null
 )
-export DATABASE_URL="postgresql+psycopg://${DATABASE_RUNTIME_USER}:${DATABASE_RUNTIME_PASSWORD}@127.0.0.1:${PORTFOLIO_DB_PORT}/portfolio"
-
-python3 "$root/scripts/dev.py" >"$workdir/dev.log" 2>&1 &
-dev_pid=$!
-for attempt in {1..60}; do
-  if curl --silent --fail "$NEXT_PUBLIC_SITE_URL/api/health" -o "$workdir/health.json"; then
+python3 "$root/scripts/mock_resend.py" >"$workdir/resend.log" 2>&1 &
+resend_pid=$!
+for attempt in {1..30}; do
+  if curl --silent "http://127.0.0.1:${MOCK_RESEND_PORT}/health" >/dev/null 2>&1; then break; fi
+  if [[ "$attempt" == 30 ]]; then
+    kill -0 "$resend_pid" 2>/dev/null || { echo "Local Resend mock did not start." >&2; exit 1; }
     break
   fi
+  sleep 0.2
+done
+(
+  cd "$root/backend"
+  uv run uvicorn app.main:app --host 127.0.0.1 --port "$PORTFOLIO_API_PORT"
+) >"$workdir/api.log" 2>&1 &
+api_pid=$!
+(
+  cd "$root/frontend"
+  npm run dev -- --hostname 127.0.0.1 --port "$PORT"
+) >"$workdir/web.log" 2>&1 &
+web_pid=$!
+
+for attempt in {1..60}; do
+  if curl --silent --fail "$NEXT_PUBLIC_SITE_URL/api/health" -o "$workdir/health.json"; then break; fi
   if [[ "$attempt" == 60 ]]; then
-    echo "Local contact stack did not become ready." >&2
+    cat "$workdir/api.log" "$workdir/web.log" >&2
+    echo "The local PostgreSQL contact stack did not become ready." >&2
     exit 1
   fi
   sleep 1
 done
 python3 - "$workdir/health.json" <<'PY'
 import json
-import os
 import sys
 
-health = json.load(open(sys.argv[1]))
-if health.get("status") != "ready" or health.get("database") != "ready":
-    raise SystemExit("The local database did not report ready.")
-if health.get("email_delivery") != "configured":
-    raise SystemExit("The local Mailpit delivery configuration is not ready.")
+health = json.load(open(sys.argv[1], encoding="utf-8"))
+if health.get("status") != "ready":
+    raise SystemExit("The private API readiness check did not pass.")
+if set(health) != {"status", "revision"}:
+    raise SystemExit("Public health exposed internal service details.")
 PY
 
-export QA_IDEMPOTENCY_KEY="$(
-  cd "$root/frontend"
-  PORTFOLIO_QA_ORIGIN="$NEXT_PUBLIC_SITE_URL" node --input-type=module <<'JS'
-import { chromium } from "@playwright/test";
-
-const browser = await chromium.launch({ headless: true });
-try {
-  const page = await browser.newPage();
-  const key = crypto.randomUUID();
-  await page.addInitScript((value) => {
-    Object.defineProperty(Crypto.prototype, "randomUUID", {
-      configurable: true,
-      value: () => value,
-    });
-  }, key);
-  await page.goto(`${process.env.PORTFOLIO_QA_ORIGIN}/contact`);
-  await page.getByLabel("Name", { exact: true }).fill("Portfolio Mailpit QA");
-  await page.getByLabel("Email", { exact: true }).fill("visitor@example.com");
-  await page.getByLabel("Topic").selectOption("question");
-  const request = page.waitForRequest("**/api/contact");
-  await page.getByLabel("Message").fill(`Local isolated QA marker ${key}.`);
-  await page.getByRole("button", { name: /Send inquiry/ }).click();
-  const contactRequest = await request;
-  await page.getByRole("status").getByText("Your inquiry is safely recorded").waitFor();
-  if (contactRequest.headers()["idempotency-key"] !== key) {
-    throw new Error("The contact form did not forward the expected idempotency key.");
-  }
-  process.stdout.write(key);
-} finally {
-  await browser.close();
-}
-JS
-)"
-python3 - "$workdir/payload.json" <<'PY'
-import json
-import os
-import sys
-
-with open(sys.argv[1], "w") as payload_file:
-    json.dump(
-        {
-            "name": "Portfolio Mailpit QA",
-            "email": "visitor@example.com",
-            "topic": "question",
-            "message": f"Local isolated QA marker {os.environ['QA_IDEMPOTENCY_KEY']}.",
-            "website": "",
-        },
-        payload_file,
-    )
-PY
-status="$(curl --silent --show-error --output "$workdir/response.json" \
-  --write-out '%{http_code}' \
-  -H "Origin: $CONTACT_ALLOWED_ORIGIN" \
-  -H 'X-Forwarded-For: 198.51.100.19' \
-  -H "Idempotency-Key: $QA_IDEMPOTENCY_KEY" \
-  -H 'Content-Type: application/json' \
-  --data-binary "@$workdir/payload.json" \
-  "$NEXT_PUBLIC_SITE_URL/api/contact")"
-[[ "$status" == 200 ]] || { echo "Idempotent replay returned $status." >&2; exit 1; }
-
-for attempt in {1..30}; do
-  result="$("${compose[@]}" exec -T postgres psql -U portfolio -d portfolio -Atqc \
-    "SELECT d.status || '|' || d.attempt_count || '|' || COALESCE(d.last_error, '') || '|' || count(*) OVER () || '|' || COALESCE(i.source_origin, '') || '|' || i.notification_status FROM inquiries i JOIN email_deliveries d ON d.inquiry_id = i.id WHERE i.idempotency_key = '$QA_IDEMPOTENCY_KEY';")"
-  if [[ "$result" == "sent|1||1|$CONTACT_ALLOWED_ORIGIN|sent" ]]; then break; fi
-  sleep 1
+success_key="$(python3 -c 'import uuid; print(uuid.uuid4())')"
+success_payload='{"name":"Portfolio Resend QA","email":"visitor@example.com","topic":"question","message":"Local end-to-end delivery verification.","website":""}'
+for attempt in 1 2; do
+  status="$(curl --silent --show-error --output "$workdir/success-$attempt.json" \
+    --write-out '%{http_code}' -H "Origin: $CONTACT_ALLOWED_ORIGIN" \
+    -H 'X-Forwarded-For: 198.51.100.22' -H "Idempotency-Key: $success_key" \
+    -H 'Content-Type: application/json' --data "$success_payload" \
+    "$NEXT_PUBLIC_SITE_URL/api/contact")"
+  [[ "$status" == 200 ]] || { echo "Valid contact request returned $status." >&2; exit 1; }
 done
-[[ "$result" == "sent|1||1|$CONTACT_ALLOWED_ORIGIN|sent" ]] || {
-  echo "PostgreSQL did not show one sent delivery for the inquiry." >&2
+
+failure_key="$(python3 -c 'import uuid; print(uuid.uuid4())')"
+failure_payload='{"name":"Portfolio Failure QA","email":"visitor@example.com","topic":"question","message":"QA_FORCE_RESEND_503 simulated provider outage.","website":""}'
+status="$(curl --silent --show-error --output "$workdir/failure.json" \
+  --write-out '%{http_code}' -H "Origin: $CONTACT_ALLOWED_ORIGIN" \
+  -H 'X-Forwarded-For: 198.51.100.23' -H "Idempotency-Key: $failure_key" \
+  -H 'Content-Type: application/json' --data "$failure_payload" \
+  "$NEXT_PUBLIC_SITE_URL/api/contact")"
+[[ "$status" == 200 ]] || { echo "Stored inquiry with provider error returned $status." >&2; exit 1; }
+if grep -Eq 'simulated provider outage|re_test_portfolio_local_only' "$workdir/failure.json"; then
+  echo "Contact response exposed provider details." >&2
+  exit 1
+fi
+
+foreign_status="$(curl --silent --show-error -o /dev/null -w '%{http_code}' \
+  -H 'Origin: https://foreign.example' -H 'Content-Type: application/json' --data '{}' \
+  "$NEXT_PUBLIC_SITE_URL/api/contact")"
+[[ "$foreign_status" == 403 ]] || { echo "Foreign origin returned $foreign_status." >&2; exit 1; }
+
+success_state="$("${compose[@]}" exec -T postgres psql -U portfolio -d portfolio -Atqc \
+  "SELECT count(*) || '|' || min(d.status) || '|' || min(d.attempt_count)::text || '|' || min(d.provider_message_id) || '|' || min(i.notification_status) FROM inquiries i JOIN email_deliveries d ON d.inquiry_id=i.id WHERE i.idempotency_key='$success_key';")"
+[[ "$success_state" =~ ^1\|sent\|1\|qa_[[:alnum:]_-]+\|sent$ ]] || {
+  echo "Expected one persisted, sent inquiry with a provider ID; received $success_state." >&2
+  exit 1
+}
+failure_state="$("${compose[@]}" exec -T postgres psql -U portfolio -d portfolio -Atqc \
+  "SELECT count(*) || '|' || min(d.status) || '|' || min(d.attempt_count)::text || '|' || min(d.last_error) || '|' || min(i.notification_status) FROM inquiries i JOIN email_deliveries d ON d.inquiry_id=i.id WHERE i.idempotency_key='$failure_key';")"
+[[ "$failure_state" == "1|pending|1|resend_server_error|pending" ]] || {
+  echo "Provider failure was not safely retained for retry: $failure_state." >&2
   exit 1
 }
 
-python3 - "$PORTFOLIO_MAIL_UI_PORT" "$QA_IDEMPOTENCY_KEY" <<'PY'
+python3 - "$MOCK_RESEND_CAPTURE" "$success_key" <<'PY'
 import json
-import os
 import sys
-import time
-import urllib.error
-import urllib.request
 
-base = f"http://127.0.0.1:{sys.argv[1]}"
-marker = sys.argv[2]
-for _ in range(30):
-    try:
-        with urllib.request.urlopen(f"{base}/api/v1/messages", timeout=2) as response:
-            inbox = json.load(response)
-        messages = inbox.get("messages", [])
-        if len(messages) == 1:
-            message = messages[0]
-            detail_id = message.get("ID")
-            with urllib.request.urlopen(
-                f"{base}/api/v1/message/{detail_id}", timeout=2
-            ) as response:
-                detail = json.load(response)
-            if (
-                detail.get("Subject") == "Portfolio enquiry — question — Portfolio Mailpit QA"
-                and any(
-                    recipient.get("Address") == "qa-inbox@example.com"
-                    for recipient in detail.get("To", [])
-                )
-                and any(
-                    recipient.get("Address") == "visitor@example.com"
-                    for recipient in detail.get("ReplyTo", [])
-                )
-                and marker in detail.get("Text", "")
-                and "Inquiry ID: " in detail.get("Text", "")
-                and "Submitted at (UTC): " in detail.get("Text", "")
-                and f"Origin: {os.environ['CONTACT_ALLOWED_ORIGIN']}" in detail.get("Text", "")
-            ):
-                print(f"Mailpit captured the expected test inquiry (message {detail_id}).")
-                break
-    except (OSError, urllib.error.URLError, json.JSONDecodeError):
-        pass
-    time.sleep(1)
-else:
-    raise SystemExit("Mailpit did not contain the expected test inquiry.")
+messages = json.load(open(sys.argv[1], encoding="utf-8"))
+if len(messages) != 1:
+    raise SystemExit(f"Expected one provider email after replay; found {len(messages)}.")
+provider_id, payload = messages[0]
+if payload.get("to") != ["qa-inbox@example.com"]:
+    raise SystemExit("Unexpected Resend QA recipient.")
+if payload.get("reply_to") != "visitor@example.com":
+    raise SystemExit("The visitor address was not set as Reply-To.")
+if "Portfolio inquiry — question — Portfolio Resend QA" != payload.get("subject"):
+    raise SystemExit("Unexpected email subject.")
+if "Local end-to-end delivery verification." not in payload.get("text", ""):
+    raise SystemExit("Email omitted the inquiry message.")
+if not provider_id.startswith("qa_"):
+    raise SystemExit("Fake provider omitted its message identifier.")
+print(f"Fake Resend accepted one idempotent email ({provider_id}).")
 PY
 
-echo "PostgreSQL inquiry/outbox idempotency and local Mailpit delivery passed."
-echo "With make dev, inspect its local test inbox at http://localhost:8025."
+echo "Contact persistence, idempotent replay, Resend success/failure, private readiness, and origin rejection passed."

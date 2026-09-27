@@ -342,10 +342,14 @@ test("contact journey, validation, and API readiness", async ({
   const health = await request.get("/api/health");
   expect(health.status()).toBe(200);
   const healthState = await health.json();
-  expect(healthState.database).toBe("ready");
-  expect(["configured", "not_configured", "misconfigured"]).toContain(
-    healthState.email_delivery,
+  expect(healthState).toEqual({
+    status: "ready",
+    revision: "0123456789abcdef0123456789abcdef01234567",
+  });
+  const privateHealth = await request.get(
+    `http://127.0.0.1:${process.env.E2E_BACKEND_PORT || 8100}/health/ready`,
   );
+  expect(privateHealth.status()).toBe(403);
   const missingOrigin = await request.post("/api/contact", {
     data: {
       name: "Origin Check",

@@ -8,118 +8,59 @@ from re import fullmatch
 from email_validator import EmailNotValidError, validate_email
 from sqlalchemy.engine import make_url
 
+RESEND_API_ORIGIN = "https://api.resend.com"
+
 
 @dataclass(frozen=True, slots=True)
 class Settings:
+    environment: str
     database_url: str
     migration_database_url: str
     contact_internal_token: str
+    contact_allowed_origin: str
     build_revision: str
-    database_pool_size: int
-    database_max_overflow: int
-    database_pool_timeout: int
-    database_pool_recycle: int
-    email_host: str
-    email_port: int
-    email_user: str
-    email_password: str
-    email_from: str
-    email_to: str
-    email_use_tls: bool
+    resend_api_key: str
+    resend_api_url: str
+    contact_email_from: str
+    contact_email_to: str
     email_status: str
 
 
 def get_settings() -> Settings:
     # Read on use so CLI commands and isolated tests can supply their own environment.
-    environment = os.environ.get("APP_ENV", "development").strip().lower()
-    database_url = os.environ.get("DATABASE_URL", "sqlite:///./portfolio.db")
-    migration_database_url = os.environ.get("MIGRATION_DATABASE_URL") or database_url
-    contact_internal_token = os.environ.get("CONTACT_INTERNAL_TOKEN", "")
-    build_revision = os.environ.get("BUILD_REVISION", "unknown")
+    vercel_environment = os.environ.get("VERCEL_ENV", "").strip().lower()
+    default_environment = "production" if vercel_environment == "production" else "development"
+    environment = os.environ.get("APP_ENV", default_environment).strip().lower()
+    if vercel_environment == "production" and environment != "production":
+        raise RuntimeError("Vercel production requires APP_ENV=production")
     if environment not in {"development", "test", "production"}:
         raise RuntimeError("APP_ENV must be development, test, or production")
-    if environment == "production":
-        try:
-            if migration_database_url.startswith("postgres://"):
-                migration_database_url = (
-                    "postgresql+psycopg://" + migration_database_url.removeprefix("postgres://")
-                )
-            parsed_migration_url = make_url(migration_database_url)
-        except Exception as error:
-            raise RuntimeError(
-                "Production requires a valid PostgreSQL MIGRATION_DATABASE_URL"
-            ) from error
-        if parsed_migration_url.drivername not in {"postgresql", "postgresql+psycopg"}:
-            raise RuntimeError("Production requires a PostgreSQL MIGRATION_DATABASE_URL")
-        if not all(
-            (
-                parsed_migration_url.host,
-                parsed_migration_url.username,
-                parsed_migration_url.password,
-                parsed_migration_url.database,
-            )
-        ):
-            raise RuntimeError(
-                "Production MIGRATION_DATABASE_URL must include host, credentials, and database"
-            )
-        migration_password = parsed_migration_url.password or ""
-        if len(migration_password) < 32 or migration_password.lower().startswith(
-            ("replace-with", "changeme", "example")
-        ):
-            raise RuntimeError("Production migration database password is missing or unsafe")
-        migration_database_url = parsed_migration_url.set(
-            drivername="postgresql+psycopg"
-        ).render_as_string(hide_password=False)
 
-        runtime_user = os.environ.get("DATABASE_RUNTIME_USER", "").strip()
-        runtime_password = os.environ.get("DATABASE_RUNTIME_PASSWORD", "")
-        if database_url == "sqlite:///./portfolio.db":
-            if (
-                len(runtime_password) < 32
-                or not fullmatch(r"[a-zA-Z][a-zA-Z0-9_]{0,62}", runtime_user)
-                or runtime_password.lower().startswith(("replace-with", "changeme", "example"))
-            ):
-                raise RuntimeError(
-                    "Production requires a separate runtime database user and "
-                    "a non-placeholder 32-character runtime password"
-                )
-            if runtime_user == parsed_migration_url.username:
-                raise RuntimeError("Runtime and migration database users must be different")
-            database_url = parsed_migration_url.set(
-                drivername="postgresql+psycopg",
-                username=runtime_user,
-                password=runtime_password,
-            ).render_as_string(hide_password=False)
-        else:
-            try:
-                parsed_runtime_url = make_url(database_url)
-            except Exception as error:
-                raise RuntimeError("Production requires a valid PostgreSQL DATABASE_URL") from error
-            if parsed_runtime_url.drivername not in {"postgresql", "postgresql+psycopg"}:
-                raise RuntimeError("Production requires a PostgreSQL DATABASE_URL")
-            if not all(
-                (
-                    parsed_runtime_url.host,
-                    parsed_runtime_url.username,
-                    parsed_runtime_url.password,
-                    parsed_runtime_url.database,
-                )
-            ):
-                raise RuntimeError(
-                    "Production DATABASE_URL must include host, credentials, and database"
-                )
-            if parsed_runtime_url.username == parsed_migration_url.username:
-                raise RuntimeError("Runtime and migration database users must be different")
-            if not parsed_runtime_url.password or len(parsed_runtime_url.password) < 32:
-                raise RuntimeError(
-                    "Production runtime database password must contain at least 32 characters"
-                )
-            if parsed_runtime_url.password.lower().startswith(
-                ("replace-with", "changeme", "example")
-            ):
-                raise RuntimeError("Production runtime database password is missing or unsafe")
-            database_url = parsed_runtime_url.set(drivername="postgresql+psycopg").render_as_string(
-                hide_password=False
+    configured_database_url = os.environ.get("DATABASE_URL", "").strip()
+    if environment == "production" and not configured_database_url:
+        raise RuntimeError("Production requires DATABASE_URL")
+    database_url = configured_database_url or "sqlite:///./portfolio.db"
+    database_url = _normalize_database_url(database_url)
+    migration_database_url = _normalize_database_url(
+        os.environ.get("MIGRATION_DATABASE_URL", "").strip() or database_url
+    )
+
+    contact_internal_token = os.environ.get("CONTACT_INTERNAL_TOKEN", "")
+    contact_allowed_origin = os.environ.get("CONTACT_ALLOWED_ORIGIN", "").strip()
+    build_revision = (
+        os.environ.get("BUILD_REVISION") or os.environ.get("VERCEL_GIT_COMMIT_SHA") or "unknown"
+    ).strip()
+    resend_api_key = os.environ.get("RESEND_API_KEY", "").strip()
+    resend_api_url = os.environ.get("RESEND_API_URL", RESEND_API_ORIGIN).strip().rstrip("/")
+    contact_email_from = os.environ.get("CONTACT_EMAIL_FROM", "").strip()
+    contact_email_to = os.environ.get("CONTACT_EMAIL_TO", "").strip()
+
+    if environment == "production":
+        _validate_production_database(database_url)
+        configured_migration_url = os.environ.get("MIGRATION_DATABASE_URL", "").strip()
+        if configured_migration_url:
+            raise RuntimeError(
+                "MIGRATION_DATABASE_URL must not be configured in the production runtime"
             )
         if (
             len(contact_internal_token) < 32
@@ -130,91 +71,81 @@ def get_settings() -> Settings:
             raise RuntimeError("Production requires a 32-character CONTACT_INTERNAL_TOKEN")
         if not fullmatch(r"[0-9a-fA-F]{7,64}", build_revision):
             raise RuntimeError("Production requires BUILD_REVISION to be a Git commit SHA")
-    pool_size = int(os.environ.get("DATABASE_POOL_SIZE", "5"))
-    max_overflow = int(os.environ.get("DATABASE_MAX_OVERFLOW", "5"))
-    pool_timeout = int(os.environ.get("DATABASE_POOL_TIMEOUT", "10"))
-    pool_recycle = int(os.environ.get("DATABASE_POOL_RECYCLE", "300"))
-    if pool_size < 1 or max_overflow < 0 or pool_timeout < 1 or pool_recycle < 1:
-        raise RuntimeError("Database pool settings must be positive (overflow may be zero)")
-    email_host = os.environ.get("EMAIL_HOST", "").strip()
-    email_user = os.environ.get("EMAIL_USER", "")
-    email_password = os.environ.get("EMAIL_PASSWORD", "")
-    email_from = os.environ.get("EMAIL_FROM", "").strip()
-    email_to = os.environ.get("EMAIL_TO", "").strip()
-    email_use_tls = _parse_bool(os.environ.get("EMAIL_USE_TLS", "true"), "EMAIL_USE_TLS")
-    try:
-        email_port = int(os.environ.get("EMAIL_PORT", "587"))
-    except ValueError as error:
-        raise RuntimeError("EMAIL_PORT must be an integer between 1 and 65535") from error
-    if not 1 <= email_port <= 65535:
-        raise RuntimeError("EMAIL_PORT must be an integer between 1 and 65535")
+        if contact_allowed_origin != "https://ajmiraribam.me":
+            raise RuntimeError("Production CONTACT_ALLOWED_ORIGIN must be https://ajmiraribam.me")
+        if resend_api_url != RESEND_API_ORIGIN:
+            raise RuntimeError("Production RESEND_API_URL must use the official Resend API")
 
-    email_status = _email_status(
+    email_status = _resend_status(
         environment,
-        host=email_host,
-        user=email_user,
-        password=email_password,
-        sender=email_from,
-        recipient=email_to,
-        use_tls=email_use_tls,
+        api_key=resend_api_key,
+        sender=contact_email_from,
+        recipient=contact_email_to,
     )
+    if environment == "production" and email_status != "configured":
+        raise RuntimeError("Production requires a valid Resend key, sender, and recipient")
 
     return Settings(
+        environment=environment,
         database_url=database_url,
         migration_database_url=migration_database_url,
         contact_internal_token=contact_internal_token,
+        contact_allowed_origin=contact_allowed_origin,
         build_revision=build_revision,
-        database_pool_size=pool_size,
-        database_max_overflow=max_overflow,
-        database_pool_timeout=pool_timeout,
-        database_pool_recycle=pool_recycle,
-        email_host=email_host,
-        email_port=email_port,
-        email_user=email_user,
-        email_password=email_password,
-        email_from=email_from,
-        email_to=email_to,
-        email_use_tls=email_use_tls,
+        resend_api_key=resend_api_key,
+        resend_api_url=resend_api_url,
+        contact_email_from=contact_email_from,
+        contact_email_to=contact_email_to,
         email_status=email_status,
     )
 
 
-def _parse_bool(value: str, name: str) -> bool:
-    normalized = value.strip().lower()
-    if normalized in {"true", "1", "yes", "on"}:
-        return True
-    if normalized in {"false", "0", "no", "off"}:
-        return False
-    raise RuntimeError(f"{name} must be true or false")
+def _normalize_database_url(value: str) -> str:
+    if value.startswith("postgres://"):
+        value = "postgresql+psycopg://" + value.removeprefix("postgres://")
+    elif value.startswith("postgresql://"):
+        value = "postgresql+psycopg://" + value.removeprefix("postgresql://")
+    return value
 
 
-def _email_status(
-    environment: str,
-    *,
-    host: str,
-    user: str,
-    password: str,
-    sender: str,
-    recipient: str,
-    use_tls: bool,
-) -> str:
-    configured_values = (host, user, password, sender, recipient)
+def _validate_production_database(value: str) -> None:
+    try:
+        parsed = make_url(value)
+    except Exception as error:
+        raise RuntimeError("Production requires a valid PostgreSQL DATABASE_URL") from error
+    if parsed.drivername != "postgresql+psycopg":
+        raise RuntimeError("Production requires a PostgreSQL DATABASE_URL")
+    if not all((parsed.host, parsed.username, parsed.password, parsed.database)):
+        raise RuntimeError("Production DATABASE_URL must include host, credentials, and database")
+    if not parsed.host.endswith(".neon.tech") or "-pooler." not in parsed.host:
+        raise RuntimeError("Production DATABASE_URL must use the Neon pooled endpoint")
+    if parsed.query.get("sslmode") not in {"require", "verify-full"}:
+        raise RuntimeError("Production DATABASE_URL must require TLS with sslmode=require")
+
+
+def _resend_status(environment: str, *, api_key: str, sender: str, recipient: str) -> str:
+    configured_values = (api_key, sender, recipient)
     if not any(configured_values):
         return "not_configured"
-    if not all((host, sender, recipient)) or bool(user) != bool(password):
+    if not all(configured_values) or not api_key.startswith("re_"):
         return "misconfigured"
-    if "\r" in sender or "\n" in sender or "\r" in recipient or "\n" in recipient:
+    if any(char in sender + recipient for char in "\r\n"):
         return "misconfigured"
     try:
-        sender_address = parseaddr(sender)[1]
+        sender_addresses = getaddresses([sender])
         recipient_addresses = getaddresses([recipient])
-        validate_email(sender_address, check_deliverability=False)
-        if not recipient_addresses:
+        if len(sender_addresses) != 1 or len(recipient_addresses) != 1:
             return "misconfigured"
-        for _name, address in recipient_addresses:
-            validate_email(address, check_deliverability=False)
+        sender_address = sender_addresses[0][1] or parseaddr(sender)[1]
+        recipient_address = recipient_addresses[0][1] or parseaddr(recipient)[1]
+        if not sender_address or not recipient_address:
+            return "misconfigured"
+        validate_email(sender_address, check_deliverability=False)
+        validate_email(recipient_address, check_deliverability=False)
+        if "," in recipient or ";" in recipient:
+            return "misconfigured"
     except (ValueError, EmailNotValidError):
         return "misconfigured"
-    if environment == "production" and not use_tls:
+    if environment == "production" and len(api_key) < 20:
         return "misconfigured"
     return "configured"

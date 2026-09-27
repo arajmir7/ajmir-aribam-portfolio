@@ -1,13 +1,10 @@
 #!/usr/bin/env python3
-"""Create a checked PostgreSQL dump and optionally upload it to encrypted S3."""
+"""Create a verified local PostgreSQL dump with a SHA-256 sidecar."""
 
 from __future__ import annotations
 
 import hashlib
-import json
 import os
-import re
-import shutil
 import subprocess
 import sys
 import tempfile
@@ -67,79 +64,12 @@ def postgres_environment() -> tuple[dict[str, str], Path]:
     return environment, passfile
 
 
-def s3_settings() -> tuple[str, str, str, str]:
-    bucket = os.environ.get("BACKUP_S3_BUCKET", "").strip()
-    prefix = os.environ.get("BACKUP_S3_PREFIX", "portfolio/prod").strip("/")
-    region = os.environ.get("AWS_REGION", "").strip()
-    kms_key = os.environ.get("AWS_KMS_KEY_ID", "").strip()
-    if (
-        not re.fullmatch(r"[a-z0-9][a-z0-9.-]{1,61}[a-z0-9]", bucket)
-        or not region
-        or not kms_key
-        or not re.fullmatch(r"[A-Za-z0-9._/-]+", prefix)
-        or ".." in prefix.split("/")
-    ):
-        raise RuntimeError("Production S3 backup configuration is incomplete or invalid")
-    return bucket, prefix, region, kms_key
-
-
-def aws(*arguments: str, region: str) -> subprocess.CompletedProcess[str]:
-    try:
-        return subprocess.run(
-            ["aws", *arguments, "--region", region],
-            check=True,
-            capture_output=True,
-            text=True,
-            timeout=1800,
-        )
-    except (subprocess.CalledProcessError, subprocess.TimeoutExpired) as error:
-        raise RuntimeError("The encrypted backup upload or verification failed") from error
-
-
-def upload_and_verify(path: Path, uri: str, region: str, bucket: str, kms_arn: str) -> None:
-    aws(
-        "s3",
-        "cp",
-        str(path),
-        uri,
-        "--only-show-errors",
-        "--sse",
-        "aws:kms",
-        "--sse-kms-key-id",
-        kms_arn,
-        region=region,
-    )
-    key = uri.removeprefix(f"s3://{bucket}/")
-    result = aws(
-        "s3api",
-        "head-object",
-        "--bucket",
-        bucket,
-        "--key",
-        key,
-        "--output",
-        "json",
-        region=region,
-    )
-    metadata = json.loads(result.stdout)
-    if (
-        int(metadata.get("ContentLength", 0)) != path.stat().st_size
-        or metadata.get("ServerSideEncryption") != "aws:kms"
-        or metadata.get("SSEKMSKeyId") != kms_arn
-    ):
-        raise RuntimeError("An uploaded backup object failed size or KMS verification")
-
-
 def main() -> None:
     os.umask(0o077)
     environment, passfile = postgres_environment()
-    production = os.environ.get("APP_ENV") == "production"
-    backup_dir = (
-        Path(tempfile.mkdtemp(prefix="portfolio-backup-"))
-        if production
-        else Path(os.environ.get("BACKUP_DIR", "/tmp/portfolio-backups"))
-    )
+    backup_dir = Path(os.environ.get("BACKUP_DIR", "./backups")).expanduser().resolve()
     backup_dir.mkdir(mode=0o700, parents=True, exist_ok=True)
+    backup_dir.chmod(0o700)
     timestamp = datetime.now(UTC).strftime("%Y%m%dT%H%M%SZ")
     filename = f"portfolio-{timestamp}-{uuid4().hex[:12]}.dump"
     output = backup_dir / filename
@@ -169,40 +99,10 @@ def main() -> None:
         checksum_path = output.with_suffix(output.suffix + ".sha256")
         checksum_path.write_text(f"{checksum}  {filename}\n", encoding="ascii")
 
-        if os.environ.get("APP_ENV") == "production":
-            bucket, prefix, region, kms_key = s3_settings()
-            if not os.environ.get("AWS_ACCESS_KEY_ID") or not os.environ.get(
-                "AWS_SECRET_ACCESS_KEY"
-            ):
-                raise RuntimeError("Production S3 backup credentials are missing")
-            key_result = aws(
-                "kms",
-                "describe-key",
-                "--key-id",
-                kms_key,
-                "--output",
-                "json",
-                region=region,
-            )
-            kms_arn = json.loads(key_result.stdout)["KeyMetadata"]["Arn"]
-            key = f"{prefix}/{filename}"
-            uri = f"s3://{bucket}/{key}"
-            for path, destination in (
-                (output, uri),
-                (checksum_path, f"{uri}.sha256"),
-            ):
-                upload_and_verify(path, destination, region, bucket, kms_arn)
-            complete = backup_dir / f"{filename}.complete"
-            complete.write_text(f"{checksum}  {filename}\n", encoding="ascii")
-            upload_and_verify(complete, f"{uri}.complete", region, bucket, kms_arn)
-            print(f"Encrypted PostgreSQL backup verified at {uri}")
-        else:
-            print(f"Local PostgreSQL backup verified: {output} ({checksum})")
+        print(f"PostgreSQL backup verified: {output} ({checksum})")
     finally:
         passfile.unlink(missing_ok=True)
         partial.unlink(missing_ok=True)
-        if production:
-            shutil.rmtree(backup_dir, ignore_errors=True)
 
 
 if __name__ == "__main__":

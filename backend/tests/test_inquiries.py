@@ -23,7 +23,7 @@ def client_with_db():
         "sqlite://", connect_args={"check_same_thread": False}, poolclass=StaticPool
     )
     Base.metadata.create_all(engine)
-    maker = sessionmaker(bind=engine)
+    maker = sessionmaker(bind=engine, expire_on_commit=False)
 
     def override():
         with maker() as db:
@@ -54,6 +54,13 @@ def headers(ip="203.0.113.1", idempotency_key=None):
     if idempotency_key:
         result["Idempotency-Key"] = idempotency_key
     return result
+
+
+def configure_resend(monkeypatch):
+    monkeypatch.setenv("RESEND_API_KEY", "re_test_" + "a" * 32)
+    monkeypatch.setenv("CONTACT_EMAIL_FROM", "Ajmir Aribam <contact@example.com>")
+    monkeypatch.setenv("CONTACT_EMAIL_TO", "owner@example.com")
+    monkeypatch.setenv("CONTACT_ALLOWED_ORIGIN", "https://ajmiraribam.me")
 
 
 def test_private_boundary_and_persistence():
@@ -109,10 +116,11 @@ def test_validation_spam_and_throttle():
     app.dependency_overrides.clear()
 
 
-def test_health_and_readiness():
+def test_health_readiness_is_private_and_hides_outbox_counts():
     client, _ = client_with_db()
     assert client.get("/health/live").status_code == 200
-    health = client.get("/health/ready").json()
+    assert client.get("/health/ready").status_code == 403
+    health = client.get("/health/ready", headers=headers()).json()
     assert health["status"] == "ready"
     assert health["database"] == "ready"
     assert health["outbox"] == {"pending": 0, "attempting": 0, "sent": 0, "failed": 0}
@@ -154,38 +162,62 @@ def test_database_failure_returns_safe_error_without_logging_contact_or_credenti
     app.dependency_overrides.clear()
 
 
-def test_smtp_failure_keeps_inquiry_and_schedules_bounded_retry(monkeypatch):
-    from app.core.config import get_settings
-    from app.services.email_outbox import process_one
+def test_provider_failure_keeps_persisted_inquiry_and_replay_returns_recorded(monkeypatch):
     from app.services.notifications import DeliveryFailure
 
     client, maker = client_with_db()
+    monkeypatch.setattr(
+        "app.api.routes.contact.process_inquiry",
+        lambda _inquiry_id: (_ for _ in ()).throw(
+            DeliveryFailure("resend_connection_failed", retryable=True)
+        ),
+    )
     key = str(uuid4())
-    response = client.post("/inquiries", json=payload(), headers=headers("203.0.113.8", key))
-    assert response.status_code == 200
-
-    monkeypatch.setenv("EMAIL_HOST", "mailpit.invalid")
-    monkeypatch.setenv("EMAIL_PORT", "1025")
-    monkeypatch.setenv("EMAIL_USER", "")
-    monkeypatch.setenv("EMAIL_PASSWORD", "")
-    monkeypatch.setenv("EMAIL_FROM", "Portfolio <no-reply@example.com>")
-    monkeypatch.setenv("EMAIL_TO", "owner@example.com")
-    monkeypatch.setenv("EMAIL_USE_TLS", "true")
-
-    def failed_notification(_inquiry, _settings):
-        raise DeliveryFailure("smtp_connection_failed", retryable=True)
-
-    monkeypatch.setattr("app.services.email_outbox.send_notification", failed_notification)
-    assert process_one(maker, get_settings())
+    first = client.post("/inquiries", json=payload(), headers=headers(idempotency_key=key))
+    replay = client.post("/inquiries", json=payload(), headers=headers(idempotency_key=key))
+    assert first.status_code == replay.status_code == 200
     with maker() as db:
-        rows = db.scalars(select(Inquiry).where(Inquiry.idempotency_key == key)).all()
-        assert len(rows) == 1
-        delivery = db.scalar(select(EmailDelivery).where(EmailDelivery.inquiry_id == rows[0].id))
+        assert len(db.scalars(select(Inquiry)).all()) == 1
+        delivery = db.scalar(select(EmailDelivery))
+        assert delivery is not None
+        assert delivery.status == "pending"
+    app.dependency_overrides.clear()
+
+
+def test_resend_failure_keeps_outbox_pending_and_schedules_bounded_retry(monkeypatch):
+    from app.core.config import get_settings
+    from app.schemas.inquiries import InquiryInput
+    from app.services.email_outbox import process_inquiry
+    from app.services.inquiries import store_inquiry
+    from app.services.notifications import DeliveryFailure
+
+    _client, maker = client_with_db()
+    configure_resend(monkeypatch)
+    monkeypatch.setattr(
+        "app.services.email_outbox.send_notification",
+        lambda _inquiry, _delivery_id, _settings: (_ for _ in ()).throw(
+            DeliveryFailure("resend_server_error", retryable=True)
+        ),
+    )
+    with maker() as db:
+        inquiry = store_inquiry(
+            db,
+            InquiryInput(**payload()),
+            "retry-request",
+            "203.0.113.9",
+            str(uuid4()),
+            source_origin="https://ajmiraribam.me",
+        )
+        inquiry_id = inquiry.id
+    assert process_inquiry(inquiry_id, maker, get_settings())
+    with maker() as db:
+        inquiry = db.get(Inquiry, inquiry_id)
+        delivery = db.scalar(select(EmailDelivery).where(EmailDelivery.inquiry_id == inquiry_id))
         assert delivery is not None
         assert delivery.status == "pending"
         assert delivery.attempt_count == 1
-        assert delivery.last_error == "smtp_connection_failed"
-        assert rows[0].notification_status == "pending"
+        assert delivery.last_error == "resend_server_error"
+        assert inquiry is not None and inquiry.notification_status == "pending"
         retry_at = delivery.next_attempt_at
         if retry_at.tzinfo is None:
             retry_at = retry_at.replace(tzinfo=UTC)
@@ -193,17 +225,12 @@ def test_smtp_failure_keeps_inquiry_and_schedules_bounded_retry(monkeypatch):
     app.dependency_overrides.clear()
 
 
-def test_email_message_uses_configured_sender_and_visitor_reply_to(monkeypatch):
+def test_resend_payload_uses_configured_from_and_visitor_reply_to(monkeypatch):
     from app.core.config import get_settings
     from app.db.models import Inquiry
-    from app.services.notifications import build_message
+    from app.services.notifications import build_payload
 
-    monkeypatch.setenv("EMAIL_HOST", "smtp.example.test")
-    monkeypatch.setenv("EMAIL_FROM", "Portfolio <no-reply@example.com>")
-    monkeypatch.setenv("EMAIL_TO", "owner@example.com")
-    monkeypatch.setenv("EMAIL_USER", "")
-    monkeypatch.setenv("EMAIL_PASSWORD", "")
-    monkeypatch.setenv("EMAIL_USE_TLS", "true")
+    configure_resend(monkeypatch)
     inquiry = Inquiry(
         id=str(uuid4()),
         name="Ada Lovelace",
@@ -215,14 +242,13 @@ def test_email_message_uses_configured_sender_and_visitor_reply_to(monkeypatch):
         source_origin="https://ajmiraribam.me",
         created_at=datetime.now(UTC),
     )
-    message = build_message(inquiry, get_settings())
-    assert message["Subject"] == "Portfolio enquiry — project — Ada Lovelace"
-    assert message["From"] == "Portfolio <no-reply@example.com>"
-    assert message["To"] == "owner@example.com"
-    assert message["Reply-To"] == "ada@example.com"
-    assert message.get_content_type() == "text/plain"
-    content = message.get_content()
-    assert "Ada Lovelace" in content
+    message = build_payload(inquiry, get_settings())
+    assert message["subject"] == "Portfolio inquiry — project — Ada Lovelace"
+    assert message["from"] == "Ajmir Aribam <contact@example.com>"
+    assert message["to"] == ["owner@example.com"]
+    assert message["reply_to"] == "ada@example.com"
+    content = str(message["text"])
+    assert "Name: Ada Lovelace" in content
     assert f"Inquiry ID: {inquiry.id}" in content
     assert "Submitted at (UTC): " in content
     assert "Source: Portfolio contact form" in content
@@ -233,14 +259,9 @@ def test_email_message_uses_configured_sender_and_visitor_reply_to(monkeypatch):
 def test_subject_name_cannot_inject_mail_headers(monkeypatch):
     from app.core.config import get_settings
     from app.db.models import Inquiry
-    from app.services.notifications import build_message
+    from app.services.notifications import build_payload
 
-    monkeypatch.setenv("EMAIL_HOST", "smtp.example.test")
-    monkeypatch.setenv("EMAIL_FROM", "Portfolio <no-reply@example.com>")
-    monkeypatch.setenv("EMAIL_TO", "owner@example.com")
-    monkeypatch.setenv("EMAIL_USER", "")
-    monkeypatch.setenv("EMAIL_PASSWORD", "")
-    monkeypatch.setenv("EMAIL_USE_TLS", "true")
+    configure_resend(monkeypatch)
     inquiry = Inquiry(
         id=str(uuid4()),
         name="Ada\r\nBcc: attacker@example.com",
@@ -251,89 +272,103 @@ def test_subject_name_cannot_inject_mail_headers(monkeypatch):
         idempotency_key=str(uuid4()),
         created_at=datetime.now(UTC),
     )
-    message = build_message(inquiry, get_settings())
-    assert "Bcc" not in message
-    assert "attacker@example.com" not in message
-    assert "\r" not in message["Subject"]
-    assert "\n" not in message["Subject"]
+    message = build_payload(inquiry, get_settings())
+    assert "Bcc" not in str(message["subject"])
+    assert "attacker@example.com" not in str(message["subject"])
+    assert "\r" not in str(message["subject"])
+    assert "\n" not in str(message["subject"])
 
 
-def test_permanent_smtp_failure_is_failed_and_operator_recoverable(monkeypatch):
+def test_permanent_resend_failure_is_failed_and_operator_recoverable(monkeypatch):
     from app.core.config import get_settings
-    from app.services.email_outbox import process_one
+    from app.schemas.inquiries import InquiryInput
+    from app.services.email_outbox import process_inquiry
+    from app.services.inquiries import store_inquiry
     from app.services.notifications import DeliveryFailure
 
-    client, maker = client_with_db()
-    key = str(uuid4())
-    assert (
-        client.post("/inquiries", json=payload(), headers=headers(idempotency_key=key)).status_code
-        == 200
-    )
-    monkeypatch.setenv("EMAIL_HOST", "smtp.example.com")
-    monkeypatch.setenv("EMAIL_PORT", "587")
-    monkeypatch.setenv("EMAIL_USER", "")
-    monkeypatch.setenv("EMAIL_PASSWORD", "")
-    monkeypatch.setenv("EMAIL_FROM", "Portfolio <no-reply@example.com>")
-    monkeypatch.setenv("EMAIL_TO", "owner@example.com")
-    monkeypatch.setenv("EMAIL_USE_TLS", "true")
+    _client, maker = client_with_db()
+    configure_resend(monkeypatch)
     monkeypatch.setattr(
         "app.services.email_outbox.send_notification",
-        lambda _inquiry, _settings: (_ for _ in ()).throw(
-            DeliveryFailure("smtp_authentication_failed", retryable=False)
+        lambda _inquiry, _delivery_id, _settings: (_ for _ in ()).throw(
+            DeliveryFailure("resend_request_rejected", retryable=False)
         ),
     )
-
-    assert process_one(maker, get_settings())
     with maker() as db:
-        inquiry = db.scalar(select(Inquiry).where(Inquiry.idempotency_key == key))
-        assert inquiry is not None
-        delivery = db.scalar(select(EmailDelivery).where(EmailDelivery.inquiry_id == inquiry.id))
+        inquiry = store_inquiry(db, InquiryInput(**payload()), "permanent", "203.0.113.4")
+        inquiry_id = inquiry.id
+    assert process_inquiry(inquiry_id, maker, get_settings())
+    with maker() as db:
+        inquiry = db.get(Inquiry, inquiry_id)
+        delivery = db.scalar(select(EmailDelivery).where(EmailDelivery.inquiry_id == inquiry_id))
         assert delivery is not None
         assert delivery.status == "failed"
         assert delivery.attempt_count == 1
         assert delivery.next_attempt_at is None
         assert delivery.sent_at is None
-        assert delivery.last_error == "smtp_authentication_failed"
-        assert inquiry.notification_status == "failed"
+        assert delivery.last_error == "resend_request_rejected"
+        assert inquiry is not None and inquiry.notification_status == "failed"
     app.dependency_overrides.clear()
 
 
-def test_transient_smtp_failures_stop_after_five_attempts(monkeypatch):
+def test_transient_resend_failures_stop_after_five_attempts(monkeypatch):
     from app.core.config import get_settings
+    from app.schemas.inquiries import InquiryInput
     from app.services.email_outbox import MAX_ATTEMPTS, process_one
+    from app.services.inquiries import store_inquiry
     from app.services.notifications import DeliveryFailure
 
-    client, maker = client_with_db()
-    key = str(uuid4())
-    assert (
-        client.post("/inquiries", json=payload(), headers=headers(idempotency_key=key)).status_code
-        == 200
-    )
-    monkeypatch.setenv("EMAIL_HOST", "smtp.example.com")
-    monkeypatch.setenv("EMAIL_PORT", "587")
-    monkeypatch.setenv("EMAIL_USER", "")
-    monkeypatch.setenv("EMAIL_PASSWORD", "")
-    monkeypatch.setenv("EMAIL_FROM", "Portfolio <no-reply@example.com>")
-    monkeypatch.setenv("EMAIL_TO", "owner@example.com")
-    monkeypatch.setenv("EMAIL_USE_TLS", "true")
+    _client, maker = client_with_db()
+    configure_resend(monkeypatch)
     monkeypatch.setattr(
         "app.services.email_outbox.send_notification",
-        lambda _inquiry, _settings: (_ for _ in ()).throw(
-            DeliveryFailure("smtp_connection_failed", retryable=True)
+        lambda _inquiry, _delivery_id, _settings: (_ for _ in ()).throw(
+            DeliveryFailure("resend_connection_failed", retryable=True)
         ),
     )
+    with maker() as db:
+        store_inquiry(db, InquiryInput(**payload()), "bounded-retries", "203.0.113.5")
 
     for _ in range(MAX_ATTEMPTS):
         with maker() as db:
             delivery = db.scalar(select(EmailDelivery))
+            assert delivery is not None
             delivery.next_attempt_at = datetime(2000, 1, 1, tzinfo=UTC)
             db.commit()
         assert process_one(maker, get_settings())
 
     with maker() as db:
         delivery = db.scalar(select(EmailDelivery))
+        assert delivery is not None
         assert delivery.status == "failed"
         assert delivery.attempt_count == MAX_ATTEMPTS
         assert delivery.next_attempt_at is None
-        assert delivery.last_error == "smtp_connection_failed"
+        assert delivery.last_error == "resend_connection_failed"
+    app.dependency_overrides.clear()
+
+
+def test_successful_provider_response_persists_message_id(monkeypatch):
+    from app.core.config import get_settings
+    from app.schemas.inquiries import InquiryInput
+    from app.services.email_outbox import process_inquiry
+    from app.services.inquiries import store_inquiry
+
+    _client, maker = client_with_db()
+    configure_resend(monkeypatch)
+    monkeypatch.setattr(
+        "app.services.email_outbox.send_notification",
+        lambda _inquiry, _delivery_id, _settings: "resend-message-123",
+    )
+    with maker() as db:
+        inquiry = store_inquiry(db, InquiryInput(**payload()), "sent-request", "203.0.113.6")
+        inquiry_id = inquiry.id
+    assert process_inquiry(inquiry_id, maker, get_settings())
+    with maker() as db:
+        inquiry = db.get(Inquiry, inquiry_id)
+        delivery = db.scalar(select(EmailDelivery).where(EmailDelivery.inquiry_id == inquiry_id))
+        assert delivery is not None
+        assert delivery.status == "sent"
+        assert delivery.provider_message_id == "resend-message-123"
+        assert delivery.sent_at is not None
+        assert inquiry is not None and inquiry.notification_status == "sent"
     app.dependency_overrides.clear()

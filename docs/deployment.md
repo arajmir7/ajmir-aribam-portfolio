@@ -1,55 +1,83 @@
-# Render deployment
+# Manual deployment: Vercel, Neon, and Resend
 
-## Status and topology
+This guide prepares two Vercel projects from one Git repository. It does not deploy, connect accounts, alter DNS, or perform a live email test. The canonical origin is `https://ajmiraribam.me`; `www` redirects to the apex. Vercel currently documents Python as Beta on all plans, so confirm its support and your account's plan limits before launch ([runtime status](https://vercel.com/docs/functions/runtimes/python)).
 
-`render.yaml` describes the Singapore deployment: a public Next.js web service, a private FastAPI service, a private email background worker, private Render Postgres, and a daily S3 backup job. The API and database have no public HTTP endpoint. The frontend talks to the API over Render's same-region private network; the worker polls the PostgreSQL outbox and submits notifications through the configured SMTP provider. Render's paid pre-deploy command provisions the restricted runtime database role and applies Alembic migrations before the API is replaced. [Render background workers](https://render.com/docs/background-workers) run continuously without inbound network traffic, which fits this polling worker.
+## 1. Create Neon database and roles
 
-This repository has not been connected to a Render workspace, DNS account, AWS account, or live domain. The Blueprint has not been remotely validated or deployed. Render CLI validation requires account authentication; the local PostgreSQL checks do not prove the managed database account has the permissions required by the bootstrap command. Do not route public traffic until the first deployment and release checks pass.
+Create a Neon project in a region near Vercel, then create the production database and separate migration/application roles. Copy the pooled connection URI for the application role from Neon and require `sslmode=require`. `DATABASE_URL` must use the pooled hostname containing `-pooler.`. Keep the direct migration URI in a password manager or protected local environment; never add it to Vercel. Neon supports pooled URI generation through its [connection URI API](https://api-docs.neon.tech/reference/getconnectionuri).
 
-Render documentation: [Blueprint reference](https://render.com/docs/blueprint-spec), [private services](https://render.com/docs/private-services), [private networking](https://render.com/docs/private-network), [Postgres credentials](https://render.com/docs/postgresql-credentials), and [custom domains](https://render.com/docs/custom-domains).
+Grant the application role only database `CONNECT`, schema `USAGE`, table `SELECT/INSERT/UPDATE/DELETE`, and required sequence privileges. Grant default privileges for future tables and sequences created by the migration role. Do not use the owner role as the runtime user.
 
-## Blueprint setup
+## Existing Render data, if any
 
-1. Connect the GitHub repository to Render and select the approved `main` branch. Create resources from the repository's `render.yaml`. Review the proposed Singapore region and paid plans before accepting any billable resource.
-2. Render prompts for the `sync: false` values on the backup job. Add the bucket, KMS key ID, AWS access key ID and secret after creating the bucket and least-privilege IAM identity described in [operations](operations.md). Keep the bucket private and in `ap-south-1`.
-3. Check the Postgres instance is private (`ipAllowList: []`) and that the generated application roles are distinct. The migration connection is provided to the API as `MIGRATION_DATABASE_URL`; `DATABASE_RUNTIME_USER` and `DATABASE_RUNTIME_PASSWORD` configure a separate API role. Before public DNS is attached, verify the Render Postgres migration credential can create or alter that role. Render does not provide database superuser access. If Render denies role creation, create a managed `portfolio_app` credential through the database Credentials UI/API, set its URL/password in the API service, and use a migration connection with permission to grant the schema/table/sequence privileges. The API deliberately fails health checks until its runtime and migration users are distinct and valid.
-4. Confirm the API pre-deploy task can connect, grant least-privilege DML to the runtime user, and apply migrations. Confirm the API is private and `/health/ready` returns its current revision, database status, SMTP configuration status and outbox counts.
-5. Confirm the private `portfolio-email-worker` is running the same revision and receives the API's runtime database credentials and `EMAIL_*` settings. Verify it receives no public HTTP endpoint.
-6. Confirm the web build used `NEXT_PUBLIC_SITE_URL=https://ajmiraribam.me`. Its readiness endpoint checks the private API and exact production contact configuration and returns only safe DB/email/outbox readiness fields.
-7. Configure GitHub repository variables `PRODUCTION_URL=https://ajmiraribam.me` and `PRODUCTION_REVISION=<deployed full commit SHA>` to enable the scheduled workflow in `.github/workflows/production-monitor.yml`. Configure GitHub Actions failure notifications or an owner-approved alert destination; the workflow does not send email or configure an external alert provider by itself.
-8. Add the apex custom domain to `portfolio-web`. Render's domain flow includes `www` and redirects the alias to the root/apex host. Do not add DNS records until the web service is ready for domain verification.
+No Render account credentials or database snapshot were provided, so no existing inquiries have been transferred. If the old database contains records that must be retained, do this before public cutover: pause old contact writes and stop its mail worker; create a consistent source dump in a private, access-restricted directory; restore it into a new empty Neon branch/database; apply current Alembic migrations using the direct migration URI; and compare table counts, Alembic revision, and selected records from a trusted shell. Do not copy database URLs or inquiry data into GitHub, tickets, or logs. Verify pending/attempting email rows and coordinate whether they should be dispatched through Resend before enabling the new contact form. Keep the source database intact until the owner verifies the transfer and recovery path.
 
-## Production environment
+## 2. Configure the Vercel frontend project
 
-Render injects service variables at runtime. `NEXT_PUBLIC_SITE_URL` must also be present during the frontend image build because Next.js embeds public environment values into the build.
+Import the repository and set Root Directory to `frontend`, Framework Preset to Next.js, Node.js version to 24, and enable Vercel System Environment Variables so the Git commit SHA is present. Use the default build command and output settings.
 
-| Service      | Required variables                                                                                                                                                                                                                                           | Source / purpose                                                                                                                                                                                    |
-| ------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Web          | `NEXT_PUBLIC_SITE_URL`, `CONTACT_ALLOWED_ORIGIN`, `CONTACT_API_HOSTPORT`, `CONTACT_INTERNAL_TOKEN`, `CONTACT_CLIENT_IP_HEADER`, `BUILD_REVISION`                                                                                                             | Canonical HTTPS origin; exact allowed origin; private API host:port; shared server-only token; trusted Render proxy header (`x-forwarded-for`); full source commit SHA.                             |
-| API          | `APP_ENV=production`, `MIGRATION_DATABASE_URL`, `DATABASE_RUNTIME_USER`, `DATABASE_RUNTIME_PASSWORD`, `CONTACT_INTERNAL_TOKEN`, `BUILD_REVISION`                                                                                                             | Migration connection and separate limited runtime account; same token as web and worker; deployed source SHA. Pool settings are optional and conservative by default.                               |
-| Email worker | `APP_ENV=production`, `MIGRATION_DATABASE_URL`, `DATABASE_RUNTIME_USER`, `DATABASE_RUNTIME_PASSWORD`, `CONTACT_INTERNAL_TOKEN`, `BUILD_REVISION`, `EMAIL_HOST`, `EMAIL_PORT`, `EMAIL_USER`, `EMAIL_PASSWORD`, `EMAIL_FROM`, `EMAIL_TO`, `EMAIL_USE_TLS=true` | Same limited runtime database account; SMTP provider endpoint/credentials and owner-configured sender/recipient. Configure these secrets in Render or reference matching API environment variables. |
-| Backup Cron  | `APP_ENV=production`, `DATABASE_URL`, `AWS_REGION`, `BACKUP_S3_BUCKET`, `BACKUP_S3_PREFIX`, `AWS_KMS_KEY_ID`, `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`                                                                                                   | PostgreSQL connection; encrypted S3 destination and credentials with only required bucket/KMS access.                                                                                               |
+Set these Preview/Production environment variables on the frontend project:
 
-Production configuration rejects localhost, SQLite, weak or placeholder credentials, an invalid revision, non-HTTPS canonical origin, mismatched allowed origin, and an unsupported trusted-header name. SMTP settings are validated separately: if all `EMAIL_*` fields are empty, inquiry storage remains available while readiness reports `not_configured`; partial settings report `misconfigured`. Production requires TLS, paired SMTP username/password when authentication is used, and valid `EMAIL_FROM`/`EMAIL_TO`. `configured` does not prove a live SMTP connection. Do not set secrets in `.env`, Docker build arguments (except the public canonical origin), source control, or `NEXT_PUBLIC_*` variables.
+| Variable                   | Value                                                       |
+| -------------------------- | ----------------------------------------------------------- |
+| `NEXT_PUBLIC_SITE_URL`     | `https://ajmiraribam.me`                                    |
+| `CONTACT_ALLOWED_ORIGIN`   | `https://ajmiraribam.me`                                    |
+| `CONTACT_API_URL`          | `https://api.ajmiraribam.me`                                |
+| `CONTACT_INTERNAL_TOKEN`   | Random 32+ character secret, also configured on API project |
+| `CONTACT_CLIENT_IP_HEADER` | `x-forwarded-for`                                           |
+| `BUILD_REVISION`           | Optional when Vercel provides the Git commit SHA            |
 
-## DNS and TLS for `ajmiraribam.me`
+Only `NEXT_PUBLIC_SITE_URL` is public. The internal token must remain server-side. Use isolated Preview credentials and origin, or keep contact disabled in Preview; never copy production secrets to Preview.
 
-In the domain provider's DNS zone, use Render's current domain instructions and the target shown on the `portfolio-web` service:
+## 3. Configure the Vercel FastAPI project
 
-| Type  | Host  | Value                        | Notes                                                                                                             |
-| ----- | ----- | ---------------------------- | ----------------------------------------------------------------------------------------------------------------- |
-| A     | `@`   | `216.24.57.1`                | Render's documented apex A record; verify against the service's current custom-domain instructions before saving. |
-| CNAME | `www` | `portfolio-web.onrender.com` | Replace with the exact generated `onrender.com` hostname displayed by Render if it differs.                       |
+Import the same repository as a second Vercel project. Set Root Directory to `backend`, Python version to 3.12, and enable Vercel System Environment Variables. The Python entry point is `app.main:app` from `backend/pyproject.toml`.
 
-Remove conflicting `AAAA` records for the apex and `www`. Preserve unrelated MX/TXT records used for email or domain verification. Add both names to Render, wait for domain verification and managed TLS issuance, then check HTTP-to-HTTPS and `www`-to-apex permanent redirects with the smoke script. Render custom-domain guide: [Configure a custom domain](https://render.com/docs/custom-domains); Namecheap-specific steps: [Configure Namecheap DNS](https://render.com/docs/configure-namecheap-dns).
+Set these Production variables on the backend project:
 
-## Release procedure
+| Variable                 | Value                                                             |
+| ------------------------ | ----------------------------------------------------------------- |
+| `APP_ENV`                | `production`                                                      |
+| `DATABASE_URL`           | Neon pooled application-role URI with TLS                         |
+| `CONTACT_INTERNAL_TOKEN` | Same random secret as frontend project                            |
+| `CONTACT_ALLOWED_ORIGIN` | `https://ajmiraribam.me`                                          |
+| `RESEND_API_KEY`         | Resend API key                                                    |
+| `CONTACT_EMAIL_FROM`     | Verified sender, such as `Ajmir Aribam <contact@verified-domain>` |
+| `CONTACT_EMAIL_TO`       | `arajmir7@gmail.com`                                              |
+| `BUILD_REVISION`         | Optional if Vercel provides the Git commit SHA                    |
 
-1. Require `.github/workflows/ci.yml` to pass for the exact commit to deploy. Render auto-deploys after CI checks pass; disable/hold automatic deployment if the candidate has not completed owner review.
-2. Confirm the target Postgres plan's automated recovery window and storage capacity. Run the backup job manually, check its completed dump, checksum and KMS encryption in S3, then restore that object to a new isolated database and verify its Alembic revision and a known inquiry before migration or traffic cutover.
-3. The Render pre-deploy command performs runtime-role grants and `alembic upgrade head`. Migrations must remain backward compatible with both the new and previous application revision. Never edit migration history to make a drift check pass.
-4. Verify `/health/live`, `/health/ready`, and `/api/health`, the current revision, public routes, security headers, canonical metadata, sitemap, TLS, and both redirects.
-5. Verify contact success persists exactly one inquiry and one `pending` outbox record. Verify invalid input returns `422`, a foreign Origin returns `403` without persistence, and rate-limited traffic returns `429`. If SMTP is configured, separately verify worker delivery and inspect the delivery row for `sent`, attempt count and timestamps; an API success alone only confirms database persistence.
-6. Run `PRODUCTION_URL=https://ajmiraribam.me EXPECTED_REVISION=<full SHA> bash scripts/production-smoke.sh` from a trusted runner. Keep its output with the release record and confirm the scheduled monitor is active.
+Do not configure `MIGRATION_DATABASE_URL` on the application, or set database/Resend credentials on the frontend. Production configuration fails closed when required settings are missing.
 
-Local deployment commands are `make compose-up`, `make email-qa`, `make production-smoke` (after setting `PRODUCTION_URL` and `EXPECTED_REVISION`), and `make verify`. The email QA uses loopback-only Mailpit and disposable PostgreSQL, never provider credentials. Do not run a local Compose deployment command against production credentials.
+## 4. Apply Alembic migrations before traffic
+
+Use Python 3.12/uv from a trusted shell and the direct Neon migration URI. Apply and check the schema before enabling production traffic:
+
+```sh
+cd backend
+MIGRATION_DATABASE_URL='postgresql+psycopg://<migration-role>:<password>@<direct-neon-host>/<database>?sslmode=require' uv run alembic upgrade head
+MIGRATION_DATABASE_URL='postgresql+psycopg://<migration-role>:<password>@<direct-neon-host>/<database>?sslmode=require' uv run alembic check
+```
+
+Avoid shell history/transcript exposure; prefer a protected environment file or secret manager. Confirm the database reports migration `003_resend_message_id`. Migrations are explicit and are not run during application startup.
+
+## 5. Set up Resend
+
+Create a Resend account and API key; add the key only to the backend project. Add and verify a sending domain, and publish exactly the SPF/DKIM DNS records Resend provides. Preserve existing MX/TXT records. Set `CONTACT_EMAIL_FROM` to a verified sender and `CONTACT_EMAIL_TO=arajmir7@gmail.com`. Visitor email remains `Reply-To`, never `From`.
+
+## 6. Attach domains and TLS
+
+Add `ajmiraribam.me` and `www.ajmiraribam.me` to the frontend project, with the apex primary. Add `api.ajmiraribam.me` to the backend project. Copy the exact A/ALIAS/CNAME records displayed in Vercel project settings; do not rely on guessed values because records can depend on the project and may change. Remove only conflicting web records, preserve mail records, and do not put an unverified proxy/CDN in front of Vercel. Wait for Vercel to verify domains and issue managed TLS. The app redirects `www` to the apex while preserving path and query.
+
+## 7. Deploy, smoke, and approve a live contact test
+
+Require `.github/workflows/ci.yml` to pass for the exact commit. In each Vercel project's Deployments view, create/promote a production deployment from that same commit; record its full SHA and deployment URL. Check backend `/health/live`; unauthenticated `/health/ready` must return `403`. Frontend `/api/health` must report `ready` with only `status` and `revision`.
+
+Run `PRODUCTION_URL=https://ajmiraribam.me EXPECTED_REVISION=<full SHA> bash scripts/production-smoke.sh` from a trusted runner. Then obtain owner approval for one real inquiry. Verify one Neon inquiry/outbox row, delivery state and provider ID, owner inbox receipt, visitor `Reply-To`, and logs free of secrets and inquiry content. A successful form response means the inquiry is durably saved even if delivery later needs retry.
+
+Set GitHub repository variables `PRODUCTION_URL=https://ajmiraribam.me` and `PRODUCTION_REVISION=<full SHA>` for scheduled public smoke checks. Configure owner alerts for Vercel deploy/function failures, Neon availability/storage/connection pressure, Resend delivery failures, and failed Actions runs; this repository does not configure external alert destinations.
+
+## 8. Backups and rollback
+
+Confirm the Neon plan's recovery window, retention, and export/restore options. Before launch, take an owner-approved backup/export, restore it to a new isolated database/branch, verify its Alembic revision and known data, and record evidence. `make verify` tests local backup/checksum/restore tooling only, not a Neon account. Roll back frontend and API to compatible Vercel deployments together. Prefer forward corrective migrations; do not automatically downgrade production. Recover data into a separate Neon branch/database, validate, then switch connections in a controlled window.
+
+No Vercel/Neon/Resend account, DNS, TLS, deployment, backup schedule, alert, or live email delivery is asserted as configured by this repository.

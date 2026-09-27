@@ -1,85 +1,28 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-project="portfolio_verify_$$"
-workdir="$(mktemp -d)"
-headers="$workdir/headers"
-port="$(python3 -c 'import socket; s=socket.socket(); s.bind(("127.0.0.1", 0)); print(s.getsockname()[1]); s.close()')"
-export COMPOSE_PROJECT_NAME="$project"
-export POSTGRES_PASSWORD=portfolio_compose_verify_migration_password_at_least_32_chars
-export DATABASE_RUNTIME_USER=portfolio_app
-export DATABASE_RUNTIME_PASSWORD=local-compose-app-db-password-at-least-32-chars
-export CONTACT_INTERNAL_TOKEN=local-compose-token-at-least-32-characters
-export NEXT_PUBLIC_SITE_URL=https://ajmiraribam.me
-export CONTACT_ALLOWED_ORIGIN=https://ajmiraribam.me
-export CONTACT_CLIENT_IP_HEADER=x-forwarded-for
-export EMAIL_HOST=
-export EMAIL_PORT=587
-export EMAIL_USER=
-export EMAIL_PASSWORD=
-export EMAIL_FROM=
-export EMAIL_TO=
-export EMAIL_USE_TLS=true
-export BUILD_REVISION="$(git rev-parse --short HEAD)"
-export PORTFOLIO_WEB_PORT="$port"
+root="$(cd "$(dirname "$0")/.." && pwd)"
+compose=(docker compose -f "$root/compose.yaml" -f "$root/infra/compose.dev.yaml")
+export COMPOSE_PROJECT_NAME="portfolio_compose_verify_$$"
+export POSTGRES_PASSWORD=portfolio_compose_verify_password_32_chars
+export PORTFOLIO_DB_PORT="$(python3 -c 'import socket; s=socket.socket(); s.bind(("127.0.0.1", 0)); print(s.getsockname()[1]); s.close()')"
+export APP_ENV=test
+export DATABASE_URL="postgresql+psycopg://portfolio:${POSTGRES_PASSWORD}@127.0.0.1:${PORTFOLIO_DB_PORT}/portfolio"
 
-cleanup() {
-  docker compose down -v --remove-orphans >/dev/null 2>&1 || true
-  rm -rf "$workdir"
-}
+cleanup() { "${compose[@]}" down -v --remove-orphans >/dev/null 2>&1 || true; }
 trap cleanup EXIT
 
-docker compose up -d --build --wait postgres
-docker compose run --rm --build backend python -m app.maintenance prepare-runtime-role
-docker compose run --rm --build backend alembic upgrade head
-docker compose up -d --build --wait
-curl --fail --silent --show-error "http://127.0.0.1:${port}/api/health" >/dev/null
-
-curl --fail --silent --show-error -D "$headers" \
-  "http://127.0.0.1:${port}/" -o /dev/null
-for header in content-security-policy strict-transport-security x-content-type-options referrer-policy x-frame-options; do
-  grep -qi "^${header}:" "$headers" || {
-    echo "Local production response is missing $header." >&2
-    exit 1
-  }
-done
-
-status="$(curl --silent --show-error -o /dev/null -w '%{http_code}' \
-  -H "Origin: ${CONTACT_ALLOWED_ORIGIN}" -H 'X-Forwarded-For: 198.51.100.41' -H 'Content-Type: application/json' \
-  --data '{"name":"Compose Verification","email":"verify@example.com","topic":"project","message":"Verifying inquiry persistence in the isolated Compose topology.","website":""}' \
-  "http://127.0.0.1:${port}/api/contact")"
-[[ "$status" == 200 ]] || { echo "Contact smoke returned $status" >&2; exit 1; }
-
-status="$(curl --silent --show-error -o /dev/null -w '%{http_code}' \
-  -H "Origin: ${CONTACT_ALLOWED_ORIGIN}" -H 'X-Forwarded-For: 198.51.100.41' -H 'Content-Type: application/json' \
-  --data '{}' "http://127.0.0.1:${port}/api/contact")"
-[[ "$status" == 422 ]] || { echo "Invalid contact payload returned $status" >&2; exit 1; }
-
-for attempt in 2 3 4 5; do
-  status="$(curl --silent --show-error -o /dev/null -w '%{http_code}' \
-    -H "Origin: ${CONTACT_ALLOWED_ORIGIN}" -H 'X-Forwarded-For: 198.51.100.41' -H 'Content-Type: application/json' \
-    --data "{\"name\":\"Compose Verification ${attempt}\",\"email\":\"verify@example.com\",\"topic\":\"project\",\"message\":\"Rate limit verification ${attempt}.\"}" \
-    "http://127.0.0.1:${port}/api/contact")"
-  [[ "$status" == 200 ]] || { echo "Valid contact attempt ${attempt} returned $status" >&2; exit 1; }
-done
-
-status="$(curl --silent --show-error -o /dev/null -w '%{http_code}' \
-  -H "Origin: ${CONTACT_ALLOWED_ORIGIN}" -H 'X-Forwarded-For: 198.51.100.41' -H 'Content-Type: application/json' \
-  --data '{"name":"Compose Verification Limit","email":"verify@example.com","topic":"project","message":"This request should reach the rate limit."}' \
-  "http://127.0.0.1:${port}/api/contact")"
-[[ "$status" == 429 ]] || { echo "Rate limit request returned $status" >&2; exit 1; }
-
-count="$(docker compose exec -T postgres psql -U portfolio -d portfolio -Atc 'select count(*) from inquiries')"
-[[ "$count" == 5 ]] || { echo "Expected five persisted inquiries; found $count" >&2; exit 1; }
-delivery_count="$(docker compose exec -T postgres psql -U portfolio -d portfolio -Atc 'select count(*) from email_deliveries')"
-[[ "$delivery_count" == 5 ]] || { echo "Expected five durable email deliveries; found $delivery_count" >&2; exit 1; }
-pending_count="$(docker compose exec -T postgres psql -U portfolio -d portfolio -Atc "select count(*) from email_deliveries where status = 'pending'")"
-[[ "$pending_count" == 5 ]] || { echo "SMTP-missing inquiries should remain pending; found $pending_count" >&2; exit 1; }
-
-status="$(curl --silent --show-error -o /dev/null -w '%{http_code}' \
-  -H 'Origin: https://wrong.example' -H 'Content-Type: application/json' \
-  --data '{"name":"Cross Origin","email":"verify@example.com","topic":"project","message":"This message must be rejected by the public boundary."}' \
-  "http://127.0.0.1:${port}/api/contact")"
-[[ "$status" == 403 ]] || { echo "Cross-origin smoke returned $status" >&2; exit 1; }
-
-echo "Compose readiness, security headers, contact persistence/outbox/origin/rate limits passed. SMTP is explicitly unconfigured and records remain pending."
+"${compose[@]}" config --quiet
+"${compose[@]}" up -d --wait postgres
+(
+  cd "$root/backend"
+  uv run alembic upgrade head
+  uv run alembic check
+)
+revision="$("${compose[@]}" exec -T postgres psql -U portfolio -d portfolio -Atqc \
+  'SELECT version_num FROM alembic_version')"
+[[ "$revision" == "003_resend_message_id" ]] || {
+  echo "Compose database migration revision was $revision." >&2
+  exit 1
+}
+echo "Local Compose PostgreSQL, Alembic upgrade, and schema drift checks passed at $revision."

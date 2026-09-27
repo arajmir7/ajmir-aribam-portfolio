@@ -1,5 +1,5 @@
 FROM postgres:17-alpine
-RUN apk add --no-cache aws-cli python3
+RUN apk add --no-cache python3
 WORKDIR /app
 COPY scripts/backup_postgres.py scripts/restore_postgres.py ./
 USER postgres

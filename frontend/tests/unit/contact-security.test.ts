@@ -28,35 +28,31 @@ describe("contact origin boundary", () => {
 });
 
 describe("contact client address boundary", () => {
-  const headers = new Headers({
-    "x-forwarded-for": "203.0.113.7, 10.0.0.2",
-    "x-real-ip": "198.51.100.9",
-  });
-
-  it("ignores proxy headers until one is explicitly trusted", () => {
+  it("reads one valid address only from the explicitly trusted header", () => {
+    const headers = new Headers({
+      "x-forwarded-for": "203.0.113.7",
+      "x-real-ip": "198.51.100.9",
+    });
     expect(clientIpFromTrustedHeader(headers, undefined)).toBeNull();
     expect(clientIpFromTrustedHeader(headers, "forwarded")).toBeNull();
-  });
-
-  it("reads only the configured proxy header", () => {
     expect(clientIpFromTrustedHeader(headers, "x-real-ip")).toBe(
       "198.51.100.9",
     );
     expect(clientIpFromTrustedHeader(headers, "x-forwarded-for")).toBe(
-      "10.0.0.2",
+      "203.0.113.7",
     );
   });
 
-  it("uses the address appended by the trusted edge, never a spoofable first entry", () => {
-    const spoofed = new Headers({
-      "x-forwarded-for": "192.0.2.44, 198.51.100.18",
-    });
-    expect(clientIpFromTrustedHeader(spoofed, "x-forwarded-for")).toBe(
-      "198.51.100.18",
-    );
+  it("rejects caller-controlled proxy chains rather than guessing the trusted hop", () => {
     expect(
       clientIpFromTrustedHeader(
-        new Headers({ "x-forwarded-for": "192.0.2.44, not-an-ip" }),
+        new Headers({ "x-forwarded-for": "192.0.2.44, 198.51.100.18" }),
+        "x-forwarded-for",
+      ),
+    ).toBeNull();
+    expect(
+      clientIpFromTrustedHeader(
+        new Headers({ "x-forwarded-for": "not-an-ip" }),
         "x-forwarded-for",
       ),
     ).toBeNull();
@@ -67,17 +63,17 @@ describe("contact runtime readiness", () => {
   const productionConfig = {
     siteUrl: "https://ajmiraribam.me",
     allowedOrigin: "https://ajmiraribam.me",
-    apiHostport: "portfolio-api.internal:8000",
+    apiUrl: "https://api.ajmiraribam.me",
     internalToken: "a-random-production-token-with-32-characters",
     trustedClientIpHeader: "x-forwarded-for",
     buildRevision: "0123456789abcdef0123456789abcdef01234567",
     production: true,
   };
 
-  it("requires the canonical origin, private API, token, proxy, and Git revision", () => {
+  it("requires canonical HTTPS, the expected API host, token, proxy, and Git revision", () => {
     expect(isContactRuntimeReady(productionConfig)).toBe(true);
     expect(contactApiBaseUrl(productionConfig)).toBe(
-      "http://portfolio-api.internal:8000",
+      "https://api.ajmiraribam.me",
     );
     expect(
       isContactRuntimeReady({ ...productionConfig, allowedOrigin: "" }),
@@ -100,7 +96,6 @@ describe("contact runtime readiness", () => {
     expect(
       isContactRuntimeReady({
         ...productionConfig,
-        apiHostport: undefined,
         apiUrl: "https://public-api.example",
       }),
     ).toBe(false);
@@ -112,19 +107,24 @@ describe("contact runtime readiness", () => {
     ).toBe(false);
   });
 
-  it("rejects localhost and malformed private API addresses in production", () => {
+  it("rejects localhost and malformed API addresses in production", () => {
     expect(
       contactApiBaseUrl({
         ...productionConfig,
-        apiHostport: undefined,
         apiUrl: "http://localhost:8000",
       }),
     ).toBeNull();
     expect(
-      contactApiBaseUrl({ ...productionConfig, apiHostport: "127.0.0.1:8000" }),
+      contactApiBaseUrl({
+        ...productionConfig,
+        apiUrl: "https://api.ajmiraribam.me/path",
+      }),
     ).toBeNull();
     expect(
-      contactApiBaseUrl({ ...productionConfig, apiHostport: "api:99999" }),
+      contactApiBaseUrl({
+        ...productionConfig,
+        apiUrl: "https://api.example.com",
+      }),
     ).toBeNull();
   });
 });

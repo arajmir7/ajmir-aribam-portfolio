@@ -61,17 +61,17 @@ export default defineConfig({
     {
       command: `DATABASE_URL=sqlite:///./${database} CONTACT_INTERNAL_TOKEN=${token} uv run alembic upgrade head && DATABASE_URL=sqlite:///./${database} CONTACT_INTERNAL_TOKEN=${token} uv run uvicorn app.main:app --host 127.0.0.1 --port ${backendPort}`,
       cwd: "../backend",
-      url: `${backendUrl}/health/ready`,
+      url: `${backendUrl}/health/live`,
       reuseExistingServer: !process.env.CI,
       timeout: 120_000,
     },
     {
-      command: `npm run build && cp -R public .next/standalone/public && mkdir -p .next/standalone/.next && cp -R .next/static .next/standalone/.next/static && cd .next/standalone && HOSTNAME=127.0.0.1 PORT=${frontendInternalPort} node server.js`,
+      command: `npm run build && npm run start -- --hostname 127.0.0.1 --port ${frontendInternalPort}`,
       url: `${frontendInternalUrl}/api/health`,
       env: {
         NEXT_PUBLIC_SITE_URL: frontendUrl,
         CONTACT_ALLOWED_ORIGIN: frontendUrl,
-        CONTACT_API_HOSTPORT: `e2e-api.internal:${backendPort}`,
+        CONTACT_API_URL: `http://e2e-api.internal:${backendPort}`,
         CONTACT_INTERNAL_TOKEN: token,
         CONTACT_CLIENT_IP_HEADER: "x-forwarded-for",
         BUILD_REVISION: revision,

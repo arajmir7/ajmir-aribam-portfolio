@@ -1,43 +1,50 @@
-# Ajmir Aribam — Software Engineering Portfolio
+# Ajmir Aribam Portfolio
 
-Next.js portfolio frontend and private FastAPI inquiry service, backed by PostgreSQL. The two applications communicate over HTTP; the API and database are never exposed as public web services.
+An approved Next.js portfolio repository with a FastAPI contact service configured for PostgreSQL persistence and Resend transactional email. The migration changes deployment and operations only; it preserves the public presentation, routes, and project content.
 
-## Repository layout
+## Architecture and technology
 
-```text
-frontend/          Next.js routes, content, assets, unit and browser tests
-backend/           FastAPI API, persistence, Alembic migrations and API tests
-docs/              Architecture, security, deployment and release runbooks
-infra/              Development Compose and backup container
-.github/workflows/  CI quality gate and optional scheduled production smoke
-scripts/            Development, production smoke, PostgreSQL and Compose checks
-compose.yaml        Local production-like service topology
-render.yaml         Render web/API/email worker/backup service blueprint
-Makefile            Local development and release verification commands
-```
+- **Frontend:** Next.js 16, React 19, TypeScript; deployment target is a Vercel frontend project.
+- **Backend:** FastAPI; deployment target is Vercel's Python runtime at `api.ajmiraribam.me`.
+- **Database:** Neon PostgreSQL with TLS, pooled runtime connections, and Alembic migrations.
+- **Email:** Resend HTTPS API with a persisted, idempotent delivery outbox.
+- **Verification:** GitHub Actions, Vitest, pytest, PostgreSQL, Playwright, accessibility checks, dependency audits, and secret scanning.
+
+## Repository structure
+
+- `frontend/` — pages, public content, assets, and browser/unit tests
+- `backend/` — API, persistence, Alembic migrations, and API tests
+- `docs/` — architecture, deployment, security, development, and operations
+- `infra/` — local PostgreSQL Compose and backup utility image
+- `.github/workflows/` — CI release gate and optional public smoke workflow
+- `scripts/` — local development, verification, smoke, backup, and restore tools
+- `compose.yaml`, `.env.example`, and `Makefile` — local operations
 
 ## Local development
 
-Requirements: Node.js 24, npm, Python 3.12, uv, Docker and Make.
+Requirements: Node.js 24, npm, Python 3.12, uv, Docker, and Make.
 
 ```sh
 cp .env.example .env
+# Replace the local PostgreSQL password and internal-token placeholders.
 make install
 make dev
 ```
 
-The example values are for local use only. `make dev` starts PostgreSQL and Mailpit, applies migrations, and starts the frontend, API, and durable outbox worker. Open `http://localhost:3000`; inspect captured test mail at `http://localhost:8025`. Mailpit is loopback-only and never relays mail. Stop the services with `make compose-down`.
+`make dev` starts local PostgreSQL, applies migrations, and launches Next.js and FastAPI. The local email check uses a loopback fake Resend server and never sends real mail. Visit `http://127.0.0.1:3000`; `make compose-down` stops PostgreSQL.
 
-## Release verification
+## Environment and database migrations
 
-Run `make verify` from the repository root. It checks formatting, lint, strict TypeScript, unit/API/PostgreSQL tests, migrations and drift, browser and accessibility flows, dependency and secret scans, Docker builds, production-like Compose behavior, contact persistence/origin/rate limits, local PostgreSQL→outbox→Mailpit delivery and replay idempotency, and a backup restored into an isolated database. This is local evidence; it does not establish a live deployment or delivery to a real mailbox.
+`.env.example` documents local-only values. Configure production secrets in Vercel's encrypted environment settings; keep `NEXT_PUBLIC_*` values public. Migrations run explicitly, never at API startup: `cd backend && uv run alembic upgrade head`. Use a trusted local environment for the direct Neon migration URI; keep it out of Vercel runtime settings and logs.
 
-## Production
+## Contact delivery
 
-Render is the prepared target and `https://ajmiraribam.me` is the intended canonical origin. Production configuration is fail-closed. The API and separate email worker share a PostgreSQL runtime role and a durable, idempotent outbox. An inquiry succeeds only after the inquiry and pending notification are committed together; it never claims the owner notification was sent. Configure TLS SMTP on both services with `EMAIL_HOST`, `EMAIL_PORT`, `EMAIL_USER`, `EMAIL_PASSWORD`, `EMAIL_FROM`, `EMAIL_TO` and `EMAIL_USE_TLS=true`. If mail is absent, database readiness remains distinct and reports `email_delivery: not_configured`; outbox rows remain inspectable and recoverable. The scheduled backup needs a private S3 bucket, KMS key and narrowly scoped AWS credentials.
+FastAPI commits the inquiry and its outbox record before attempting Resend. A successful form response confirms durable storage, not email receipt. Provider failures remain stored and retryable; an accepted provider message ID is recorded. Real-provider smoke is opt-in and requires `resend-smoke --confirm-send`. See [contact delivery](docs/contact-delivery.md).
 
-See [deployment](docs/deployment.md), [contact delivery](docs/contact-delivery.md) and [operations](docs/operations.md) for Render setup, DNS, secrets, migrations, backup recovery, email operations, monitoring and rollback. Do not treat repository configuration or passing local checks as proof that DNS, TLS, backups, alerts, real email or production are active.
+## Verification
 
-## Project documentation
+`make verify` runs formatting, lint, strict TypeScript, unit/API/PostgreSQL tests, migration/drift checks, production frontend build, browser/accessibility/responsive tests, dependency and secret scans, Compose contact checks, mocked Resend success/failure/replay, PostgreSQL backup and isolated restore, and `git diff --check`. These are local results; they do not prove account setup, live email, production uptime, or field performance.
 
-[Architecture](docs/architecture.md) · [Development](docs/development.md) · [Testing](docs/testing.md) · [Deployment](docs/deployment.md) · [Contact delivery](docs/contact-delivery.md) · [Operations](docs/operations.md) · [Security](docs/security.md) · [Release certification](RELEASE_CERTIFICATION.md)
+## Deployment, security, and operations
+
+The intended host is Vercel, with `ajmiraribam.me` as the HTTPS canonical origin, Neon PostgreSQL, and Resend. The frontend and FastAPI are prepared as separate Vercel projects in this monorepo; account configuration and deployment remain outstanding. Copy DNS records from Vercel's project domain settings. Production configuration fails closed when required settings are absent. Read [deployment](docs/deployment.md), [security](docs/security.md), [operations](docs/operations.md), [testing](docs/testing.md), and [release certification](RELEASE_CERTIFICATION.md). No deployment, DNS change, live backup, external alert, or real email delivery is claimed here.

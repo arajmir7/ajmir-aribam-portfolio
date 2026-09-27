@@ -1,18 +1,16 @@
 """Operator-only maintenance. Run in a trusted shell, never as an HTTP route."""
 
 import argparse
-import os
 from datetime import UTC, datetime, timedelta
-from re import fullmatch
+from uuid import uuid4
 
-import psycopg
-from psycopg import sql
 from sqlalchemy import delete, func, select, text
-from sqlalchemy.engine import make_url
 
 from app.core.config import get_settings
 from app.db.database import SessionLocal
 from app.db.models import EmailDelivery, Inquiry, RateWindow
+from app.services.email_outbox import process_inquiry, process_one
+from app.services.notifications import send_notification
 
 
 def main():
@@ -23,68 +21,51 @@ def main():
             "pending",
             "deliveries",
             "retry-delivery",
+            "dispatch-pending",
+            "resend-smoke",
             "recent-inquiries",
             "email-status",
             "purge",
-            "prepare-runtime-role",
         ],
     )
     parser.add_argument("--days", type=int, default=90)
     parser.add_argument("--status", choices=["pending", "attempting", "sent", "failed"])
     parser.add_argument("--delivery-id")
     parser.add_argument("--limit", type=int, default=20)
+    parser.add_argument(
+        "--confirm-send",
+        action="store_true",
+        help="required to send the explicit Resend transport test",
+    )
     args = parser.parse_args()
-    if args.command == "prepare-runtime-role":
+    if args.command == "resend-smoke":
+        if not args.confirm_send:
+            parser.error("resend-smoke requires --confirm-send to send one real email")
         settings = get_settings()
-        role = os.environ.get("DATABASE_RUNTIME_USER", "").strip()
-        password = os.environ.get("DATABASE_RUNTIME_PASSWORD", "")
-        if not fullmatch(r"[a-zA-Z][a-zA-Z0-9_]{0,62}", role):
-            parser.error("DATABASE_RUNTIME_USER must be a simple PostgreSQL role name")
-        if len(password) < 32:
-            parser.error("DATABASE_RUNTIME_PASSWORD must contain at least 32 characters")
-        migration_url = make_url(settings.migration_database_url)
-        if role == migration_url.username:
-            parser.error("Runtime and migration database users must be different")
-        connect_url = migration_url.set(drivername="postgresql").render_as_string(
-            hide_password=False
+        if settings.email_status != "configured":
+            parser.error("Resend API key, sender, and recipient must be configured")
+        now = datetime.now(UTC)
+        inquiry = Inquiry(
+            id=str(uuid4()),
+            name="Portfolio delivery test",
+            email=settings.contact_email_to,
+            topic="question",
+            message="Owner-approved Resend transport smoke test. This is not a visitor inquiry.",
+            request_id=f"resend-smoke-{uuid4()}",
+            source_origin=settings.contact_allowed_origin or None,
+            created_at=now,
         )
-        with psycopg.connect(connect_url, autocommit=True) as connection:
-            role_identifier = sql.Identifier(role)
-            role_password = sql.Literal(password)
-            migration_identifier = sql.Identifier(migration_url.username)
-            database_identifier = sql.Identifier(migration_url.database)
-            exists = connection.execute(
-                "SELECT 1 FROM pg_roles WHERE rolname = %s", (role,)
-            ).fetchone()
-            operation = "ALTER ROLE" if exists else "CREATE ROLE"
-            connection.execute(
-                sql.SQL("{} {} WITH LOGIN PASSWORD {}").format(
-                    sql.SQL(operation), role_identifier, role_password
-                )
-            )
-            statements = (
-                sql.SQL("GRANT CONNECT ON DATABASE {} TO {}").format(
-                    database_identifier, role_identifier
-                ),
-                sql.SQL("GRANT USAGE ON SCHEMA public TO {}").format(role_identifier),
-                sql.SQL(
-                    "GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA public TO {}"
-                ).format(role_identifier),
-                sql.SQL(
-                    "GRANT USAGE, SELECT, UPDATE ON ALL SEQUENCES IN SCHEMA public TO {}"
-                ).format(role_identifier),
-                sql.SQL(
-                    "ALTER DEFAULT PRIVILEGES FOR ROLE {} IN SCHEMA public "
-                    "GRANT SELECT, INSERT, UPDATE, DELETE ON TABLES TO {}"
-                ).format(migration_identifier, role_identifier),
-                sql.SQL(
-                    "ALTER DEFAULT PRIVILEGES FOR ROLE {} IN SCHEMA public "
-                    "GRANT USAGE, SELECT, UPDATE ON SEQUENCES TO {}"
-                ).format(migration_identifier, role_identifier),
-            )
-            for statement in statements:
-                connection.execute(statement)
-        print("Prepared the restricted runtime database role.")
+        provider_id = send_notification(inquiry, str(uuid4()), settings)
+        print(f"Resend accepted the explicit smoke email; provider_message_id={provider_id}.")
+        return
+
+    if args.command == "dispatch-pending":
+        if not 1 <= args.limit <= 50:
+            parser.error("--limit must be between 1 and 50")
+        processed = 0
+        while processed < args.limit and process_one():
+            processed += 1
+        print(f"Processed {processed} due outbox deliveries.")
         return
 
     with SessionLocal() as db:
@@ -107,12 +88,15 @@ def main():
             delivery.claim_token = None
             delivery.next_attempt_at = datetime.now(UTC)
             delivery.sent_at = None
+            delivery.provider_message_id = None
             delivery.last_error = None
             inquiry = db.get(Inquiry, delivery.inquiry_id)
             if inquiry is not None:
                 inquiry.notification_status = "pending"
             db.commit()
-            print(f"Queued delivery {delivery.id} for retry.")
+            process_inquiry(inquiry.id if inquiry else "")
+            db.refresh(delivery)
+            print(f"Retried delivery {delivery.id}; state={delivery.status}.")
         elif args.command == "recent-inquiries":
             if not 1 <= args.limit <= 100:
                 parser.error("--limit must be between 1 and 100")
@@ -166,7 +150,8 @@ def _print_deliveries(db, status: str | None, limit: int) -> None:
         error = delivery.last_error or "-"
         print(
             f"{delivery.id}\t{delivery.inquiry_id}\t{delivery.status}\t"
-            f"{delivery.attempt_count}\t{attempted}\t{sent}\t{error}"
+            f"{delivery.attempt_count}\t{attempted}\t{sent}\t"
+            f"{delivery.provider_message_id or '-'}\t{error}"
         )
 
 

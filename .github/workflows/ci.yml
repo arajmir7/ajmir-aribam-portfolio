@@ -18,22 +18,22 @@ jobs:
     env:
       NEXT_PUBLIC_SITE_URL: https://ajmiraribam.me
     steps:
-      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.0.2
-      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.1.0
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - uses: actions/setup-node@395ad3262231945c25e8478fd5baf05154b1d79f # v6.1.0
         with:
-          {
-            node-version: "24",
-            cache: npm,
-            cache-dependency-path: frontend/package-lock.json,
-          }
+          node-version: "24"
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
       - uses: astral-sh/setup-uv@c18668ad3cf93ea998bef934396af7bb5c839dc7 # v10.2.0
-        with: { version: "0.12.16" }
+        with:
+          version: "0.12.16"
+          enable-cache: true
+          cache-dependency-glob: backend/uv.lock
       - run: npm ci
       - run: uv sync --frozen --group dev
         working-directory: backend
       - run: npm run format:check
-      - run: npx prettier --check '../README.md' '../RELEASE_CERTIFICATION.md' '../docs/*.md' '../compose.yaml' '../render.yaml' '../infra/*.yaml' '../.github/workflows/*.yml'
-      - run: uvx --from check-jsonschema==0.38.2 check-jsonschema --schemafile https://render.com/schema/render.yaml.json ../render.yaml
+      - run: npx prettier --check '../README.md' '../RELEASE_CERTIFICATION.md' '../docs/*.md' '../compose.yaml' '../infra/*.yaml' '../.github/workflows/*.yml' '../backend/vercel.json'
       - run: npm run lint
       - run: npm run typecheck
       - run: npm run test
@@ -41,7 +41,6 @@ jobs:
       - run: npx playwright install --with-deps chromium
       - run: npm run e2e
       - run: npm run build
-      - run: docker build --build-arg NEXT_PUBLIC_SITE_URL=https://example.com -t portfolio-web:ci .
   api:
     runs-on: ubuntu-latest
     timeout-minutes: 20
@@ -49,24 +48,29 @@ jobs:
       run:
         working-directory: backend
     steps:
-      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.0.2
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
       - uses: astral-sh/setup-uv@c18668ad3cf93ea998bef934396af7bb5c839dc7 # v10.2.0
-        with: { version: "0.12.16" }
+        with:
+          version: "0.12.16"
+          enable-cache: true
+          cache-dependency-glob: backend/uv.lock
       - run: uv sync --frozen --group dev
-      - run: uv run ruff check . ../scripts/dev.py ../scripts/backup_postgres.py ../scripts/restore_postgres.py && uv run ruff format --check . ../scripts/dev.py ../scripts/backup_postgres.py ../scripts/restore_postgres.py
+      - run: uv run ruff check . ../scripts/*.py && uv run ruff format --check . ../scripts/*.py
+      - run: uv run python -c 'from app.main import app; assert app.title == "Portfolio inquiry service"'
+      - run: bash ../scripts/verify-production-config.sh
       - run: uv run pytest -q
-      - name: Verify PostgreSQL migrations, rate limiting, and restore
+      - name: Verify PostgreSQL migrations, least-privilege access, and restore
         run: bash scripts/verify-postgres.sh
         working-directory: ${{ github.workspace }}
       - run: uvx pip-audit -r <(uv export --no-dev --format requirements-txt --no-hashes)
         shell: bash
-      - run: docker build -t portfolio-api:ci .
   secrets:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.0.2
-        with: { fetch-depth: 0 }
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          fetch-depth: 0
       - name: Scan complete repository history
         run: >-
           docker run --rm -v "$PWD:/repo:ro" -w /repo
@@ -77,6 +81,24 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
-      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.0.2
-      - name: Verify production topology and persisted contact flow
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - uses: actions/setup-node@395ad3262231945c25e8478fd5baf05154b1d79f # v6.1.0
+        with:
+          node-version: "24"
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - uses: astral-sh/setup-uv@c18668ad3cf93ea998bef934396af7bb5c839dc7 # v10.2.0
+        with:
+          version: "0.12.16"
+          enable-cache: true
+          cache-dependency-glob: backend/uv.lock
+      - run: npm ci
+        working-directory: frontend
+      - run: uv sync --frozen --group dev
+        working-directory: backend
+      - name: Verify Docker Compose local database and migrations
         run: bash scripts/verify-compose.sh
+      - name: Verify contact persistence and mocked Resend flow
+        run: bash scripts/verify-email-outbox.sh
+      - name: Check committed whitespace
+        run: git diff --check && git show --check --oneline HEAD

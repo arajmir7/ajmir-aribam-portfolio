@@ -90,13 +90,20 @@ def test_postgres_replayed_idempotency_key_creates_one_delivery():
         db.commit()
 
 
-def test_postgres_smtp_failure_persists_recoverable_delivery(monkeypatch):
-    from app.core.config import get_settings
-    from app.services.email_outbox import process_one
+def test_postgres_resend_failure_persists_recoverable_delivery(monkeypatch):
     from app.services.notifications import DeliveryFailure
 
     client = TestClient(app)
     key = str(uuid4())
+    monkeypatch.setenv("RESEND_API_KEY", "re_test_" + "a" * 32)
+    monkeypatch.setenv("CONTACT_EMAIL_FROM", "Ajmir Aribam <contact@example.com>")
+    monkeypatch.setenv("CONTACT_EMAIL_TO", "owner@example.com")
+    monkeypatch.setattr(
+        "app.services.email_outbox.send_notification",
+        lambda _inquiry, _delivery_id, _settings: (_ for _ in ()).throw(
+            DeliveryFailure("resend_server_error", retryable=True)
+        ),
+    )
     response = client.post(
         "/inquiries",
         headers={
@@ -106,29 +113,14 @@ def test_postgres_smtp_failure_persists_recoverable_delivery(monkeypatch):
             "Idempotency-Key": key,
         },
         json={
-            "name": "SMTP Failure Integration",
+            "name": "Resend Failure Integration",
             "email": "visitor@example.com",
             "topic": "question",
-            "message": "An SMTP failure must leave this inquiry recoverable.",
+            "message": "A Resend failure must leave this inquiry recoverable.",
             "website": "",
         },
     )
     assert response.status_code == 200
-    monkeypatch.setenv("EMAIL_HOST", "mailpit.invalid")
-    monkeypatch.setenv("EMAIL_PORT", "1025")
-    monkeypatch.setenv("EMAIL_USER", "")
-    monkeypatch.setenv("EMAIL_PASSWORD", "")
-    monkeypatch.setenv("EMAIL_FROM", "Portfolio <no-reply@example.com>")
-    monkeypatch.setenv("EMAIL_TO", "owner@example.com")
-    monkeypatch.setenv("EMAIL_USE_TLS", "true")
-    monkeypatch.setattr(
-        "app.services.email_outbox.send_notification",
-        lambda _inquiry, _settings: (_ for _ in ()).throw(
-            DeliveryFailure("smtp_connection_failed", retryable=True)
-        ),
-    )
-
-    assert process_one(settings=get_settings())
     with SessionLocal() as db:
         inquiry = db.scalar(select(Inquiry).where(Inquiry.idempotency_key == key))
         assert inquiry is not None
@@ -136,7 +128,7 @@ def test_postgres_smtp_failure_persists_recoverable_delivery(monkeypatch):
         assert delivery is not None
         assert delivery.status == "pending"
         assert delivery.attempt_count == 1
-        assert delivery.last_error == "smtp_connection_failed"
+        assert delivery.last_error == "resend_server_error"
         db.delete(inquiry)
         db.commit()
 

@@ -7,7 +7,7 @@ from fastapi.responses import JSONResponse
 from sqlalchemy import func, select, text
 from sqlalchemy.orm import Session
 
-from app.api.dependencies import session
+from app.api.dependencies import require_internal_token, session
 from app.core.config import get_settings
 from app.db.models import EmailDelivery
 
@@ -19,7 +19,7 @@ def live():
     return {"status": "ok", "revision": get_settings().build_revision}
 
 
-@router.get("/health/ready")
+@router.get("/health/ready", dependencies=[Depends(require_internal_token)])
 def ready(db: Annotated[Session, Depends(session)]):
     settings = get_settings()
     if len(settings.contact_internal_token) < 32:

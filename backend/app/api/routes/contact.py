@@ -8,8 +8,10 @@ from fastapi import APIRouter, Depends, HTTPException, Request
 from sqlalchemy.orm import Session
 
 from app.api.dependencies import require_internal_token, session
+from app.core.config import get_settings
 from app.core.logging import log
 from app.schemas.inquiries import InquiryInput
+from app.services.email_outbox import process_inquiry
 from app.services.inquiries import store_inquiry
 
 router = APIRouter()
@@ -30,9 +32,17 @@ def create_inquiry(
         return {"message": "Your inquiry was received."}
     client_ip = request.headers.get("x-client-ip", "unknown")[:128]
     source_origin = _validated_source_origin(request.headers.get("x-source-origin"))
+    settings = get_settings()
+    if settings.environment == "production" and source_origin != settings.contact_allowed_origin:
+        raise HTTPException(status_code=403, detail="Request origin is not allowed.")
     inquiry = store_inquiry(
         db, payload, request_id, client_ip, idempotency_key, source_origin=source_origin
     )
+    try:
+        process_inquiry(inquiry.id)
+    except Exception as error:
+        # The inquiry already committed. Delivery can be retried without losing it.
+        log("email_delivery_processing_deferred", request_id, error_type=type(error).__name__)
     return {"message": "Your inquiry was received.", "request_id": inquiry.request_id}
 
 
