@@ -108,13 +108,17 @@ def test_resend_http_failures_are_reduced_to_safe_codes(
     monkeypatch, status: int, code: str, retryable: bool, provider_type: str
 ):
     current_inquiry = inquiry()
+    internal_token = "internal-contact-secret-123"
+    database_url = "postgresql://db_user:db_password@db.example.com/private?sslmode=require"
+    monkeypatch.setenv("CONTACT_INTERNAL_TOKEN", internal_token)
+    monkeypatch.setenv("DATABASE_URL", database_url)
     api_key = get_settings().resend_api_key
     provider_body = json.dumps(
         {
             "name": provider_type,
             "message": (
                 f"Rejected {api_key}; visitor {current_inquiry.email}; "
-                f"message {current_inquiry.message}"
+                f"message {current_inquiry.message}; {internal_token}; {database_url}"
             ),
         }
     ).encode()
@@ -145,8 +149,38 @@ def test_resend_http_failures_are_reduced_to_safe_codes(
     assert api_key not in safe_message
     assert current_inquiry.email not in safe_message
     assert current_inquiry.message not in safe_message
+    assert internal_token not in safe_message
+    assert database_url not in safe_message
     assert "private-body-secret" not in str(raised.value)
     assert "api.resend.com" not in str(raised.value)
+
+
+def test_non_json_provider_rejection_retains_a_redacted_excerpt(monkeypatch):
+    secret = "re_test_" + "b" * 32
+    monkeypatch.setenv("RESEND_API_KEY", secret)
+    body = f"gateway denied token={secret} for ada@example.com".encode()
+
+    def fail(*_args, **_kwargs):
+        raise HTTPError(
+            "https://api.resend.com/emails",
+            403,
+            "private-body-secret",
+            {"content-type": "text/plain; charset=utf-8", "x-resend-id": "request_456"},
+            BytesIO(body),
+        )
+
+    monkeypatch.setattr(notifications, "urlopen", fail)
+    with pytest.raises(DeliveryFailure) as raised:
+        notifications.send_notification(inquiry(), "delivery-uuid-non-json", get_settings())
+
+    diagnostics = raised.value.diagnostics
+    assert diagnostics["provider_response_format"] == "non_json"
+    assert (
+        diagnostics["provider_response_excerpt"] == "gateway denied token=[redacted] for [redacted]"
+    )
+    assert diagnostics["provider_content_type"] == "text/plain"
+    assert diagnostics["provider_request_id"] == "request_456"
+    assert secret not in str(diagnostics)
 
 
 def test_resend_network_error_does_not_expose_provider_details(monkeypatch):

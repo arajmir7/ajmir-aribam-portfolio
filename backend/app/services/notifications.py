@@ -129,37 +129,69 @@ def _resend_error_diagnostics(
         "provider_http_status": error.code,
     }
     try:
-        body = json.loads(error.read(16 * 1024))
-    except (OSError, UnicodeDecodeError, json.JSONDecodeError):
+        raw_body = error.read(16 * 1024)
+    except OSError:
+        raw_body = b""
+    try:
+        body = json.loads(raw_body) if raw_body else None
+    except (UnicodeDecodeError, json.JSONDecodeError):
         body = None
 
+    sensitive_values = (
+        settings.resend_api_key,
+        settings.contact_internal_token,
+        settings.database_url,
+        settings.migration_database_url,
+        inquiry.name,
+        inquiry.email,
+        inquiry.message,
+        str(payload.get("from", "")),
+        str(payload.get("subject", "")),
+        str(payload.get("text", "")),
+        str(payload.get("reply_to", "")),
+        *(str(item) for item in payload.get("to", []) if isinstance(item, str)),
+    )
+
     if isinstance(body, dict):
-        provider_type = body.get("name") or body.get("code") or body.get("type")
+        provider_type = (
+            body.get("name") or body.get("code") or body.get("type") or body.get("error")
+        )
         if isinstance(provider_type, str):
             safe_type = re.sub(r"[^A-Za-z0-9_.-]", "", provider_type)[:80]
             if safe_type:
                 result["provider_error_type"] = safe_type
-        message = body.get("message")
+        message = body.get("message") or body.get("error_description") or body.get("detail")
         if isinstance(message, str):
             safe_message = _sanitize_provider_message(
                 message,
-                sensitive_values=(
-                    settings.resend_api_key,
-                    inquiry.name,
-                    inquiry.email,
-                    inquiry.message,
-                    str(payload.get("from", "")),
-                    str(payload.get("subject", "")),
-                    str(payload.get("text", "")),
-                    str(payload.get("reply_to", "")),
-                    *(str(item) for item in payload.get("to", []) if isinstance(item, str)),
-                ),
+                sensitive_values=sensitive_values,
             )
             if safe_message:
                 result["provider_error_message"] = safe_message
 
+    # Provider responses can be non-JSON (for example, a gateway-generated 403).
+    # Keep only a short excerpt after applying the same secret and inquiry redaction.
+    if not result.get("provider_error_message"):
+        if isinstance(body, (dict, list)):
+            excerpt = json.dumps(body, ensure_ascii=False, separators=(",", ":"))
+            result["provider_response_format"] = "json"
+        elif raw_body:
+            excerpt = raw_body.decode("utf-8", errors="replace")
+            result["provider_response_format"] = "non_json"
+        else:
+            excerpt = ""
+            result["provider_response_format"] = "empty"
+        safe_excerpt = _sanitize_provider_message(excerpt, sensitive_values=sensitive_values)
+        if safe_excerpt:
+            result["provider_response_excerpt"] = safe_excerpt
+
     headers = error.headers
     if headers is not None:
+        content_type = headers.get("content-type")
+        if content_type:
+            safe_content_type = content_type.split(";", 1)[0].strip().lower()
+            if re.fullmatch(r"[a-z0-9.+-]+/[a-z0-9.+-]+", safe_content_type):
+                result["provider_content_type"] = safe_content_type
         for header in ("x-resend-id", "resend-request-id", "x-request-id"):
             request_id = headers.get(header)
             if request_id and re.fullmatch(r"[A-Za-z0-9_-]{1,128}", request_id):
@@ -176,6 +208,12 @@ def _sanitize_provider_message(message: str, *, sensitive_values: tuple[str, ...
         safe_message = safe_message.replace(value, "[redacted]")
     safe_message = re.sub(r"(?i)\bBearer\s+\S+", "Bearer [redacted]", safe_message)
     safe_message = re.sub(r"\bre_[A-Za-z0-9_-]{8,}\b", "[redacted]", safe_message)
+    safe_message = re.sub(
+        r"(?i)(\b(?:authorization|api[_-]?key|token|password|secret)\b\s*[:=]\s*)[\"']?[^,}\s\"']+",
+        r"\1[redacted]",
+        safe_message,
+    )
+    safe_message = re.sub(r"(?i)postgres(?:ql)?(?:\+\w+)?://\S+", "[database URL]", safe_message)
     safe_message = re.sub(
         r"\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}\b", "[email]", safe_message, flags=re.I
     )
