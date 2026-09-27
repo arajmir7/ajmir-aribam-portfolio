@@ -27,6 +27,7 @@ export async function GET() {
       present: false,
       https: false,
       vercel_host: false,
+      hostname_suffix: "unknown",
       no_credentials: false,
       no_query: false,
       no_hash: false,
@@ -38,6 +39,10 @@ export async function GET() {
         present: true,
         https: configuredApiUrl.protocol === "https:",
         vercel_host: configuredApiUrl.hostname.endsWith(".vercel.app"),
+        hostname_suffix: configuredApiUrl.hostname
+          .split(".")
+          .slice(-2)
+          .join("."),
         no_credentials:
           !configuredApiUrl.username && !configuredApiUrl.password,
         no_query: !configuredApiUrl.search,
