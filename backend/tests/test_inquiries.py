@@ -288,11 +288,25 @@ def test_permanent_resend_failure_is_failed_and_operator_recoverable(monkeypatch
 
     _client, maker = client_with_db()
     configure_resend(monkeypatch)
+    events = []
+
+    def fail_delivery(_inquiry, _delivery_id, _settings):
+        raise DeliveryFailure(
+            "resend_request_rejected",
+            retryable=False,
+            diagnostics={
+                "provider": "resend",
+                "provider_http_status": 401,
+                "provider_error_type": "invalid_api_key",
+                "provider_error_message": "The API key is invalid.",
+                "provider_request_id": "request_123",
+            },
+        )
+
+    monkeypatch.setattr("app.services.email_outbox.send_notification", fail_delivery)
     monkeypatch.setattr(
-        "app.services.email_outbox.send_notification",
-        lambda _inquiry, _delivery_id, _settings: (_ for _ in ()).throw(
-            DeliveryFailure("resend_request_rejected", retryable=False)
-        ),
+        "app.services.email_outbox.log",
+        lambda event, request_id, **fields: events.append((event, request_id, fields)),
     )
     with maker() as db:
         inquiry = store_inquiry(db, InquiryInput(**payload()), "permanent", "203.0.113.4")
@@ -308,6 +322,10 @@ def test_permanent_resend_failure_is_failed_and_operator_recoverable(monkeypatch
         assert delivery.sent_at is None
         assert delivery.last_error == "resend_request_rejected"
         assert inquiry is not None and inquiry.notification_status == "failed"
+    assert events[-1][0] == "email_delivery_failed"
+    assert events[-1][2]["provider_http_status"] == 401
+    assert events[-1][2]["provider_error_type"] == "invalid_api_key"
+    assert events[-1][2]["provider_request_id"] == "request_123"
     app.dependency_overrides.clear()
 
 
@@ -371,4 +389,53 @@ def test_successful_provider_response_persists_message_id(monkeypatch):
         assert delivery.provider_message_id == "resend-message-123"
         assert delivery.sent_at is not None
         assert inquiry is not None and inquiry.notification_status == "sent"
+    app.dependency_overrides.clear()
+
+
+def test_operator_retry_keeps_the_existing_attempt_count(monkeypatch):
+    import sys
+
+    from app import maintenance
+    from app.core.config import get_settings
+    from app.schemas.inquiries import InquiryInput
+    from app.services.email_outbox import process_inquiry
+    from app.services.inquiries import store_inquiry
+
+    _client, maker = client_with_db()
+    configure_resend(monkeypatch)
+    monkeypatch.setattr(
+        "app.services.email_outbox.send_notification",
+        lambda _inquiry, _delivery_id, _settings: "resend-retry-message",
+    )
+    with maker() as db:
+        inquiry = store_inquiry(db, InquiryInput(**payload()), "retry-existing", "203.0.113.7")
+        inquiry_id = inquiry.id
+        delivery = db.scalar(select(EmailDelivery).where(EmailDelivery.inquiry_id == inquiry_id))
+        assert delivery is not None
+        delivery.status = "failed"
+        delivery.attempt_count = 1
+        delivery.last_error = "resend_request_rejected"
+        inquiry.notification_status = "failed"
+        db.commit()
+        delivery_id = delivery.id
+
+    monkeypatch.setattr(maintenance, "SessionLocal", maker)
+    monkeypatch.setattr(
+        maintenance,
+        "process_inquiry",
+        lambda identifier: process_inquiry(identifier, maker, get_settings()),
+    )
+    monkeypatch.setattr(
+        sys,
+        "argv",
+        ["maintenance", "retry-delivery", "--delivery-id", delivery_id],
+    )
+    maintenance.main()
+
+    with maker() as db:
+        delivery = db.get(EmailDelivery, delivery_id)
+        assert delivery is not None
+        assert delivery.status == "sent"
+        assert delivery.attempt_count == 2
+        assert delivery.provider_message_id == "resend-retry-message"
     app.dependency_overrides.clear()

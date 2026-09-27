@@ -9,7 +9,7 @@ from sqlalchemy import delete, func, select, text
 from app.core.config import get_settings
 from app.db.database import SessionLocal
 from app.db.models import EmailDelivery, Inquiry, RateWindow
-from app.services.email_outbox import process_inquiry, process_one
+from app.services.email_outbox import MAX_ATTEMPTS, process_inquiry, process_one
 from app.services.notifications import send_notification
 
 
@@ -82,8 +82,9 @@ def main():
                 parser.error("email delivery was not found")
             if delivery.status != "failed":
                 parser.error("only failed deliveries can be retried")
+            if delivery.attempt_count >= MAX_ATTEMPTS:
+                parser.error("delivery has exhausted the configured attempt limit")
             delivery.status = "pending"
-            delivery.attempt_count = 0
             delivery.claimed_at = None
             delivery.claim_token = None
             delivery.next_attempt_at = datetime.now(UTC)

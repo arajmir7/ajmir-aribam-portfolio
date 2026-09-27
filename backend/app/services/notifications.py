@@ -14,10 +14,17 @@ from app.db.models import Inquiry
 class DeliveryFailure(Exception):
     """A Resend failure reduced to a safe operator-facing code."""
 
-    def __init__(self, code: str, *, retryable: bool):
+    def __init__(
+        self,
+        code: str,
+        *,
+        retryable: bool,
+        diagnostics: dict[str, str | int] | None = None,
+    ):
         super().__init__(code)
         self.code = code
         self.retryable = retryable
+        self.diagnostics = diagnostics or {}
 
 
 def build_payload(inquiry: Inquiry, settings: Settings) -> dict[str, object]:
@@ -77,12 +84,9 @@ def send_notification(
                 raise DeliveryFailure("resend_unexpected_response", retryable=True)
             result = json.loads(response.read(64 * 1024))
     except HTTPError as error:
+        diagnostics = _resend_error_diagnostics(error, inquiry, payload, configuration)
+        provider_code = diagnostics.get("provider_error_type")
         if error.code == 409:
-            try:
-                provider_error = json.loads(error.read(16 * 1024))
-                provider_code = provider_error.get("name") or provider_error.get("code")
-            except Exception:
-                provider_code = None
             if provider_code == "concurrent_idempotent_requests":
                 code = "resend_request_in_progress"
                 retryable = True
@@ -98,7 +102,7 @@ def send_notification(
         else:
             code = "resend_request_rejected"
             retryable = False
-        raise DeliveryFailure(code, retryable=retryable) from None
+        raise DeliveryFailure(code, retryable=retryable, diagnostics=diagnostics) from None
     except DeliveryFailure:
         raise
     except (TimeoutError, URLError, OSError):
@@ -111,3 +115,68 @@ def send_notification(
     if not isinstance(message_id, str) or not re.fullmatch(r"[A-Za-z0-9_-]{1,128}", message_id):
         raise DeliveryFailure("resend_invalid_response", retryable=True)
     return message_id
+
+
+def _resend_error_diagnostics(
+    error: HTTPError,
+    inquiry: Inquiry,
+    payload: dict[str, object],
+    settings: Settings,
+) -> dict[str, str | int]:
+    """Keep useful provider detail while excluding request data and credentials."""
+    result: dict[str, str | int] = {
+        "provider": "resend",
+        "provider_http_status": error.code,
+    }
+    try:
+        body = json.loads(error.read(16 * 1024))
+    except (OSError, UnicodeDecodeError, json.JSONDecodeError):
+        body = None
+
+    if isinstance(body, dict):
+        provider_type = body.get("name") or body.get("code") or body.get("type")
+        if isinstance(provider_type, str):
+            safe_type = re.sub(r"[^A-Za-z0-9_.-]", "", provider_type)[:80]
+            if safe_type:
+                result["provider_error_type"] = safe_type
+        message = body.get("message")
+        if isinstance(message, str):
+            safe_message = _sanitize_provider_message(
+                message,
+                sensitive_values=(
+                    settings.resend_api_key,
+                    inquiry.name,
+                    inquiry.email,
+                    inquiry.message,
+                    str(payload.get("from", "")),
+                    str(payload.get("subject", "")),
+                    str(payload.get("text", "")),
+                    str(payload.get("reply_to", "")),
+                    *(str(item) for item in payload.get("to", []) if isinstance(item, str)),
+                ),
+            )
+            if safe_message:
+                result["provider_error_message"] = safe_message
+
+    headers = error.headers
+    if headers is not None:
+        for header in ("x-resend-id", "resend-request-id", "x-request-id"):
+            request_id = headers.get(header)
+            if request_id and re.fullmatch(r"[A-Za-z0-9_-]{1,128}", request_id):
+                result["provider_request_id"] = request_id
+                break
+    return result
+
+
+def _sanitize_provider_message(message: str, *, sensitive_values: tuple[str, ...]) -> str:
+    safe_message = " ".join(
+        "".join(" " if unicodedata.category(char) == "Cc" else char for char in message).split()
+    )
+    for value in sorted((value for value in sensitive_values if value), key=len, reverse=True):
+        safe_message = safe_message.replace(value, "[redacted]")
+    safe_message = re.sub(r"(?i)\bBearer\s+\S+", "Bearer [redacted]", safe_message)
+    safe_message = re.sub(r"\bre_[A-Za-z0-9_-]{8,}\b", "[redacted]", safe_message)
+    safe_message = re.sub(
+        r"\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}\b", "[email]", safe_message, flags=re.I
+    )
+    return safe_message[:240]

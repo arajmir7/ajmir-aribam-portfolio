@@ -145,6 +145,7 @@ def finish_claim(
         delivery_id=claim.delivery_id,
         attempt_count=claim.attempt_count,
         error=failure.code,
+        **failure.diagnostics,
     )
     return True
 
