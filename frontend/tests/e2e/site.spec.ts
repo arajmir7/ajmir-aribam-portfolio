@@ -279,15 +279,50 @@ test("orientation, routes, metadata, and evidence links", async ({
   for (const [asset, contentType] of [
     ["/opengraph-image", "image/png"],
     ["/icon.svg", "image/svg+xml"],
+    ["/favicon.ico", "image/x-icon"],
+    ["/icon.png", "image/png"],
     ["/apple-icon.png", "image/png"],
     ["/icon-192.png", "image/png"],
     ["/icon-512.png", "image/png"],
+    ["/site.webmanifest", "application/manifest+json"],
     ["/manifest.webmanifest", "application/manifest+json"],
   ]) {
     const response = await request.get(asset);
     expect(response.status(), asset).toBe(200);
     expect(response.headers()["content-type"], asset).toContain(contentType);
   }
+  const iconHrefs = await page
+    .locator('link[rel="icon"]')
+    .evaluateAll((links) =>
+      links.map((link) => {
+        const href = link.getAttribute("href");
+        return href ? new URL(href, window.location.href).pathname : "";
+      }),
+    );
+  for (const icon of [
+    "/favicon.ico",
+    "/icon.svg",
+    "/icon.png",
+    "/icon-192.png",
+    "/icon-512.png",
+  ])
+    expect(iconHrefs).toContain(icon);
+  await expect(page.locator('link[rel="apple-touch-icon"]')).toHaveAttribute(
+    "href",
+    "/apple-icon.png",
+  );
+  await expect(page.locator('link[rel="manifest"]')).toHaveAttribute(
+    "href",
+    "/site.webmanifest",
+  );
+  const webManifest = await (await request.get("/site.webmanifest")).json();
+  expect(webManifest.name).toBe("Ajmir Aribam — Software Engineer");
+  expect(webManifest.icons).toEqual(
+    expect.arrayContaining([
+      expect.objectContaining({ src: "/icon-192.png", sizes: "192x192" }),
+      expect.objectContaining({ src: "/icon-512.png", sizes: "512x512" }),
+    ]),
+  );
   const internal = new Set<string>();
   for (const path of routes) {
     await page.goto(path);

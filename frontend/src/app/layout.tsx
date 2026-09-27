@@ -28,6 +28,7 @@ export const metadata: Metadata = {
     template: "%s — Ajmir Aribam",
   },
   description: homeDescription,
+  manifest: "/site.webmanifest",
   authors: [{ name: publicName, url: `${siteUrl}/about` }],
   creator: publicName,
   alternates: { canonical: "/" },
@@ -42,10 +43,13 @@ export const metadata: Metadata = {
   },
   icons: {
     icon: [
+      { url: "/favicon.ico", type: "image/x-icon" },
       { url: "/icon.svg", type: "image/svg+xml" },
+      { url: "/icon.png", sizes: "512x512", type: "image/png" },
       { url: "/icon-192.png", sizes: "192x192", type: "image/png" },
+      { url: "/icon-512.png", sizes: "512x512", type: "image/png" },
     ],
-    apple: "/apple-icon.png",
+    apple: [{ url: "/apple-icon.png", sizes: "180x180", type: "image/png" }],
   },
   twitter: {
     card: "summary_large_image",
