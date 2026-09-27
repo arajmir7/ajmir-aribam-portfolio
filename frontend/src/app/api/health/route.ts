@@ -23,11 +23,34 @@ export async function GET() {
   });
   if (!api || !ready) {
     const token = process.env.CONTACT_INTERNAL_TOKEN?.trim();
+    let apiUrlChecks = {
+      present: false,
+      https: false,
+      vercel_host: false,
+      no_credentials: false,
+      no_query: false,
+      no_hash: false,
+      no_port: false,
+    };
+    try {
+      const configuredApiUrl = new URL(process.env.CONTACT_API_URL || "");
+      apiUrlChecks = {
+        present: true,
+        https: configuredApiUrl.protocol === "https:",
+        vercel_host: configuredApiUrl.hostname.endsWith(".vercel.app"),
+        no_credentials:
+          !configuredApiUrl.username && !configuredApiUrl.password,
+        no_query: !configuredApiUrl.search,
+        no_hash: !configuredApiUrl.hash,
+        no_port: !configuredApiUrl.port,
+      };
+    } catch {}
     console.error(
       JSON.stringify({
         event: "contact_runtime_config_invalid",
         checks: {
           api_url: Boolean(api),
+          api_url_parts: apiUrlChecks,
           internal_token:
             Boolean(token) &&
             token!.length >= 32 &&
