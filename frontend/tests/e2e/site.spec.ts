@@ -575,6 +575,18 @@ test("public routes hydrate without browser errors", async ({ page }) => {
     await page.waitForTimeout(100);
   }
   expect(errors).toEqual([]);
+  errors.length = 0;
+  const missingResponse = await page.goto("/work/no-such-project");
+  expect(missingResponse?.status()).toBe(404);
+  await expect(page.locator("#main h1")).toBeVisible();
+  await page.waitForTimeout(100);
+  expect(
+    errors.filter(
+      (message) =>
+        !message.includes("Failed to load resource") ||
+        !message.includes("404"),
+    ),
+  ).toEqual([]);
 });
 
 test("representative visual states are captured", async ({ page }) => {

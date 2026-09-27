@@ -1,6 +1,19 @@
 import { NextRequest, NextResponse } from "next/server";
 import { projectBySlug } from "@/content/projects";
 
+const notFoundRewriteHeader = "x-portfolio-not-found-rewrite";
+
+function inheritedRewriteNonce(request: NextRequest) {
+  if (
+    request.nextUrl.pathname !== "/404" ||
+    request.headers.get(notFoundRewriteHeader) !== "1"
+  ) {
+    return null;
+  }
+  const value = request.headers.get("x-nonce");
+  return value && /^[A-Za-z0-9+/=]{16,128}$/.test(value) ? value : null;
+}
+
 export function proxy(request: NextRequest) {
   if (
     request.nextUrl.hostname.toLowerCase() === "www.ajmiraribam.me" &&
@@ -12,7 +25,9 @@ export function proxy(request: NextRequest) {
     canonicalUrl.port = "";
     return NextResponse.redirect(canonicalUrl, 308);
   }
-  const nonce = Buffer.from(crypto.randomUUID()).toString("base64");
+  const nonce =
+    inheritedRewriteNonce(request) ||
+    Buffer.from(crypto.randomUUID()).toString("base64");
   const dev = process.env.NODE_ENV === "development";
   const csp = [
     "default-src 'self'",
@@ -29,6 +44,7 @@ export function proxy(request: NextRequest) {
     "upgrade-insecure-requests",
   ].join("; ");
   const requestHeaders = new Headers(request.headers);
+  requestHeaders.delete(notFoundRewriteHeader);
   requestHeaders.set("x-nonce", nonce);
   requestHeaders.set("Content-Security-Policy", csp);
   requestHeaders.set(
@@ -43,6 +59,7 @@ export function proxy(request: NextRequest) {
     notFoundUrl.protocol = "http:";
     notFoundUrl.pathname = "/404";
     notFoundUrl.search = "";
+    requestHeaders.set(notFoundRewriteHeader, "1");
     response = NextResponse.rewrite(notFoundUrl, {
       status: 404,
       request: { headers: requestHeaders },
