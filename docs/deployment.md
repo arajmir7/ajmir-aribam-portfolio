@@ -69,7 +69,7 @@ MIGRATION_DATABASE_URL='postgresql+psycopg://<migration-user>:<password>@<direct
 MIGRATION_DATABASE_URL='postgresql+psycopg://<migration-user>:<password>@<direct-host>.neon.tech/<database>?sslmode=require' uv run alembic current
 ```
 
-Use the exact direct URI from Neon, adapted to the SQLAlchemy `postgresql+psycopg` driver. `alembic current` must report `003_resend_message_id`; `alembic check` must report no new operations. Run from a trusted operator shell and do not put the URL in shell history on shared systems. These commands do not run automatically in the Vercel backend.
+Use the exact direct URI from Neon, adapted to the SQLAlchemy `postgresql+psycopg` driver. `alembic current` must report `004_delivery_state_constraints`; `alembic check` must report no new operations. Run from a trusted operator shell and do not put the URL in shell history on shared systems. These commands do not run automatically in the Vercel backend.
 
 ## 3. Configure Resend
 

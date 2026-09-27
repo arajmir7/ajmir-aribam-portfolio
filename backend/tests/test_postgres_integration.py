@@ -172,3 +172,86 @@ def test_runtime_database_role_cannot_change_schema():
                 text("CREATE TABLE runtime_role_must_not_create_schema (id integer PRIMARY KEY)")
             )
         db.rollback()
+
+
+def test_database_rejects_invalid_delivery_state():
+    inquiry_id = str(uuid4())
+    with SessionLocal() as db:
+        db.execute(
+            text(
+                """
+                INSERT INTO inquiries
+                    (id, name, email, topic, message, request_id,
+                     notification_status, idempotency_key, created_at)
+                VALUES
+                    (:id, 'Constraint Check', 'constraint@example.com', 'question',
+                     'A valid inquiry used to test delivery constraints.', :id,
+                     'pending', :id, now())
+                """
+            ),
+            {"id": inquiry_id},
+        )
+        with pytest.raises(DBAPIError):
+            db.execute(
+                text(
+                    """
+                    INSERT INTO email_deliveries
+                        (id, inquiry_id, status, attempt_count, created_at)
+                    VALUES (:id, :inquiry_id, 'unknown', 0, now())
+                    """
+                ),
+                {"id": str(uuid4()), "inquiry_id": inquiry_id},
+            )
+        db.rollback()
+
+
+def test_database_rejects_invalid_inquiry_notification_state():
+    inquiry_id = str(uuid4())
+    with SessionLocal() as db:
+        with pytest.raises(DBAPIError):
+            db.execute(
+                text(
+                    """
+                    INSERT INTO inquiries
+                        (id, name, email, topic, message, request_id,
+                         notification_status, idempotency_key, created_at)
+                    VALUES
+                        (:id, 'Constraint Check', 'constraint@example.com', 'question',
+                         'An invalid notification state must be rejected.', :id,
+                         'unknown', :id, now())
+                    """
+                ),
+                {"id": inquiry_id},
+            )
+        db.rollback()
+
+
+def test_database_rejects_invalid_delivery_attempt_count():
+    inquiry_id = str(uuid4())
+    with SessionLocal() as db:
+        db.execute(
+            text(
+                """
+                INSERT INTO inquiries
+                    (id, name, email, topic, message, request_id,
+                     notification_status, idempotency_key, created_at)
+                VALUES
+                    (:id, 'Attempt Check', 'constraint@example.com', 'question',
+                     'A valid inquiry used to test attempt constraints.', :id,
+                     'pending', :id, now())
+                """
+            ),
+            {"id": inquiry_id},
+        )
+        with pytest.raises(DBAPIError):
+            db.execute(
+                text(
+                    """
+                    INSERT INTO email_deliveries
+                        (id, inquiry_id, status, attempt_count, created_at)
+                    VALUES (:id, :inquiry_id, 'pending', 6, now())
+                    """
+                ),
+                {"id": str(uuid4()), "inquiry_id": inquiry_id},
+            )
+        db.rollback()

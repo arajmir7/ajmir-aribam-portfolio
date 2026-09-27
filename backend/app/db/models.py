@@ -1,7 +1,16 @@
 from datetime import UTC, datetime
 from uuid import uuid4
 
-from sqlalchemy import DateTime, ForeignKey, Index, Integer, String, Text, UniqueConstraint
+from sqlalchemy import (
+    CheckConstraint,
+    DateTime,
+    ForeignKey,
+    Index,
+    Integer,
+    String,
+    Text,
+    UniqueConstraint,
+)
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.db.database import Base
@@ -13,7 +22,13 @@ def now() -> datetime:
 
 class Inquiry(Base):
     __tablename__ = "inquiries"
-    __table_args__ = (UniqueConstraint("idempotency_key", name="uq_inquiries_idempotency_key"),)
+    __table_args__ = (
+        UniqueConstraint("idempotency_key", name="uq_inquiries_idempotency_key"),
+        CheckConstraint(
+            "notification_status IN ('pending', 'sent', 'failed')",
+            name="ck_inquiries_notification_status",
+        ),
+    )
 
     id: Mapped[str] = mapped_column(String(36), primary_key=True, default=lambda: str(uuid4()))
     name: Mapped[str] = mapped_column(String(120), nullable=False)
@@ -35,6 +50,14 @@ class EmailDelivery(Base):
     __tablename__ = "email_deliveries"
     __table_args__ = (
         UniqueConstraint("inquiry_id", name="uq_email_deliveries_inquiry_id"),
+        CheckConstraint(
+            "status IN ('pending', 'attempting', 'sent', 'failed')",
+            name="ck_email_deliveries_status",
+        ),
+        CheckConstraint(
+            "attempt_count >= 0 AND attempt_count <= 5",
+            name="ck_email_deliveries_attempt_count",
+        ),
         Index("ix_email_deliveries_ready", "status", "next_attempt_at", "created_at"),
     )
 

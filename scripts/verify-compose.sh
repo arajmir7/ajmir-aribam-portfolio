@@ -21,7 +21,7 @@ trap cleanup EXIT
 )
 revision="$("${compose[@]}" exec -T postgres psql -U portfolio -d portfolio -Atqc \
   'SELECT version_num FROM alembic_version')"
-[[ "$revision" == "003_resend_message_id" ]] || {
+[[ "$revision" == "004_delivery_state_constraints" ]] || {
   echo "Compose database migration revision was $revision." >&2
   exit 1
 }
