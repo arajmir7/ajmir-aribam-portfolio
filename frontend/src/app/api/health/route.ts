@@ -21,7 +21,30 @@ export async function GET() {
     buildRevision,
     production,
   });
-  if (!api || !ready)
+  if (!api || !ready) {
+    const token = process.env.CONTACT_INTERNAL_TOKEN?.trim();
+    console.error(
+      JSON.stringify({
+        event: "contact_runtime_config_invalid",
+        checks: {
+          api_url: Boolean(api),
+          internal_token:
+            Boolean(token) &&
+            token!.length >= 32 &&
+            !["replace-with", "changeme", "example"].some((prefix) =>
+              token!.toLowerCase().startsWith(prefix),
+            ),
+          trusted_client_ip_header:
+            process.env.CONTACT_CLIENT_IP_HEADER?.toLowerCase() ===
+            "x-forwarded-for",
+          build_revision: /^[0-9a-f]{7,64}$/i.test(buildRevision),
+          site_url:
+            process.env.NEXT_PUBLIC_SITE_URL === "https://ajmiraribam.me",
+          allowed_origin:
+            process.env.CONTACT_ALLOWED_ORIGIN === "https://ajmiraribam.me",
+        },
+      }),
+    );
     return NextResponse.json(
       {
         status: "unavailable",
@@ -29,6 +52,7 @@ export async function GET() {
       },
       { status: 503, headers: { "Cache-Control": "no-store" } },
     );
+  }
   try {
     const response = await fetch(`${api}/health/ready`, {
       headers: { "X-Internal-Token": process.env.CONTACT_INTERNAL_TOKEN || "" },
