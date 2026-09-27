@@ -53,7 +53,7 @@ for header in permissions-policy x-frame-options; do
     exit 1
   }
 done
-grep -Fq "rel=\"canonical\" href=\"$origin/\"" "$workdir/home" || {
+grep -Eq "rel=\"canonical\" href=\"${origin}/?\"" "$workdir/home" || {
   echo "Homepage canonical does not match $origin/." >&2
   exit 1
 }

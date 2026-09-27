@@ -24,6 +24,7 @@ test("personal introduction precedes proof, public work and current work at ever
       });
 
       const introduction = page.locator('[data-section="introduction"]');
+      const portrait = introduction.locator("img");
       const proof = page.locator('[data-section="engineering-proof"]');
       const work = page.locator('[data-section="public-work"]');
       const currentWork = page.locator('[data-section="current-work"]');
@@ -39,7 +40,16 @@ test("personal introduction precedes proof, public work and current work at ever
       expect(currentWorkBounds.y).toBeGreaterThanOrEqual(
         workBounds.y + workBounds.height - 1,
       );
-      await expect(introduction.locator("img")).toHaveCount(1);
+      await expect(portrait).toHaveCount(1);
+      await expect(portrait).toHaveAttribute(
+        "src",
+        "/images/ajmir-portrait.jpg",
+      );
+      expect(
+        await portrait.evaluate(
+          (image) => (image as HTMLImageElement).naturalWidth,
+        ),
+      ).toBeGreaterThan(0);
       await expect(
         introduction.locator('img[src*="projects"], article, .project-card'),
       ).toHaveCount(0);
