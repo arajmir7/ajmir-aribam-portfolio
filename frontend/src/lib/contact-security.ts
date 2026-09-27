@@ -88,10 +88,7 @@ export function contactApiBaseUrl(config: ContactRuntimeConfig): string | null {
       url.password ||
       url.search ||
       url.hash ||
-      (config.production &&
-        (url.protocol !== "https:" ||
-          !url.hostname.endsWith(".vercel.app") ||
-          url.port !== ""))
+      (config.production && (url.protocol !== "https:" || url.port !== ""))
     ) {
       return null;
     }

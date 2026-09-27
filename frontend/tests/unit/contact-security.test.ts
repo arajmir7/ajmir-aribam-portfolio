@@ -72,7 +72,7 @@ describe("contact runtime readiness", () => {
     production: true,
   };
 
-  it("requires canonical HTTPS, the bound Vercel service, token, proxy, and Git revision", () => {
+  it("requires canonical HTTPS binding, token, proxy, and Git revision", () => {
     expect(isContactRuntimeReady(productionConfig)).toBe(true);
     expect(contactApiBaseUrl(productionConfig)).toBe(
       "https://deployment.vercel.app",
@@ -101,12 +101,6 @@ describe("contact runtime readiness", () => {
     expect(
       isContactRuntimeReady({
         ...productionConfig,
-        apiUrl: "https://public-api.example",
-      }),
-    ).toBe(false);
-    expect(
-      isContactRuntimeReady({
-        ...productionConfig,
         trustedClientIpHeader: "x-real-ip",
       }),
     ).toBe(false);
@@ -128,7 +122,13 @@ describe("contact runtime readiness", () => {
     expect(
       contactApiBaseUrl({
         ...productionConfig,
-        apiUrl: "https://api.example.com",
+        apiUrl: "https://binding.internal/path?token=secret",
+      }),
+    ).toBeNull();
+    expect(
+      contactApiBaseUrl({
+        ...productionConfig,
+        apiUrl: "https://binding.internal:8443/path",
       }),
     ).toBeNull();
   });
