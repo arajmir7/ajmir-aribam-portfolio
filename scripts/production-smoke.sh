@@ -125,7 +125,7 @@ contact_status="$(curl --silent --show-error --output "$workdir/contact-origin-e
   exit 1
 }
 
-for asset in /icon.svg /apple-icon.png /opengraph-image; do
+for asset in /favicon.ico /favicon-48x48.png /favicon-96x96.png /apple-icon.png /site.webmanifest /opengraph-image; do
   fetch "$asset" "$workdir/asset-$(printf '%s' "$asset" | tr '/' '_')"
 done
 

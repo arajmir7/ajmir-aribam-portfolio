@@ -278,14 +278,13 @@ test("orientation, routes, metadata, and evidence links", async ({
   expect(robots).toContain("Disallow: /api/");
   for (const [asset, contentType] of [
     ["/opengraph-image", "image/png"],
-    ["/icon.svg", "image/svg+xml"],
     ["/favicon.ico", "image/x-icon"],
-    ["/icon.png", "image/png"],
+    ["/favicon-48x48.png", "image/png"],
+    ["/favicon-96x96.png", "image/png"],
     ["/apple-icon.png", "image/png"],
     ["/icon-192.png", "image/png"],
     ["/icon-512.png", "image/png"],
     ["/site.webmanifest", "application/manifest+json"],
-    ["/manifest.webmanifest", "application/manifest+json"],
   ]) {
     const response = await request.get(asset);
     expect(response.status(), asset).toBe(200);
@@ -299,14 +298,34 @@ test("orientation, routes, metadata, and evidence links", async ({
         return href ? new URL(href, window.location.href).pathname : "";
       }),
     );
-  for (const icon of [
+  expect(iconHrefs).toEqual([
     "/favicon.ico",
-    "/icon.svg",
-    "/icon.png",
-    "/icon-192.png",
-    "/icon-512.png",
-  ])
-    expect(iconHrefs).toContain(icon);
+    "/favicon-48x48.png",
+    "/favicon-96x96.png",
+  ]);
+  expect(iconHrefs.some((href) => href.endsWith(".svg"))).toBe(false);
+  for (const [path, size] of [
+    ["/favicon-48x48.png", 48],
+    ["/favicon-96x96.png", 96],
+  ] as const) {
+    const image = Buffer.from(await (await request.get(path)).body());
+    expect(image.subarray(0, 8)).toEqual(
+      Buffer.from([137, 80, 78, 71, 13, 10, 26, 10]),
+    );
+    expect(image.readUInt32BE(16), path).toBe(size);
+    expect(image.readUInt32BE(20), path).toBe(size);
+  }
+  const ico = Buffer.from(await (await request.get("/favicon.ico")).body());
+  expect(ico.readUInt16LE(0)).toBe(0);
+  expect(ico.readUInt16LE(2)).toBe(1);
+  const icoCount = ico.readUInt16LE(4);
+  expect(icoCount).toBeGreaterThanOrEqual(3);
+  const icoSizes = Array.from({ length: icoCount }, (_, index) => {
+    const dimension = ico[6 + index * 16];
+    return dimension || 256;
+  });
+  expect(icoSizes).toEqual(expect.arrayContaining([16, 32, 48]));
+  expect(iconHrefs[0]).toBe("/favicon.ico");
   await expect(page.locator('link[rel="apple-touch-icon"]')).toHaveAttribute(
     "href",
     "/apple-icon.png",
@@ -317,12 +336,11 @@ test("orientation, routes, metadata, and evidence links", async ({
   );
   const webManifest = await (await request.get("/site.webmanifest")).json();
   expect(webManifest.name).toBe("Ajmir Aribam — Software Engineer");
-  expect(webManifest.icons).toEqual(
-    expect.arrayContaining([
-      expect.objectContaining({ src: "/icon-192.png", sizes: "192x192" }),
-      expect.objectContaining({ src: "/icon-512.png", sizes: "512x512" }),
-    ]),
-  );
+  for (const icon of webManifest.icons) {
+    const response = await request.get(icon.src);
+    expect(response.status(), icon.src).toBe(200);
+    expect(response.headers()["content-type"], icon.src).toContain("image/png");
+  }
   const internal = new Set<string>();
   for (const path of routes) {
     await page.goto(path);
